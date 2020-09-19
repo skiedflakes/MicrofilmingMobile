@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View,Alert,StyleSheet,TouchableOpacity,ScrollView,FlatList,SafeAreaView } from 'react-native';
+import { Text, View,Alert,StyleSheet,TouchableOpacity,ScrollView,FlatList,TouchableHighlight,Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Entypo from 'react-native-vector-icons/Entypo';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MCI from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useFocusEffect } from '@react-navigation/native';
@@ -18,10 +18,8 @@ const mydata = [
   },
     {
     id:"3",
-    name:"Test Navigation",
+    name:"Test Screen",
   },
-
-
 ];
 
 
@@ -37,9 +35,46 @@ const FlatListItemSeparator = () => {
     );
   }
 
+  const FlatListItemSeparator_modal = () => {
+    return (
+      <View
+        style={{
+          height: 0.5,
+          width: "100%",
+          backgroundColor: "#000",
+        }}
+      />
+    );
+  }
+
 export default function HomeScreen ({navigation:{goBack},navigation}) {
   const [menu_list, setMenu_list] = React.useState(null);
-  var [content, setcontent] = React.useState(null);
+  const [content, setcontent] = React.useState(null);
+  const [company_id, setcompany_id] = React.useState(null);
+  const [selected_farm_location, setselected_farm_location] = React.useState("");
+  const [allow_navigation,setallow_navigation] = React.useState(false);
+  
+  //modalbranch
+  const [modalVisible, setModalVisible] = useState(false);
+  const [branch_data, setBranch_data] = useState('');
+
+
+  const onSelectBranch = (branch_name,branch_id) =>{
+    setModalVisible(false);
+
+    set_branch_offline_db('branch_details',{'branch_details':1,'branch_name':branch_name,'branch_id':branch_id})
+    setselected_farm_location(branch_name);
+    setallow_navigation(true);
+              
+  }
+
+  const set_branch_offline_db = async (key,value) => {
+    try {
+      await AsyncStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      // Error saving data
+    }
+  };
 
   const logout = () =>{
     goBack();
@@ -49,7 +84,57 @@ export default function HomeScreen ({navigation:{goBack},navigation}) {
 
   useFocusEffect(
     React.useCallback(() => {
-        setMenu_list(mydata);
+      setselected_farm_location('Select Farm Location');
+    //ASYNC STORAGE REMOVE ALL PRE-SELECTED ADDITIONS
+    AsyncStorage.getAllKeys((err, keys) => {
+      AsyncStorage.multiGet(keys, (err, stores) => {
+          stores.map((result, i, store) => {
+            let key = store[i][0];
+            var jsonPars = JSON.parse(store[i][1]);
+            if(jsonPars.user_details==1){
+              setcompany_id(jsonPars.company_id);
+            }else if(jsonPars.branch_details==1){
+              setselected_farm_location(jsonPars.branch_name)
+              setallow_navigation(true);
+
+            }else{
+
+            }
+
+
+          });
+        });
+    });
+
+
+    
+    const formData = new FormData();
+    formData.append('company_id', '135');
+    fetch(global.global_url+'get_branch.php', {
+    method: 'POST',
+    headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'multipart/form-data'
+    },
+    body: formData
+
+    }).then((response) => response.json())
+    .then((responseJson) => {
+    var data = responseJson.array_data.map(function(item,index) {
+        return {
+        branch_id:item.branch_id,
+        branch_name: item.branch_name
+        };
+        });
+        setBranch_data(data);
+    }).catch((error) => {
+    setLogin_load(false);
+    console.error(error);
+    Alert.alert('Internet Connection Error');
+    });
+
+
+    setMenu_list(mydata);
       return () => {
       };
     }, [])
@@ -57,10 +142,49 @@ export default function HomeScreen ({navigation:{goBack},navigation}) {
 
   return (
     <View style={styles.main}>
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+          }}>
+              <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+    
+              <Text style={styles.modalText}>Select Farm Location</Text>
+                          <FlatList
+                          showsHorizontalScrollIndicator={false}
+                          showsVerticalScrollIndicator={false}
+                          style={{alignContent:"center",margin:2}}
+                          data={branch_data}
+                          renderItem={
+                          ({ item }) => 
+                          <RowItem_modal
+                              onSelect = {onSelectBranch}
+                              branch_id={item.branch_id} 
+                              branch_name={item.branch_name} />
+                          }
+                          keyExtractor={item => item.branch_id.toString()}
+                          ItemSeparatorComponent = { FlatListItemSeparator_modal }
+                          />
+              </View>
+              </View>
+        </Modal>
     <View style={styles.header} >
 
     <View style={{ flex:6,  flexDirection: 'row', padding:2,}} >
-      <Text style={{color:'#ffff',alignSelf:'center',marginLeft:20,fontSize:20}}>Microfilming Mobile</Text>
+
+    <TouchableOpacity     onPress={() => {
+          setModalVisible(true);
+        }} style={{color:'#ffff',alignSelf:'center',marginLeft:20,fontSize:20}}>
+      <View style={{flexDirection:"row"}}>
+      <Text style={{color:'#ffff',alignSelf:'center',marginLeft:20,fontSize:12}}>{selected_farm_location}
+      </Text>
+      <AntDesign  name="downcircle" size={25} color={"#ffff"} style={{alignContent:'center',alignSelf:'center', color:'#ffff',padding:10}}/>
+      </View>
+      </TouchableOpacity> 
+
       <TouchableOpacity style={{flex:5.5,flexDirection:'row-reverse',}} onPress={() =>logout()}>
       <MaterialCommunityIcons  name="logout" size={25} color={"#ffff"} style={{alignContent:'center',alignSelf:'center', color:'#ffff',padding:10}}/>
       <Text style={{alignContent:'center',alignSelf:'center', color:'#ffff'}} onPress={() =>logout()}>Logout</Text>
@@ -80,6 +204,7 @@ export default function HomeScreen ({navigation:{goBack},navigation}) {
               <RowItem
                 navigation={navigation}
                 title={item.name} 
+                allow_navigation={allow_navigation}
                 id={item.id} />
               }
             keyExtractor={item => item.id.toString()}
@@ -94,9 +219,9 @@ export default function HomeScreen ({navigation:{goBack},navigation}) {
 }
 
 
-function RowItem ({navigation,title,id}) {
+function RowItem ({navigation,title,id,allow_navigation}) {
   return (
-      <TouchableOpacity onPress={() => getContent(navigation,title,id)}>
+      <TouchableOpacity onPress={() => getContent(navigation,title,id,allow_navigation)}>
           <View style={styles.item}>
             <View style={{flex:3,flexDirection:'row',alignItems:"center"}}>
               <Text style={styles.title}>{title}</Text>
@@ -107,16 +232,73 @@ function RowItem ({navigation,title,id}) {
   );
 }
 
-function getContent(navigation,name,id){
-  if(id==1){ // load Abort
-    navigation.navigate("Deliveries");
-  }else if(id==2){ // load items
-    navigation.navigate("Adopt");
+function RowItem_modal ({branch_id,branch_name,onSelect}) {
+  return (
+      <TouchableOpacity onPress={() =>  onSelect(branch_name,branch_id)}>
+          <View style={styles.item_modal}>
+            <View style={{flex:3,flexDirection:'row',alignItems:"center"}}>
+              <Text >{branch_name}</Text>
+            </View>
+          </View>
+      </TouchableOpacity>
+  );
+}
+
+function getContent(navigation,name,id,allow_navigation){
+  console.log(allow_navigation)
+  if(allow_navigation){
+    if(id==1){ // load Abort
+      navigation.navigate("Deliveries");
+    }else if(id==2){ // load items
+      navigation.navigate("Adopt");
+    }else if(id==3){ // load items
+      navigation.navigate("Test Screen");
+    }else{
+  
+    
+    }
+  }else{
+    Alert.alert('Please Select Farm Location')
   }
+
 }
 
 
+
 const styles = StyleSheet.create({
+  item_modal: {
+ 
+    paddingLeft:10,
+    backgroundColor:'#ffff',
+    padding:18,
+    alignContent:"center",
+    alignItems:"center"
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5
+  },
     main:{
         alignItems:"center",
         alignContent:"center",
@@ -148,6 +330,7 @@ const styles = StyleSheet.create({
         flex: 1,
         marginTop:5,
       },
+      
       item: {
         flexDirection:'row',
         paddingLeft:10,

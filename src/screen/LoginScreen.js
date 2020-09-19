@@ -4,15 +4,12 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { Provider as PaperProvider, TextInput,Button} from 'react-native-paper';
-
-
 export default function LoginScreen ({navigation}) {
   const [user, setUser] = useState('');
   const [password, setPassword] = useState('');
   var [Show_loading,setShow_loading] = useState(false); 
   var [Show_view,setShow_view] = useState(false); 
   var [Login_load,setLogin_load] = useState(false); 
-
   useFocusEffect(
   React.useCallback(() => {
       setUser('');
@@ -46,7 +43,6 @@ export default function LoginScreen ({navigation}) {
     }
   };
 
-
   const login = async () => {
     if(!user){
       Alert.alert('Please enter username');
@@ -54,16 +50,41 @@ export default function LoginScreen ({navigation}) {
       Alert.alert('Please enter password');
     } else {
       setLogin_load(true);
-      setLogin_load(false);
-       
-      setItemStorage('user_details',{'user_details':1,'user_id':'save_response_data.user_id',
-      'company_code': 'save_response_data.company_code',
-      'company_id':' save_response_data.company_id',
-      'user_code': 'save_response_data.user_code',
-      'category_id': 'save_response_data.category_id',
-      'company_name': 'save_response_data.company_name',
-      'user_name': 'save_response_data.user_name'})
-      navigation.navigate("Home");
+  
+      const formData = new FormData();
+      formData.append('username', user);
+      formData.append('password', password);
+
+      fetch(global.global_url+'login.php', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'multipart/form-data'
+        },
+        body: formData
+
+      }).then((response) => response.json())
+        .then((responseJson) => {
+          setLogin_load(false);
+          var save_response_data = responseJson.response_[0];
+
+          if(save_response_data.status == '1'){
+            setItemStorage('user_details',{'user_details':1,'user_id':save_response_data.user_id,
+            'company_code': save_response_data.company_code,
+            'company_id': save_response_data.company_id,
+            'user_code': save_response_data.user_code,
+            'category_id': save_response_data.category_id,
+            'company_name': save_response_data.company_name,
+            'user_name': save_response_data.user_name})
+            navigation.navigate("Home");
+          } else {
+            Alert.alert('User not found');
+          }
+        }).catch((error) => {
+          setLogin_load(false);
+          console.error(error);
+          Alert.alert('Internet Connection Error');
+        });
     }
   }
 

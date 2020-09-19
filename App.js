@@ -6,6 +6,7 @@ import LoginScreen from './src/screen/LoginScreen';
 
 
 import DeliveriesScreen from './src/screen/DeliveriesScreen';
+import TestScreen from './src/screen/TestScreen';
 const Stack = createStackNavigator(); 
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
       // global.global_url = 'https://mobile.wdysolutions.com/notes_verifier/main/';
       //global.global_url = 'http://192.168.254.185/PigNotesMobile/';
       // global.global_url = 'http://192.168.8.106/PigNotesMobile_php/';
+       global.global_url = 'http://192.168.41.1/microfilming/';
     });
     return (
       <NavigationContainer>
@@ -22,6 +24,7 @@ function App() {
             <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}/>
 
             <Stack.Screen name="Deliveries" component={DeliveriesScreen} />
+            <Stack.Screen name="Test Screen" component={TestScreen} />
 
         </Stack.Navigator>
       </NavigationContainer>
