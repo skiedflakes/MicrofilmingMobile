@@ -27,12 +27,10 @@ const images = [{
 
 
 export default function Test_main () {
-
-
   return (
     <Modal visible={true} transparent={true}>
     <ImageViewer imageUrls={images}/>
-</Modal>
+    </Modal>
   );
 };
 
