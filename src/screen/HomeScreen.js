@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, View,Alert,StyleSheet,TouchableOpacity,ScrollView,FlatList,TouchableHighlight,Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MCI from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useFocusEffect } from '@react-navigation/native';
@@ -186,9 +187,10 @@ const FlatListItemSeparator = () => {
           setModalVisible(true);
         }} style={{color:'#ffff',alignSelf:'center',marginLeft:20,fontSize:20}}>
       <View style={{flexDirection:"row"}}>
-      <Text style={{color:'#ffff',alignSelf:'center',marginLeft:20,fontSize:12}}>{selected_farm_location}
+      <Entypo  name="location" size={15} color={"#ffff"} style={{alignContent:'center',alignSelf:'center', color:'#ffff'}}/>
+      <Text style={{color:'#ffff',alignSelf:'center',marginLeft:10,fontSize:12}}>{selected_farm_location}
       </Text>
-      <AntDesign  name="downcircle" size={25} color={"#ffff"} style={{alignContent:'center',alignSelf:'center', color:'#ffff',padding:10}}/>
+   
       </View>
       </TouchableOpacity> 
 

@@ -23,7 +23,8 @@ function App() {
             <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }}  />
             <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}/>
 
-            <Stack.Screen name="Deliveries" component={DeliveriesScreen} />
+            <Stack.Screen name="Deliveries" component={DeliveriesScreen}
+             options={{ headerShown: false }}/>
             <Stack.Screen name="Test Screen" component={TestScreen} />
 
         </Stack.Navigator>

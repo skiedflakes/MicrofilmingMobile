@@ -4,6 +4,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { Provider as PaperProvider, TextInput,Button} from 'react-native-paper';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
 export default function LoginScreen ({navigation}) {
   const [user, setUser] = useState('');
   const [password, setPassword] = useState('');
@@ -28,7 +30,10 @@ export default function LoginScreen ({navigation}) {
        }else{
         setShow_loading(true);
         setShow_view(false);
-        navigation.navigate("Home");
+        navigation.navigate('Home', {
+          company_code: value.company_code,
+          company_id: value.company_id,
+        });
        }
       } 
       catch (error) {
@@ -103,6 +108,7 @@ export default function LoginScreen ({navigation}) {
       <ActivityIndicator size="large" color="#0000ff" animating={Show_loading}/>
       {Show_view && 
       <View>
+        
        <Text style={{
     backgroundColor:"#ffff",
     color:"#4ABBE5",
@@ -111,20 +117,28 @@ export default function LoginScreen ({navigation}) {
     textAlign:'center',
     fontSize:18,
     fontWeight:'bold'
-    }}>MicroFilming</Text>     
+    }}>   <FontAwesome  name="photo" size={20} color={"#4ABBE5"}/> Microfilming</Text>     
         <TextInput
           label="Username"
           type="outlined"
           onChangeText={text => setUser(text)}
           value={user}
-          style={{marginBottom:20}}
+          style={{marginBottom:20, backgroundColor:"white"}}
+          underlineColorAndroid='#FFfF'
         />
+        
         <TextInput
           label="Password"
           type="outlined"
           secureTextEntry={true} 
           onChangeText={text => setPassword(text)}
           value={password}
+          style={
+            {
+              textAlign:"center",
+              backgroundColor:"white"
+            }
+          }
         />
    
     {Login_load==true? <ActivityIndicator style={{ padding:15,}} size="large" color="#00a65a" animating={true}/>: 
