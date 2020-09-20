@@ -76,7 +76,13 @@ export default function LoginScreen ({navigation}) {
             'category_id': save_response_data.category_id,
             'company_name': save_response_data.company_name,
             'user_name': save_response_data.user_name})
-            navigation.navigate("Home");
+            var company_code = save_response_data.company_code;
+            var company_id = save_response_data.company_id;
+            navigation.navigate('Home', {
+              company_code: company_code,
+              company_id: company_id,
+            });
+            
           } else {
             Alert.alert('User not found');
           }

@@ -47,11 +47,16 @@ const FlatListItemSeparator = () => {
     );
   }
 
-export default function HomeScreen ({navigation:{goBack},navigation}) {
+  export default function HomeScreen ({navigation:{goBack},navigation,route}) {
+
+    const { company_id } = route.params;
+    const { company_code } = route.params;
+
+
   const [menu_list, setMenu_list] = React.useState(null);
   const [content, setcontent] = React.useState(null);
-  const [company_id, setcompany_id] = React.useState(null);
   const [selected_farm_location, setselected_farm_location] = React.useState("");
+  const [selected_farm_location_id, setselected_farm_location_id] = React.useState("");
   const [allow_navigation,setallow_navigation] = React.useState(false);
   
   //modalbranch
@@ -64,6 +69,7 @@ export default function HomeScreen ({navigation:{goBack},navigation}) {
 
     set_branch_offline_db('branch_details',{'branch_details':1,'branch_name':branch_name,'branch_id':branch_id})
     setselected_farm_location(branch_name);
+    setselected_farm_location_id(branch_id);
     setallow_navigation(true);
               
   }
@@ -92,24 +98,29 @@ export default function HomeScreen ({navigation:{goBack},navigation}) {
             let key = store[i][0];
             var jsonPars = JSON.parse(store[i][1]);
             if(jsonPars.user_details==1){
-              setcompany_id(jsonPars.company_id);
+
             }else if(jsonPars.branch_details==1){
               setselected_farm_location(jsonPars.branch_name)
+              setselected_farm_location_id(jsonPars.branch_id)
               setallow_navigation(true);
-
             }else{
-
             }
-
-
           });
         });
     });
 
+    get_branch();
+    setMenu_list(mydata);
+      return () => {
+      };
+    }, [])
+  );
 
-    
+
+  const get_branch= () =>{
     const formData = new FormData();
-    formData.append('company_id', '135');
+    formData.append('company_code', company_code);
+    formData.append('company_id', company_id);
     fetch(global.global_url+'get_branch.php', {
     method: 'POST',
     headers: {
@@ -128,17 +139,13 @@ export default function HomeScreen ({navigation:{goBack},navigation}) {
         });
         setBranch_data(data);
     }).catch((error) => {
-    setLogin_load(false);
+
     console.error(error);
     Alert.alert('Internet Connection Error');
     });
 
 
-    setMenu_list(mydata);
-      return () => {
-      };
-    }, [])
-  );
+  }
 
   return (
     <View style={styles.main}>
@@ -205,7 +212,11 @@ export default function HomeScreen ({navigation:{goBack},navigation}) {
                 navigation={navigation}
                 title={item.name} 
                 allow_navigation={allow_navigation}
-                id={item.id} />
+                id={item.id}
+                branch_id={selected_farm_location_id}
+                company_code={company_code}
+                company_id={company_id}
+                 />
               }
             keyExtractor={item => item.id.toString()}
             ItemSeparatorComponent = { FlatListItemSeparator }
@@ -219,9 +230,9 @@ export default function HomeScreen ({navigation:{goBack},navigation}) {
 }
 
 
-function RowItem ({navigation,title,id,allow_navigation}) {
+function RowItem ({navigation,title,id,allow_navigation,branch_id,company_code,company_id}) {
   return (
-      <TouchableOpacity onPress={() => getContent(navigation,title,id,allow_navigation)}>
+      <TouchableOpacity onPress={() => getContent(navigation,title,id,allow_navigation,branch_id,company_code,company_id)}>
           <View style={styles.item}>
             <View style={{flex:3,flexDirection:'row',alignItems:"center"}}>
               <Text style={styles.title}>{title}</Text>
@@ -244,11 +255,11 @@ function RowItem_modal ({branch_id,branch_name,onSelect}) {
   );
 }
 
-function getContent(navigation,name,id,allow_navigation){
+function getContent(navigation,name,id,allow_navigation,branch_id,company_code,company_id){
   console.log(allow_navigation)
   if(allow_navigation){
     if(id==1){ // load Abort
-      navigation.navigate("Deliveries");
+      navigation.navigate("Deliveries",{branch_id:branch_id,company_code,company_id});
     }else if(id==2){ // load items
       navigation.navigate("Adopt");
     }else if(id==3){ // load items

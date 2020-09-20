@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View,Alert,StyleSheet,TouchableOpacity,ScrollView,FlatList,TouchableHighlight,Modal } from 'react-native';
+import { Text, View,Alert,StyleSheet,TouchableOpacity,ScrollView,FlatList,TouchableHighlight,Button } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MCI from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
+import DateTimePicker from '@react-native-community/datetimepicker';
+
+
+
 const mydata = [
   {
     id:"1",
@@ -35,10 +40,14 @@ const FlatListItemSeparator = () => {
     );
   }
 
-export default function Deliveries_main ({navigation:{goBack},navigation}) {
+export default function Deliveries_main ({navigation:{goBack},navigation,route}) {
+  
+  //global params for instant loading
+  const { company_id,branch_id,company_code } = route.params;
+
   const [menu_list, setMenu_list] = React.useState(null);
   const [content, setcontent] = React.useState(null);
-  const [company_id, setcompany_id] = React.useState(null);
+
   
 
 
@@ -48,25 +57,89 @@ export default function Deliveries_main ({navigation:{goBack},navigation}) {
     Alert.alert('offline storage cleared');
   }
 
-  useFocusEffect(
-    React.useCallback(() => {
+  const get_deliveries_data= () =>{
+    const formData = new FormData();
+    formData.append('company_code', company_code);
+    formData.append('company_id', company_id);
+    fetch(global.global_url+'/deliveries/get_deliveries_data.php', {
+    method: 'POST',
+    headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'multipart/form-data'
+    },
+    body: formData
 
-    //ASYNC STORAGE REMOVE ALL PRE-SELECTED ADDITIONS
-    AsyncStorage.getAllKeys((err, keys) => {
-      AsyncStorage.multiGet(keys, (err, stores) => {
-          stores.map((result, i, store) => {
-            let key = store[i][0];
-            var jsonPars = JSON.parse(store[i][1]);
-            if(jsonPars.user_details==1){
-              setcompany_id(jsonPars.company_id);
-            }else if(jsonPars.branch_details==1){
-            }else{
-            }
-          });
+    }).then((response) => response.json())
+    .then((responseJson) => {
+    var data = responseJson.array_data.map(function(item,index) {
+        return {
+          dr_header_id:item.dr_header_id,
+        delivery_number: item.delivery_number
+        };
         });
+        setMenu_list(data);
+    }).catch((error) => {
+
+    console.error(error);
+    Alert.alert('Internet Connection Error');
     });
 
-    setMenu_list(mydata);
+
+  }
+
+
+  //date
+  const [date, setDate] = useState(new Date());
+  const [mode, setMode] = useState('date');
+  const [show, setShow] = useState(false);
+  const [selected_date, setselected_date] = useState('Please Select Date')
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+
+    setDate(currentDate);
+    setShow(Platform.OS === 'ios' ? true : false);
+    var mdate ='';
+    var Y = selectedDate.getFullYear();
+    var mm ='';
+    var dd='';
+
+    if((selectedDate.getMonth()+1).toString().length>1){
+      mm =selectedDate.getMonth()+1; 
+    }else{
+      mm ='0'+(selectedDate.getMonth()+1); 
+    }
+
+    if(selectedDate.getDate().toString().length==1){
+      dd ='0'+selectedDate.getDate(); 
+    }else{
+      dd =selectedDate.getDate(); 
+    }
+ 
+    mdate = Y+'-'+mm+'-'+dd;
+    setselected_date(mdate);
+    
+  };
+
+  const showMode = currentMode => {
+    setShow(true);
+    setMode(currentMode);
+  };
+
+  const showDatepicker = () => {
+    showMode('date');
+  };
+
+  const showTimepicker = () => {
+    showMode('time');
+  };
+
+
+  useFocusEffect(
+    React.useCallback(() => {
+    
+
+
+    get_deliveries_data();
       return () => {
       };
     }, [])
@@ -74,6 +147,33 @@ export default function Deliveries_main ({navigation:{goBack},navigation}) {
 
   return (
     <View style={styles.main}>
+        <View style={styles.header} >
+        <View style={{ flex:6,  flexDirection: 'row', padding:2,}} >
+      <Text style={styles.text_header}>Date:</Text>
+        {show && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          value={date}
+          mode={mode}
+          is24Hour={true}
+          display="default"
+          onChange={onChange}
+        />
+      )}
+        <TouchableOpacity onPress={showDatepicker} style={styles.date_picker}>
+          <View style={{ flexDirection: "row",}} >
+        <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_date}</Text>
+            <View style={{flex:0.2,flexDirection:"row-reverse",alignContent:'center',alignContent:"center",alignSelf:'center',}}
+            >
+              <FontAwesome  name="calendar" size={17} color={"gray"}/> 
+            </View>
+            
+            {/* */}
+          </View>
+        </TouchableOpacity>
+     
+      </View>
+      </View>
     <View style={styles.body}>
     <View style={{  flexDirection: 'row',alignContent:"center",alignItems:"center"}} >
         {/* <Text>{user}</Text> */}
@@ -86,10 +186,10 @@ export default function Deliveries_main ({navigation:{goBack},navigation}) {
               ({ item }) => 
               <RowItem
                 navigation={navigation}
-                title={item.name} 
-                id={item.id} />
+                dr_header_id={item.dr_header_id} 
+                delivery_number={item.delivery_number} />
               }
-            keyExtractor={item => item.id.toString()}
+            keyExtractor={item => item.dr_header_id.toString()}
             ItemSeparatorComponent = { FlatListItemSeparator }
         />
     </View>     
@@ -101,12 +201,12 @@ export default function Deliveries_main ({navigation:{goBack},navigation}) {
 }
 
 
-function RowItem ({navigation,title,id}) {
+function RowItem ({navigation,delivery_number,dr_header_id}) {
   return (
-      <TouchableOpacity onPress={() => getContent(navigation,title,id)}>
+      <TouchableOpacity>
           <View style={styles.item}>
             <View style={{flex:3,flexDirection:'row',alignItems:"center"}}>
-              <Text style={styles.title}>{title}</Text>
+              <Text style={styles.title}>{delivery_number}</Text>
             </View>
             <MaterialIcons style={{alignSelf:'center'}} name="keyboard-arrow-right" size={25} color={"#4ABBE5"}/>
           </View>
@@ -137,7 +237,6 @@ const styles = StyleSheet.create({
         flexDirection:'row-reverse',
         padding:2,
         flex:0.6,
-        backgroundColor: '#4ABBE5',
         alignContent:"center",
     },
     body:{
@@ -165,4 +264,25 @@ const styles = StyleSheet.create({
         padding:15,
         fontSize: 20,
       },
+      text_header: {
+        alignContent:"center",
+        alignSelf:"center",
+        textAlign:"center",
+        borderWidth:1,
+        padding: 10,
+        borderColor: "gray",
+        borderBottomLeftRadius:8,
+        borderTopLeftRadius:8,
+        flex:0.2
+      },
+      date_picker:{
+        flex:0.8,
+        alignContent:"center",
+        alignSelf:"center",
+        borderWidth:1,
+        padding: 10,
+        borderColor: "gray",
+        borderBottomRightRadius:8,
+        borderTopRightRadius:8
+      }
 })
