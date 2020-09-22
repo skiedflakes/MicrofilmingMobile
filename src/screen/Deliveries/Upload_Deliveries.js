@@ -17,8 +17,9 @@ import {
 export default function Upload_Deliveries ({navigation:{goBack},navigation,route}) {
   
   //global params for instant loading
-  const { company_id,branch_id,company_code,user_id } = route.params;
+  const { company_id,branch_id,company_code,user_id,dr_number } = route.params;
 
+  console.log(user_id);
   const [image_preview,Setimage_preview] = useState(false);
   const [imageUri,SetimageUri] = useState('');
   const [image_file_type,Setimage_file_type] = useState('');
@@ -35,7 +36,7 @@ export default function Upload_Deliveries ({navigation:{goBack},navigation,route
       formData.append('company_id', company_id);
       formData.append('branch_id', branch_id);
 
-      formData.append('ref_num', "DR-124-072618143907");
+      formData.append('ref_num', dr_number);
       formData.append('details_id', "0");
       formData.append('chart_id', "0");
       formData.append('module', "DR");
@@ -114,7 +115,7 @@ return (
   
   <View style={styles.container}>
 
-    <Text style={{fontSize:18,textAlign:"center"}}>Delivery # : {'rf_number variable here'}</Text>
+    <Text style={{fontSize:18,textAlign:"center"}}>Delivery # : {dr_number}</Text>
 
         <TouchableOpacity
               onPress={() => { open_file(); }}
