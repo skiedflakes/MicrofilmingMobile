@@ -8,14 +8,16 @@ import {
   SectionList,
   Alert,
   Platform,
-  Image
+  Image,
+  TouchableHighlight,
+  AntDesign
 } from "react-native";
 
 
 export default function Upload_Deliveries ({navigation:{goBack},navigation,route}) {
   
-    //global params for instant loading
-    const { company_id,branch_id,company_code } = route.params;
+  //global params for instant loading
+  const { company_id,branch_id,company_code,user_id } = route.params;
 
   const [image_preview,Setimage_preview] = useState(false);
   const [imageUri,SetimageUri] = useState('');
@@ -27,13 +29,23 @@ export default function Upload_Deliveries ({navigation:{goBack},navigation,route
     }
     else {
       const formData = new FormData();
-      formData.append('test_string', "variable here");
-      formData.append('image', {
+
+      formData.append('user_id', user_id);
+      formData.append('company_code', company_code);
+      formData.append('company_id', company_id);
+      formData.append('branch_id', branch_id);
+
+      formData.append('ref_num', "DR-124-072618143907");
+      formData.append('details_id', "0");
+      formData.append('chart_id', "0");
+      formData.append('module', "DR");
+
+      formData.append('file', {
           uri: imageUri,
           name: 'my_photo',
           type: image_file_type
         });
-      fetch('http://192.168.1.4/test_php/test.php', {
+      fetch(global.global_url+'/deliveries/upload_img.php', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -85,8 +97,8 @@ export default function Upload_Deliveries ({navigation:{goBack},navigation,route
     if(image_preview==false){
         return (
             <Image 
-            style={{height:200,width:200,alignItems:"center",alignContent:"center"}}
-            source={null} />
+            style={{height:250,width:250,alignItems:"center",alignContent:"center"}}
+            source={require('../../asset/add_image.png')} />
         );
     }else{
         return (
@@ -99,23 +111,25 @@ export default function Upload_Deliveries ({navigation:{goBack},navigation,route
 }
 
 return (
+  
   <View style={styles.container}>
 
-        {renderImage()}
+    <Text style={{fontSize:18,textAlign:"center"}}>Delivery # : {'rf_number variable here'}</Text>
 
         <TouchableOpacity
-            onPress={() => { open_file(); }}
-            style={{alignItems:"center",marginBottom:10}}
-            >
-            <Text>Open Gallery</Text>
+              onPress={() => { open_file(); }}
+              style={{alignItems:"center",marginBottom:10}}
+              >
+              { renderImage()}
         </TouchableOpacity>
 
         <TouchableOpacity
             onPress={() => { addImage(); }}
             style={{alignItems:"center",marginBottom:10}}
             >
-            <Text>Upload</Text>
+            <Text style={{fontSize:18}}>Upload image</Text>
         </TouchableOpacity>
+
   </View>
 )
 
@@ -125,9 +139,9 @@ return (
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#ffffff',
+    padding: 10
   },
   welcome: {
     fontSize: 18,
