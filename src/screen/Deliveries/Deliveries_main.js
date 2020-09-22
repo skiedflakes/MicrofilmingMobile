@@ -87,7 +87,6 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
     formData.append('start_date', selected_start_date);
     formData.append('end_date', selected_end_date);
 
-    console.log(company_code+" "+company_id+" "+branch_id+" "+selected_start_date+" "+selected_end_date);
     fetch(global.global_url+'/deliveries/get_deliveries_data.php', {
     method: 'POST',
     headers: {
@@ -141,7 +140,7 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
 
         setimage_data_loaded(true);
         setimg_list(data);
-        console.log(data)
+
         // 
     }).catch((error) => {
 
@@ -295,9 +294,6 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
     <View style={styles.main}>
 
       {/* //Main modal */}
- 
-
-
       <Modal
         animationType="fade"
         transparent={true}
@@ -328,7 +324,7 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
     
     
                 <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-                  <TouchableOpacity  onPress={() => {console.log(img_list); setmodal_img_Visible(true); }} style={styles.rounded_btn}>
+                  <TouchableOpacity  onPress={() => {setmodal_img_Visible(true); }} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
                       <MaterialIcons  name="image-search" size={20} color={"black"}/> 
                       <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>View Image</Text>

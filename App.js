@@ -14,7 +14,7 @@ function App() {
       // global.global_url = 'https://mobile.wdysolutions.com/notes_verifier/main/';
       //global.global_url = 'http://192.168.254.185/PigNotesMobile/';
       // global.global_url = 'http://192.168.8.106/PigNotesMobile_php/';
-       global.global_url = 'http://192.168.41.1/microfilming/';
+       global.global_url = 'http://192.168.41.1/microfilming_localhost/';
        global.notes_web_directory = 'http://192.168.41.1/notes/';
     });
     return (
