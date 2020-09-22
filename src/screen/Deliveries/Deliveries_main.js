@@ -27,8 +27,6 @@ const mydata = [
   },
 ];
 
-
-
 const images = [{
   // Simplest usage.
   url: 'http://192.168.41.1/microfilming/img/cake2.jpg',
@@ -64,7 +62,11 @@ const FlatListItemSeparator = () => {
 export default function Deliveries_main ({navigation:{goBack},navigation,route}) {
   
   //global params for instant loading
-  const { company_id,branch_id,company_code } = route.params;
+  const { company_id,branch_id,company_code,user_id } = route.params;
+
+
+  
+
 
   //selected
   const[selected_dr_number,setselected_dr_number] = useState('');
@@ -83,6 +85,11 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
     const formData = new FormData();
     formData.append('company_code', company_code);
     formData.append('company_id', company_id);
+    formData.append('branch_id', branch_id); 
+    formData.append('start_date', selected_start_date);
+    formData.append('end_date', selected_end_date);
+
+    console.log(company_code+" "+company_id+" "+branch_id+" "+selected_start_date+" "+selected_end_date);
     fetch(global.global_url+'/deliveries/get_deliveries_data.php', {
     method: 'POST',
     headers: {
@@ -125,13 +132,54 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
   //date
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
-  const [show, setShow] = useState(false);
-  const [selected_date, setselected_date] = useState('Please Select Date')
-  const onChange = (event, selectedDate) => {
+
+  
+
+  const [show_end_date, setshow_end_date] = useState(false);
+
+  const [show_start_date, setshow_start_date] = useState(false);
+
+
+        //setup state start date
+        var start_date ='';
+        var start_raw_date =  new Date(); 
+        var Y = start_raw_date.getFullYear();
+        var mm ='';
+        var dd='';
+    
+        if((start_raw_date.getMonth()+1).toString().length>1){
+          mm =start_date_.getMonth()+1; 
+        }else{
+          mm ='0'+(start_raw_date.getMonth()+1); 
+        }
+     
+        start_date = Y+'-'+mm+'-'+'01';
+   
+   
+   
+        //setup state end date
+        var end_date =  '';
+        var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0); // get last day of the month
+        var e_Y = lastDay.getFullYear();
+        var e_mm = ''
+        var e_dd =lastDay.getDate();
+   
+        if((lastDay.getMonth()+1).toString().length>1){
+         e_mm =lastDay.getMonth()+1; 
+       }else{
+         e_mm ='0'+(lastDay.getMonth()+1); 
+       }
+   
+       end_date = e_Y+'-'+e_mm+'-'+e_dd;
+
+  const [selected_start_date, setselected_start_date] =   useState(start_date);
+  const [selected_end_date, setselected_end_date] =   useState( end_date);
+  // const [selected_date, setselected_date] =   useState( new Date().toDateString());
+  const onChange_start_date = (event, selectedDate) => {
     const currentDate = selectedDate || date;
 
     setDate(currentDate);
-    setShow(Platform.OS === 'ios' ? true : false);
+    setshow_start_date(Platform.OS === 'ios' ? true : false);
     var mdate ='';
     var Y = selectedDate.getFullYear();
     var mm ='';
@@ -150,12 +198,46 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
     }
  
     mdate = Y+'-'+mm+'-'+dd;
-    setselected_date(mdate);
+    setselected_start_date(mdate);
     
   };
 
+  
+  const onChange_end_date = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+
+    setDate(currentDate);
+    setshow_end_date(Platform.OS === 'ios' ? true : false);
+    var mdate ='';
+    var Y = selectedDate.getFullYear();
+    var mm ='';
+    var dd='';
+
+    if((selectedDate.getMonth()+1).toString().length>1){
+      mm =selectedDate.getMonth()+1; 
+    }else{
+      mm ='0'+(selectedDate.getMonth()+1); 
+    }
+
+    if(selectedDate.getDate().toString().length==1){
+      dd ='0'+selectedDate.getDate(); 
+    }else{
+      dd =selectedDate.getDate(); 
+    }
+ 
+    mdate = Y+'-'+mm+'-'+dd;
+    setselected_end_date(mdate);
+    
+  };
+
+
+
   const showMode = currentMode => {
-    setShow(true);
+    setshow_start_date(true);
+    setMode(currentMode);
+  };
+  const showMode2 = currentMode => {
+    setshow_end_date(true);
     setMode(currentMode);
   };
 
@@ -163,21 +245,28 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
     showMode('date');
   };
 
+  const showDatepicker2 = () => {
+    showMode2('date');
+  };
+
   const showTimepicker = () => {
     showMode('time');
   };
 
 
+  //main function
   useFocusEffect(
     React.useCallback(() => {
+
+
+
     
-
-
     get_deliveries_data();
       return () => {
       };
     }, [])
   );
+
 
   return (
     <View style={styles.main}>
@@ -279,34 +368,62 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
       </TouchableHighlight>
       </View>
       </View>
-        <View style={styles.header} >
+        <View style={styles.header_date} >
+            <View style={{flexDirection:"column",flex:1}}>
+                      <View style={{  flexDirection: 'row', padding:5,}} >
+                      <Text style={styles.text_header}>Start Date</Text>
+                        {show_start_date && (
+                        <DateTimePicker
+                          testID="dateTimePicker"
+                          value={date}
+                          mode={mode}
+                          is24Hour={true}
+                          display="default"
+                          onChange={onChange_start_date}
+                        />
+                      )}
+                        <TouchableOpacity onPress={showDatepicker} style={styles.date_picker}>
+                          <View style={{ flexDirection: "row",}} >
+                        <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_start_date}</Text>
+                            <View style={{flex:0.2,flexDirection:"row-reverse",alignContent:'center',alignContent:"center",alignSelf:'center',}}
+                            >
+                              <FontAwesome  name="calendar" size={17} color={"gray"}/> 
+                            </View>
+                            
+                            {/* */}
+                          </View>
+                        </TouchableOpacity>
+                    
+                      </View>
 
 
-        <View style={{ flex:6,  flexDirection: 'row', padding:5,}} >
-      <Text style={styles.text_header}>Date</Text>
-        {show && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={date}
-          mode={mode}
-          is24Hour={true}
-          display="default"
-          onChange={onChange}
-        />
-      )}
-        <TouchableOpacity onPress={showDatepicker} style={styles.date_picker}>
-          <View style={{ flexDirection: "row",}} >
-        <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_date}</Text>
-            <View style={{flex:0.2,flexDirection:"row-reverse",alignContent:'center',alignContent:"center",alignSelf:'center',}}
-            >
-              <FontAwesome  name="calendar" size={17} color={"gray"}/> 
-            </View>
-            
-            {/* */}
-          </View>
-        </TouchableOpacity>
-     
-      </View>
+
+                      <View style={{flexDirection: 'row', padding:5,}} >
+                      <Text style={styles.text_header}>End Date</Text>
+                        {show_end_date && (
+                        <DateTimePicker
+                          testID="dateTimePicker"
+                          value={date}
+                          mode={mode}
+                          is24Hour={true}
+                          display="default"
+                          onChange={onChange_end_date}
+                        />
+                      )}
+                        <TouchableOpacity onPress={showDatepicker2} style={styles.date_picker}>
+                          <View style={{ flexDirection: "row",}} >
+                        <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_end_date}</Text>
+                            <View style={{flex:0.2,flexDirection:"row-reverse",alignContent:'center',alignContent:"center",alignSelf:'center',}}
+                            >
+                              <FontAwesome  name="calendar" size={17} color={"gray"}/> 
+                            </View>
+                            
+                            {/* */}
+                          </View>
+                        </TouchableOpacity>
+                    
+                      </View>
+                      </View>
       </View>
     <View style={styles.body}>
     <View style={{  flexDirection: 'row',alignContent:"center",alignItems:"center"}} >
@@ -349,34 +466,6 @@ function RowItem ({navigation,delivery_number,dr_header_id,show_modal_main}) {
       </TouchableOpacity>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const styles = StyleSheet.create({
 
   rounded_btn:{
@@ -403,11 +492,20 @@ const styles = StyleSheet.create({
         alignItems:"center",
         alignContent:"center",
         alignSelf:"center",
-        flexDirection:'row-reverse',
+        flexDirection:'row',
         padding:2,
-        flex:0.6,
+        flex:0.5,
         alignContent:"center",
     },
+    header_date:{
+      alignItems:"center",
+      alignContent:"center",
+      alignSelf:"center",
+      flexDirection:'row',
+      padding:2,
+      flex:1.5,
+      alignContent:"center",
+  },
     body:{
         flex:5.4,
         backgroundColor: '#DADCDC',
@@ -442,10 +540,10 @@ const styles = StyleSheet.create({
         borderColor: "gray",
         borderBottomLeftRadius:8,
         borderTopLeftRadius:8,
-        flex:0.2
+        flex:0.3
       },
       date_picker:{
-        flex:0.8,
+        flex:0.7  ,
         alignContent:"center",
         alignSelf:"center",
         borderWidth:1,
