@@ -20,7 +20,7 @@ function App() {
       //  global.notes_web_directory = 'http://192.168.41.1/notes/';
 
       //dev url
-      global.global_url = 'http://mobile.wdysolutions.com/microfilming/main/';
+      global.global_url = 'https://mobile.wdysolutions.com/microfilming/main/';
       global.notes_web_directory = 'https://dev.wdysolutions.com/wfh';
     });
     return (
