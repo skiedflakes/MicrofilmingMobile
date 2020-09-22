@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View,Alert,StyleSheet,TouchableOpacity,ScrollView,FlatList,TouchableHighlight,Button,Modal } from 'react-native';
+import { Text, View,Alert,StyleSheet,TouchableOpacity,ScrollView,FlatList,TouchableHighlight,Button,Modal,ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -30,21 +30,6 @@ const mydata = [
 const images = [{
   // Simplest usage.
   url: 'http://192.168.41.1/microfilming/img/cake2.jpg',
-
-  // width: number
-  // height: number
-  // Optional, if you know the image size, you can set the optimization performance
-
-  // You can pass props to <Image />.
-  props: {
-      // headers: ...
-  }
-}, {
-  url: '',
-  props: {
-      // Or you can set source directory.
-      source: require('../../asset/cake1.jpg')
-  }
 }]
 
 const FlatListItemSeparator = () => {
@@ -63,16 +48,29 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
   
   //global params for instant loading
   const { company_id,branch_id,company_code,user_id } = route.params;
+  const module = 'DR'; // module
+  const [image_data_loaded,setimage_data_loaded] = useState(false);
 
+  //main function
+  useFocusEffect(
+    React.useCallback(() => {
+ 
+    get_deliveries_data();
+      return () => {
+      };
+    }, [])
+  );
 
-  
-
+  const on_generate_report = () =>{
+    get_deliveries_data();
+  }
 
   //selected
   const[selected_dr_number,setselected_dr_number] = useState('');
   const[selected_dr_id,setselected_dr_id] = useState('');
 
   const [menu_list, setMenu_list] = React.useState(null);
+  const [img_list, setimg_list] = React.useState(null);
   const [content, setcontent] = React.useState(null);
 
   const logout = () =>{
@@ -89,7 +87,6 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
     formData.append('start_date', selected_start_date);
     formData.append('end_date', selected_end_date);
 
-    console.log(company_code+" "+company_id+" "+branch_id+" "+selected_start_date+" "+selected_end_date);
     fetch(global.global_url+'/deliveries/get_deliveries_data.php', {
     method: 'POST',
     headers: {
@@ -112,8 +109,44 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
     console.error(error);
     Alert.alert('Internet Connection Error');
     });
+  }
 
 
+  const get_images_data= (reference_number) =>{
+    const formData = new FormData();
+    formData.append('company_code', company_code);
+    formData.append('company_id', company_id);
+    formData.append('branch_id', branch_id); 
+    formData.append('reference_number', reference_number);
+    formData.append('module',module );
+    formData.append('primary_url', global.notes_web_directory);
+
+    fetch(global.global_url+'/deliveries/get_micro_filming_img.php', {
+    method: 'POST',
+    headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'multipart/form-data'
+    },
+    body: formData
+
+    }).then((response) => response.json())
+    .then((responseJson) => {
+
+    var data = responseJson.array_data.map(function(item,index) {
+        return {
+          url:item.slug,
+        };
+        });
+
+        setimage_data_loaded(true);
+        setimg_list(data);
+
+        // 
+    }).catch((error) => {
+
+    console.error(error);
+    Alert.alert('Internet Connection Error');
+    });
   }
 
   //main modal
@@ -254,27 +287,13 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
   };
 
 
-  //main function
-  useFocusEffect(
-    React.useCallback(() => {
 
-
-
-    
-    get_deliveries_data();
-      return () => {
-      };
-    }, [])
-  );
 
 
   return (
     <View style={styles.main}>
 
       {/* //Main modal */}
- 
-
-
       <Modal
         animationType="fade"
         transparent={true}
@@ -285,42 +304,47 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
           Alert.alert("Modal has been closed.");
         }} >
           
-        <View style={styles.centeredView}>
-          <View style={styles.main_modalView}>
           
-          <View style={{flexDirection: 'row', padding:2,}} >
+        <View style={styles.centeredView}>
+ 
+            {image_data_loaded? 
+                   <View style={styles.main_modalView}>
+              <View style={{flexDirection: 'row', padding:2,}} >
             
-          <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_dr_number}</Text>
-          </View>
-          <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-              <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Upload Deliveries',{dr_number:selected_dr_number});}} style={styles.rounded_btn}>
-                <View style={{ flexDirection: "row",}} >
-                  <MCI  name="image-plus" size={20} color={"black"}/> 
-                  <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>Add Image</Text>
-                </View>
-              </TouchableOpacity>
-           </View>
-
-
-            <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-              <TouchableOpacity  onPress={() => {setmodal_img_Visible(true);}} style={styles.rounded_btn}>
-                <View style={{ flexDirection: "row",}} >
-                  <MaterialIcons  name="image-search" size={20} color={"black"}/> 
-                  <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>View</Text>
-                </View>
-              </TouchableOpacity>
-           </View>
-           <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-              <TouchableOpacity  onPress={() => {setmodal_main_Visible(false);}} style={styles.rounded_btn}>
-                <View style={{ flexDirection: "row",}} >
-   
-                  <Text style={{flex:1,alignSelf:'center', textAlign:"center",}}>Close</Text>
-                </View>
-              </TouchableOpacity>
-           </View>
-
-           
-          </View>
+              <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_dr_number}</Text>
+              </View>
+              <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
+                  <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Upload Deliveries',{dr_number:selected_dr_number,user_id:user_id});}} style={styles.rounded_btn}>
+                    <View style={{ flexDirection: "row",}} >
+                      <MCI  name="image-plus" size={20} color={"black"}/> 
+                      <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>Add Image</Text>
+                    </View>
+                  </TouchableOpacity>
+               </View>
+    
+    
+                <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
+                  <TouchableOpacity  onPress={() => {setmodal_img_Visible(true); }} style={styles.rounded_btn}>
+                    <View style={{ flexDirection: "row",}} >
+                      <MaterialIcons  name="image-search" size={20} color={"black"}/> 
+                      <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>View Image</Text>
+                    </View>
+                  </TouchableOpacity>
+               </View>
+               <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
+                  <TouchableOpacity  onPress={() => {setmodal_main_Visible(false);}} style={styles.rounded_btn}>
+                    <View style={{ flexDirection: "row",}} >
+       
+                      <Text style={{flex:1,alignSelf:'center', textAlign:"center",}}>Close</Text>
+                    </View>
+                  </TouchableOpacity>
+               </View>
+               </View>
+            :
+            <View style={styles.main_modalView}>
+            <ActivityIndicator size="small" color="#4ABBE5" />
+            </View>
+            }
         </View>
       </Modal>
 
@@ -346,7 +370,7 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
               <AntDesign  name="closecircleo" size={20} color={"white"}/> 
               </View>
             </TouchableHighlight>
-            <ImageViewer imageUrls={images}/>
+            <ImageViewer imageUrls={img_list}/>
 
             </Modal>
               {/* end image modal */}
@@ -423,6 +447,36 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
                         </TouchableOpacity>
                     
                       </View>
+                      <View style={{flexDirection: 'row', padding:5,alignSelf:"center",}} >
+                      <TouchableOpacity style={{
+                            backgroundColor:"#4ABBE5",flex:1,
+                            borderWidth: 1.5,
+                            borderColor:"#4ABBE5",
+                            borderRadius:10,
+                            alignContent:"center",
+                            alignSelf:"center",
+                            alignItems:"center"
+                      }} onPress={on_generate_report}>
+
+                      <View style={{ flexDirection: "row",}} >
+                      <Text style={{
+                      
+                      color:"#ffff",
+                      padding:5,
+                     
+                      textAlign:'center',
+                      fontSize:15,
+                      fontWeight:'bold',
+                      alignContent:"center",
+                      alignSelf:"center",
+                      alignItems:"center"
+             
+                      }}> <AntDesign  name="sync" size={15} color={"white"}/>  Generate Report</Text> 
+                          </View>
+                        
+                      </TouchableOpacity>
+                    
+                      </View>
                       </View>
       </View>
     <View style={styles.body}>
@@ -436,6 +490,7 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
             renderItem={
               ({ item }) => 
               <RowItem
+              get_images_data ={get_images_data}
               show_modal_main={show_modal_main}
                 navigation={navigation}
                 dr_header_id={item.dr_header_id} 
@@ -452,10 +507,11 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
   );
 }
 
-function RowItem ({navigation,delivery_number,dr_header_id,show_modal_main}) {
+function RowItem ({navigation,delivery_number,dr_header_id,show_modal_main,get_images_data}) {
   return (
       <TouchableOpacity   onPress={() => {
         show_modal_main(delivery_number,dr_header_id);
+        get_images_data(delivery_number);
       }}>
           <View style={styles.item}>
             <View style={{flex:3,flexDirection:'row',alignItems:"center"}}>
@@ -503,7 +559,7 @@ const styles = StyleSheet.create({
       alignSelf:"center",
       flexDirection:'row',
       padding:2,
-      flex:1.5,
+      flex:2,
       alignContent:"center",
   },
     body:{
@@ -536,7 +592,7 @@ const styles = StyleSheet.create({
         alignSelf:"center",
         textAlign:"center",
         borderWidth:1,
-        padding: 10,
+        padding: 7,
         borderColor: "gray",
         borderBottomLeftRadius:8,
         borderTopLeftRadius:8,
@@ -547,7 +603,7 @@ const styles = StyleSheet.create({
         alignContent:"center",
         alignSelf:"center",
         borderWidth:1,
-        padding: 10,
+        padding: 7,
         borderColor: "gray",
         borderBottomRightRadius:8,
         borderTopRightRadius:8
