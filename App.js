@@ -21,7 +21,7 @@ function App() {
 
       //dev url
       global.global_url = 'http://mobile.wdysolutions.com/microfilming/main/';
-      global.notes_web_directory = 'https://dev.wdysolutions.com/';
+      global.notes_web_directory = 'https://dev.wdysolutions.com/wfh';
     });
     return (
       <NavigationContainer>
