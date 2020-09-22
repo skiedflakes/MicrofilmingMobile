@@ -83,9 +83,11 @@ export default function LoginScreen ({navigation}) {
             'user_name': save_response_data.user_name})
             var company_code = save_response_data.company_code;
             var company_id = save_response_data.company_id;
+            var user_id = save_response_data.user_id;
             navigation.navigate('Home', {
               company_code: company_code,
               company_id: company_id,
+              user_id:user_id,
             });
             
           } else {

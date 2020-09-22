@@ -49,9 +49,7 @@ const FlatListItemSeparator = () => {
   }
 
   export default function HomeScreen ({navigation:{goBack},navigation,route}) {
-
-    const { company_id } = route.params;
-    const { company_code } = route.params;
+  const { company_id,company_code,user_id } = route.params;
 
 
   const [menu_list, setMenu_list] = React.useState(null);
@@ -218,6 +216,7 @@ const FlatListItemSeparator = () => {
                 branch_id={selected_farm_location_id}
                 company_code={company_code}
                 company_id={company_id}
+                user_id={user_id}
                  />
               }
             keyExtractor={item => item.id.toString()}
@@ -232,9 +231,9 @@ const FlatListItemSeparator = () => {
 }
 
 
-function RowItem ({navigation,title,id,allow_navigation,branch_id,company_code,company_id}) {
+function RowItem ({navigation,title,id,allow_navigation,branch_id,company_code,company_id,user_id}) {
   return (
-      <TouchableOpacity onPress={() => getContent(navigation,title,id,allow_navigation,branch_id,company_code,company_id)}>
+      <TouchableOpacity onPress={() => getContent(navigation,title,id,allow_navigation,branch_id,company_code,company_id,user_id)}>
           <View style={styles.item}>
             <View style={{flex:3,flexDirection:'row',alignItems:"center"}}>
               <Text style={styles.title}>{title}</Text>
@@ -257,11 +256,11 @@ function RowItem_modal ({branch_id,branch_name,onSelect}) {
   );
 }
 
-function getContent(navigation,name,id,allow_navigation,branch_id,company_code,company_id){
+function getContent(navigation,name,id,allow_navigation,branch_id,company_code,company_id,user_id){
   console.log(allow_navigation)
   if(allow_navigation){
     if(id==1){ // load Abort
-      navigation.navigate("Deliveries",{branch_id:branch_id,company_code,company_id});
+      navigation.navigate("Deliveries",{branch_id:branch_id,company_code,company_id,user_id});
     }else if(id==2){ // load items
       navigation.navigate("Adopt");
     }else if(id==3){ // load items
