@@ -19,8 +19,12 @@ const mydata = [
   },
     {
     id:"3",
-    name:"Test Screen",
+    name:"Test Module1",
   },
+  {
+  id:"4",
+  name:"Test Module2",
+},
 ];
 
 
@@ -84,7 +88,7 @@ const FlatListItemSeparator = () => {
   const logout = () =>{
     goBack();
     AsyncStorage.clear();
-    Alert.alert('offline storage cleared');
+    // Alert.alert('offline storage cleared');
   }
 
   useFocusEffect(
@@ -262,9 +266,13 @@ function getContent(navigation,name,id,allow_navigation,branch_id,company_code,c
     if(id==1){ // load Abort
       navigation.navigate("Deliveries",{branch_id:branch_id,company_code,company_id,user_id});
     }else if(id==2){ // load items
-      navigation.navigate("Adopt");
+     Alert.alert("Under Development");
     }else if(id==3){ // load items
-      navigation.navigate("Test Screen");
+      // navigation.navigate("Test Screen");
+      Alert.alert("Under Development");
+    } else if(id==4){ // load items
+        // navigation.navigate("Test Screen");
+        Alert.alert("Under Development");
     }else{
   
     

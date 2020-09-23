@@ -50,6 +50,8 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
   const { company_id,branch_id,company_code,user_id } = route.params;
   const module = 'DR'; // module
   const [image_data_loaded,setimage_data_loaded] = useState(false);
+  const [image_found,setimage_found]= useState(false);
+  const [spinner, setSpinner] = React.useState(false);
 
   //main function
   useFocusEffect(
@@ -80,6 +82,7 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
   }
 
   const get_deliveries_data= () =>{
+    setSpinner(true)
     const formData = new FormData();
     formData.append('company_code', company_code);
     formData.append('company_id', company_id);
@@ -97,6 +100,7 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
 
     }).then((response) => response.json())
     .then((responseJson) => {
+      setSpinner(false)
     var data = responseJson.array_data.map(function(item,index) {
         return {
           dr_header_id:item.dr_header_id,
@@ -107,12 +111,15 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
     }).catch((error) => {
 
     console.error(error);
+    setSpinner(false)
     Alert.alert('Internet Connection Error');
     });
   }
 
 
   const get_images_data= (reference_number) =>{
+    setimage_data_loaded(false);
+    setimg_list('');
     const formData = new FormData();
     formData.append('company_code', company_code);
     formData.append('company_id', company_id);
@@ -135,12 +142,19 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
     var data = responseJson.array_data.map(function(item,index) {
         return {
           url:item.slug,
+          
         };
         });
-
+        
+        if(data.length>0){
+       
+          setimg_list(data);
+          setimage_found(true);
+        }else{
+          setimg_list('');
+          setimage_found(false)
+        }
         setimage_data_loaded(true);
-        setimg_list(data);
-
         // 
     }).catch((error) => {
 
@@ -301,7 +315,7 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
         backdropColor={'green'}
        backdropOpacity= {1}
         onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
+          setmodal_main_Visible(!modal_main_Visible);
         }} >
           
           
@@ -321,10 +335,8 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
                     </View>
                   </TouchableOpacity>
                </View>
-    
-    
                 <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-                  <TouchableOpacity  onPress={() => {setmodal_img_Visible(true); }} style={styles.rounded_btn}>
+                  <TouchableOpacity  onPress={() => {image_found? setmodal_img_Visible(true):Alert.alert('No image Available') }} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
                       <MaterialIcons  name="image-search" size={20} color={"black"}/> 
                       <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>View Image</Text>
@@ -357,7 +369,7 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
               visible={modal_img_Visible}
               transparent={true}
               onRequestClose={() => {
-                Alert.alert("Modal has been closed.");
+                setmodal_img_Visible(!modal_img_Visible);
               }}
             >
             <TouchableHighlight
@@ -370,7 +382,8 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
               <AntDesign  name="closecircleo" size={20} color={"white"}/> 
               </View>
             </TouchableHighlight>
-            <ImageViewer imageUrls={img_list}/>
+            <ImageViewer imageUrls={img_list}
+            loadingRender={console.log("rendering")}/>
 
             </Modal>
               {/* end image modal */}
@@ -503,9 +516,21 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
       {/* {content} */}
 
     </View>
+    {spinner && <CustomProgressBar />}
     </View>
   );
 }
+
+const CustomProgressBar = ({ visible }) => (
+  <Modal onRequestClose={() => null} visible={visible} transparent={true}>
+    <View style={{ alignItems: 'center', justifyContent: 'center',flex: 1 }}>
+      <View style={{ borderRadius: 10, backgroundColor: '#f0f0f0', padding: 15 }}>
+   
+        <ActivityIndicator size="large" color="#4ABBE5" />
+      </View>
+    </View>
+  </Modal>
+);
 
 function RowItem ({navigation,delivery_number,dr_header_id,show_modal_main,get_images_data}) {
   return (
