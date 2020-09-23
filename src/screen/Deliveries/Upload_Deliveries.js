@@ -80,12 +80,24 @@ export default function Upload_Deliveries ({navigation:{goBack},navigation,route
       }
   }
 
-  const open_file = () =>{
+  const dialogPicker = () =>{
+    Alert.alert(
+      '',
+      'Select import',
+      [
+        {text: 'Open Gallery', onPress: () => open_Gallery()},
+        {text: 'Open Camera', onPress: () => open_Camera()},
+      ],
+      { cancelable: true }
+    );
+  }
+
+  const open_Gallery = () =>{
     let options = {
         title: 'Select Image as',
-        // customButtons: [
-        //   { name: 'customOptionKey', title: 'Choose Photo from Custom Option' },
-        // ],
+        customButtons: [
+          { name: 'customOptionKey', title: 'Choose Photo from Custom Option' },
+        ],
         storageOptions: {
           skipBackup: true,
           path: 'images',
@@ -107,6 +119,31 @@ export default function Upload_Deliveries ({navigation:{goBack},navigation,route
           Setimage_preview(true);
         }
     });
+  }
+
+  const open_Camera = () =>{
+    let options = {
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    ImagePicker.launchCamera(options, (response) => {
+      // Same code as in above section!
+
+    if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+        alert(response.customButton);
+      } else {
+        Setimage_file_type(response.type);
+        SetimageUri(response.uri);
+        Setimage_preview(true);
+      }
+  });
   }
 
   function renderImage(){
@@ -134,7 +171,7 @@ return (
 
       <View style={styles.body}>
       <TouchableOpacity
-              onPress={() => { open_file(); }}
+              onPress={() => { dialogPicker(); }}
               style={{alignItems:"center",marginBottom:10}}
               >
               { renderImage()}
