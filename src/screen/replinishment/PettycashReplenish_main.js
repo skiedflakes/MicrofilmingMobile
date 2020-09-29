@@ -1,0 +1,598 @@
+import React, { useState, useEffect } from 'react';
+import { Text, View,Alert,StyleSheet,TouchableOpacity,ScrollView,FlatList,TouchableHighlight,Button,Modal,ActivityIndicator } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MCI from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-community/async-storage';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import ImageViewer from 'react-native-image-zoom-viewer';
+import RNPickerSelect from 'react-native-picker-select';
+
+const FlatListItemSeparator = () => {
+    return (
+      <View
+        style={{
+          height: 0.5,
+          width: "100%",
+          backgroundColor: "#000",
+        }}
+      />
+    );
+  }
+
+export default function PettycashReplenish_main ({navigation:{goBack},navigation,route}) {
+  
+  //global params for instant loading
+  const { company_id,branch_id,company_code,user_id } = route.params;
+  const [spinner, setSpinner] = React.useState(false);
+  const [menu_list, setMenu_list] = React.useState(null);
+  const [filter, setFilter] = React.useState('');
+
+  //main function
+  useFocusEffect(
+    React.useCallback(() => {
+      
+      //alert("User_id:"+user_id+" | branch_id:"+branch_id+" | company_code:"+company_code+" | company_id:"+company_id+" | selected_start_date:"+selected_start_date+" | selected_end_date:"+selected_end_date);
+       get_deliveries_data();
+      return () => {
+      };
+    }, [])
+  );
+
+  const on_generate_report = () =>{
+    get_deliveries_data();
+  }
+
+  const get_deliveries_data= () =>{
+    setSpinner(true)
+    const formData = new FormData();
+    formData.append('user_id', user_id); // user_id null
+    formData.append('company_code', company_code);
+    formData.append('company_id', company_id);
+    formData.append('branch_id', branch_id); 
+    formData.append('start_date', selected_start_date);
+    formData.append('end_date', selected_end_date);
+    formData.append('req_stat', filter);
+
+    fetch(global.global_url+'/replinish/getPaymentReplenish.php', {
+      method: 'POST',
+      headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'multipart/form-data'
+      },
+      body: formData
+    }).then((response) => response.json())
+    .then((responseJson) => {
+      //console.log(responseJson);
+      setSpinner(false)
+      var data = responseJson.data.map(function(item,index) {
+        return {
+          id:item.id,
+          count: item.count,
+          br_id: item.br_id,
+          rplnsh_num: item.rplnsh_num,
+          date: item.date,
+          amnt: item.amnt,
+          remarks: item.remarks,
+          status: item.status,
+          status_db: item.status_db,
+          status_span: item.status_span,
+          status_color: item.status_color,
+          rfr_stats: item.rfr_stats,
+          rfr_stat: item.rfr_stat,
+          rfr_stat_color: item.rfr_stat_color,
+          replenish_stats: item.replenish_stats,
+          dec_stat: item.dec_stat,
+          dec_stat_color: item.dec_stat_color,
+          encodedBY: item.encodedBY,
+          approved_by: item.approved_by,
+        };
+      });
+      setMenu_list(data);
+
+    }).catch((error) => {
+      console.error(error);
+      setSpinner(false)
+      Alert.alert('Internet Connection Error');
+    });
+  }
+
+  //date
+  const [date, setDate] = useState(new Date());
+  const [mode, setMode] = useState('date');
+
+  const [show_end_date, setshow_end_date] = useState(false);
+  const [show_start_date, setshow_start_date] = useState(false);
+
+
+  //setup state start date
+  var start_date ='';
+  var start_raw_date =  new Date(); 
+  var Y = start_raw_date.getFullYear();
+  var mm ='';
+  var dd='';
+
+  if((start_raw_date.getMonth()+1).toString().length>1){
+      mm =start_date_.getMonth()+1; 
+  }else{
+      mm ='0'+(start_raw_date.getMonth()+1); 
+  }
+  start_date = Y+'-'+mm+'-'+'01';
+
+
+  //setup state end date
+  var end_date =  '';
+  var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0); // get last day of the month
+  var e_Y = lastDay.getFullYear();
+  var e_mm = ''
+  var e_dd =lastDay.getDate();
+
+  if((lastDay.getMonth()+1).toString().length>1){
+      e_mm =lastDay.getMonth()+1; 
+  }else{
+      e_mm ='0'+(lastDay.getMonth()+1); 
+  }
+  end_date = e_Y+'-'+e_mm+'-'+e_dd;
+
+  const [selected_start_date, setselected_start_date] = useState(start_date);
+  const [selected_end_date, setselected_end_date] = useState( end_date);
+  // const [selected_date, setselected_date] =   useState( new Date().toDateString());
+
+  const onChange_start_date = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+
+    setDate(currentDate);
+    setshow_start_date(Platform.OS === 'ios' ? true : false);
+    var mdate ='';
+    var Y = selectedDate.getFullYear();
+    var mm ='';
+    var dd='';
+
+    if((selectedDate.getMonth()+1).toString().length>1){
+      mm =selectedDate.getMonth()+1; 
+    }else{
+      mm ='0'+(selectedDate.getMonth()+1); 
+    }
+
+    if(selectedDate.getDate().toString().length==1){
+      dd ='0'+selectedDate.getDate(); 
+    }else{
+      dd =selectedDate.getDate(); 
+    }
+ 
+    mdate = Y+'-'+mm+'-'+dd;
+    setselected_start_date(mdate);
+  };
+
+  const onChange_end_date = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+
+    setDate(currentDate);
+    setshow_end_date(Platform.OS === 'ios' ? true : false);
+    var mdate ='';
+    var Y = selectedDate.getFullYear();
+    var mm ='';
+    var dd='';
+
+    if((selectedDate.getMonth()+1).toString().length>1){
+      mm =selectedDate.getMonth()+1; 
+    }else{
+      mm ='0'+(selectedDate.getMonth()+1); 
+    }
+
+    if(selectedDate.getDate().toString().length==1){
+      dd ='0'+selectedDate.getDate(); 
+    }else{
+      dd =selectedDate.getDate(); 
+    }
+ 
+    mdate = Y+'-'+mm+'-'+dd;
+    setselected_end_date(mdate);
+  };
+
+
+  const showMode = currentMode => {
+    setshow_start_date(true);
+    setMode(currentMode);
+  };
+  const showMode2 = currentMode => {
+    setshow_end_date(true);
+    setMode(currentMode);
+  };
+
+  const showDatepicker = () => {
+    showMode('date');
+  };
+
+  const showDatepicker2 = () => {
+    showMode2('date');
+  };
+
+  const showTimepicker = () => {
+    showMode('time');
+  };
+
+  const openAddReplinish = () => {
+    //alert("test");
+    navigation.navigate("Pettycash Replenish Add",{branch_id,company_code,company_id,user_id});
+  };
+
+  return (
+    <View style={styles.main}>
+
+        <View style={styles.header} >
+            <View style={{ flex:1,  flexDirection: 'row', padding:2,}} >
+                <TouchableHighlight
+                    style={styles.openButton}
+                    onPress={() => {
+                    goBack()
+                    }}>
+                    <View style={{alignContent:"center",alignItems:"center",alignSelf:"center",  flexDirection: 'row', padding:2,}} >
+                      <AntDesign  style={{marginRight:10}} name="arrowleft" size={20} color={"black"}/> 
+                      <Text style={{fontSize:20,textAlign:"center"}}>Petty cash Replenish</Text>
+                    </View>
+                </TouchableHighlight>
+            </View>
+        </View>
+
+        <View style={styles.header_date} >
+            <View style={{flexDirection:"column",flex:1}}>
+
+            <View style={{flexDirection: 'row', padding:5}} >
+                        <Text style={styles.filter_header}>Filter</Text>
+                        <View style={styles.filter_picker}>
+                          <RNPickerSelect
+                              placeholder={{
+                                  label: 'All',
+                                  value: '',
+                              }}
+                              style={pickerStyle}
+                              useNativeAndroidPickerStyle={false}
+                              onValueChange={(value) => setFilter(value)}
+                              items={[
+                              { label: 'Declared', value: 'd' },
+                              { label: 'Undeclared', value: 'ud' },
+                            ]}
+                          />
+                        </View>
+                      </View>
+
+                      <View style={{  flexDirection: 'row', padding:5,}} >
+                        <Text style={styles.text_header}>Start Date</Text>
+                            {show_start_date && (
+                            <DateTimePicker
+                            testID="dateTimePicker"
+                            value={date}
+                            mode={mode}
+                            is24Hour={true}
+                            display="default"
+                            onChange={onChange_start_date}
+                            />
+                        )}
+                        <TouchableOpacity onPress={showDatepicker} style={styles.date_picker}>
+                          <View style={{ flexDirection: "row",}} >
+                        <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_start_date}</Text>
+                            <View style={{flex:0.2,flexDirection:"row-reverse",alignContent:'center',alignContent:"center",alignSelf:'center',}}>
+                              <FontAwesome  name="calendar" size={17} color={"gray"}/> 
+                            </View>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
+
+                      <View style={{flexDirection: 'row', padding:5,}} >
+                      <Text style={styles.text_header}>End Date</Text>
+                        {show_end_date && (
+                        <DateTimePicker
+                          testID="dateTimePicker"
+                          value={date}
+                          mode={mode}
+                          is24Hour={true}
+                          display="default"
+                          onChange={onChange_end_date}
+                        />
+                      )}
+                        <TouchableOpacity onPress={showDatepicker2} style={styles.date_picker}>
+                          <View style={{ flexDirection: "row",}} >
+                            <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_end_date}</Text>
+                            <View style={{flex:0.2,flexDirection:"row-reverse",alignContent:'center',alignContent:"center",alignSelf:'center',}}>
+                              <FontAwesome  name="calendar" size={17} color={"gray"}/> 
+                            </View>
+                          </View>
+                        </TouchableOpacity>
+                    
+                      </View>
+                      <View style={{flexDirection: 'row', padding:5,alignSelf:"center",}} >
+                        <TouchableOpacity style={{
+                                backgroundColor:"#5cb85c",flex:1,
+                                borderWidth: 1.5,
+                                borderColor:"#5cb85c",
+                                borderRadius:10,
+                                marginRight: 2,
+                                alignContent:"center",
+                                alignSelf:"center",
+                                alignItems:"center"
+                                }} onPress={on_generate_report}>
+
+                                <View style={{ flexDirection: "row",}} >
+                                <Text style={{
+                                    color:"#ffff",
+                                    padding:5,
+                                    textAlign:'center',
+                                    fontSize:15,
+                                    fontWeight:'bold',
+                                    alignContent:"center",
+                                    alignSelf:"center",
+                                    alignItems:"center"
+                                }}> 
+                                <AntDesign  name="sync" size={15} color={"white"}/>  Generate Report</Text> 
+                                </View>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={{
+                                backgroundColor:"#4ABBE5",flex:1,
+                                borderWidth: 1.5,
+                                borderColor:"#4ABBE5",
+                                borderRadius:10,
+                                marginLeft: 2,
+                                alignContent:"center",
+                                alignSelf:"center",
+                                alignItems:"center"
+                                }} onPress={openAddReplinish}>
+
+                                <View style={{ flexDirection: "row",}} >
+                                <Text style={{
+                                    color:"#ffff",
+                                    padding:5,
+                                    textAlign:'center',
+                                    fontSize:15,
+                                    fontWeight:'bold',
+                                    alignContent:"center",
+                                    alignSelf:"center",
+                                    alignItems:"center"
+                                }}> Add</Text> 
+                                </View>
+                        </TouchableOpacity>
+                      </View>
+            </View>
+      </View>
+
+    <View style={styles.body}>
+      <View style={{  flexDirection: 'row',alignContent:"center",alignItems:"center"}} >
+          <FlatList
+              showsHorizontalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
+              style={{alignContent:"center",margin:2}}
+              data={menu_list}
+              renderItem={
+                ({ item }) => 
+                <RowItem
+                  navigation={navigation}
+                  approved_by={item.approved_by} 
+                  id={item.id} 
+                  count={item.count}
+                  br_id={item.br_id}
+                  rplnsh_num={item.rplnsh_num}
+                  date={item.date}
+                  amnt={item.amnt}
+                  remarks={item.remarks}
+                  status={item.status}
+                  status_db={item.status_db}
+                  status_span={item.status_span}
+                  status_color={item.status_color}
+                  rfr_stats={item.rfr_stats}
+                  rfr_stat={item.rfr_stat}
+                  rfr_stat_color={item.rfr_stat_color}
+                  replenish_stats={item.replenish_stats}
+                  dec_stat={item.dec_stat}
+                  dec_stat_color={item.dec_stat_color}
+                  encodedBY={item.encodedBY}
+                  />
+                }
+              keyExtractor={item => item.id.toString()}
+              ItemSeparatorComponent = { FlatListItemSeparator }
+          />
+      </View>     
+    </View>
+
+    {spinner && <CustomProgressBar />}
+    </View>
+  );
+}
+
+function RowItem ({navigation,approved_by,id,count,br_id,rplnsh_num,date,amnt,remarks,status,status_db,status_span,status_color,rfr_stats,rfr_stat,rfr_stat_color,replenish_stats,
+  dec_stat,dec_stat_color,encodedBY}) {
+  return (
+    <View style={{flexDirection:'column',alignItems:"flex-start",backgroundColor:'#ffff',margin:3}}>
+        <View style={styles.RowItem_view2_style}><Text style={styles.text_title}>Trucking #:</Text><Text style={styles.text_details}>{rplnsh_num}</Text></View>
+        <View style={styles.RowItem_view2_style}><Text style={styles.text_title}>Date:</Text><Text style={styles.text_details}>{date}</Text></View>
+        <View style={styles.RowItem_view2_style}><Text style={styles.text_title}>Amount:</Text><Text style={styles.text_details}>{amnt}</Text></View>
+        <View style={styles.RowItem_view2_style}><Text style={styles.text_title}>Remarks:</Text><Text style={styles.text_details}>{remarks}</Text></View>
+        <View style={styles.RowItem_view2_style}><Text style={styles.text_title}>Status:</Text><Text style={styles.text_details}>{status_span}</Text></View>
+        <View style={styles.RowItem_view2_style}><Text style={styles.text_title}>Replenish status:</Text><Text style={styles.text_details}>{rfr_stat}</Text></View>
+        <View style={styles.RowItem_view2_style}><Text style={styles.text_title}>Encoded by:</Text><Text style={styles.text_details}>{encodedBY}</Text></View>
+        <View style={styles.RowItem_view2_style}><Text style={styles.text_title}>Declared status:</Text><Text style={styles.text_details}>{dec_stat}</Text></View>
+        <View style={styles.RowItem_view2_style}><Text style={styles.text_title}>Approved by:</Text><Text style={styles.text_details}>{approved_by}</Text></View>
+      </View>
+  );    
+}
+
+const CustomProgressBar = ({ visible }) => (
+  <Modal onRequestClose={() => null} visible={visible} transparent={true}>
+    <View style={{ alignItems: 'center', justifyContent: 'center',flex: 1 }}>
+      <View style={{ borderRadius: 10, backgroundColor: '#f0f0f0', padding: 15 }}>
+        <ActivityIndicator size="large" color="#4ABBE5" />
+      </View>
+    </View>
+  </Modal>
+);
+
+const pickerStyle = {
+	inputIOS: {
+		color: 'black',
+		paddingTop: 13,
+		paddingHorizontal: 10,
+		paddingBottom: 12,
+	},
+	inputAndroid: {
+    color: 'black',
+    height: 40
+  },
+	placeholderColor: 'black',
+  underline: { borderTopWidth: 0 },
+};
+
+const styles = StyleSheet.create({
+  RowItem_view2_style:{
+    flexDirection:'row', padding:5
+  },
+  rounded_btn:{
+    flex:0.8,
+    alignContent:"center",
+    alignSelf:"center",
+    borderWidth:1,
+    padding: 10,
+    borderColor: "gray",
+    borderRadius:8
+  },
+  main:{
+      alignItems:"center",
+      alignContent:"center",
+      alignSelf:"center",
+      flex:6,
+      backgroundColor: '#ffff',
+      alignContent:"center",
+      flexDirection:'column'
+  },
+  header:{
+      alignItems:"center",
+      alignContent:"center",
+      alignSelf:"center",
+      flexDirection:'row',
+      padding:2,
+      flex:0.5,
+      alignContent:"center",
+  },
+  header_date:{
+    alignItems:"center",
+    alignContent:"center",
+    alignSelf:"center",
+    flexDirection:'row',
+    padding:2,
+    flex:3,
+    alignContent:"center",
+  },
+  body:{
+      flex:5.4,
+      backgroundColor: '#DADCDC',
+      alignContent:"center",
+      alignItems:"center",
+  },
+  container: {
+    flex: 1,
+    marginTop:5,
+  },
+  item: {
+    flexDirection:'row',
+    paddingLeft:10,
+    backgroundColor:'#ffff',
+    padding:1,
+    alignContent:"center",
+    alignItems:"center"
+  },
+  text_title: {
+    color:'#4A4A4A',
+    fontSize: 15,
+    fontWeight: "bold"
+  },
+  text_details: {
+    color:'#4A4A4A',
+    marginLeft:5,
+    fontSize: 14,
+    flexWrap: 'wrap',
+    flex:1,
+  },
+  text_header: {
+    alignContent:"center",
+    alignSelf:"center",
+    textAlign:"center",
+    borderWidth:1,
+    padding: 7,
+    borderColor: "gray",
+    borderBottomLeftRadius:8,
+    borderTopLeftRadius:8,
+    flex:0.3
+  },
+  date_picker:{
+    flex:0.7  ,
+    alignContent:"center",
+    alignSelf:"center",
+    borderWidth:1,
+    padding: 7,
+    borderColor: "gray",
+    borderBottomRightRadius:8,
+    borderTopRightRadius:8
+  },
+  filter_header: {
+    alignContent:"center",
+    alignSelf:"center",
+    textAlign:"center",
+    borderWidth:1,
+    paddingBottom: 11,
+    paddingTop: 11,
+    paddingLeft: 6,
+    paddingRight: 6,
+    borderColor: "gray",
+    borderBottomLeftRadius:8,
+    borderTopLeftRadius:8,
+    flex:0.3,
+  },
+  filter_picker:{
+    flex:0.7,
+    alignContent:"center",
+    alignSelf:"center",
+    borderWidth:1,
+    borderColor: "gray",
+    borderBottomRightRadius:8,
+    borderTopRightRadius:8,
+    height: 44
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+    main_modalView: {
+      margin: 10,
+      backgroundColor: "white",
+      borderRadius: 20,
+      padding: 25,
+      alignItems: "center",
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2
+      },
+    shadowOpacity: 1,
+    shadowRadius: 3.84,
+    elevation: 10
+  },
+})
