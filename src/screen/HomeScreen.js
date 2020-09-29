@@ -67,6 +67,9 @@ const FlatListItemSeparator = () => {
   const [branch_data, setBranch_data] = useState('');
 
 
+  //modal PettyCash
+  const [pc_modalVisible, setpc_modalVisible] = useState(false);
+
   const onSelectBranch = (branch_name,branch_id) =>{
     setModalVisible(false);
 
@@ -152,12 +155,63 @@ const FlatListItemSeparator = () => {
 
   return (
     <View style={styles.main}>
+
+       {/* //PettyCash modal */}
+       <Modal
+        animationType="fade"
+        transparent={true}
+        visible={pc_modalVisible}
+        backdropColor={'green'}
+       backdropOpacity= {1}
+        onRequestClose={() => {
+          setpc_modalVisible(!pc_modalVisible);
+        }} >
+        <View style={styles.modal_centeredView}>
+ 
+              <View style={styles.main_modalView}>
+              <View style={{flexDirection: 'row', padding:2,}} >
+            
+              <Text style={{flex:1,alignSelf:'center', textAlign:"center",}}>Petty Cash</Text>
+              </View>
+              <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
+                  <TouchableOpacity style={styles.rounded_btn}>
+                    <View style={{ flexDirection: "row",}} >
+                
+                      <Text style={{flex:1,alignSelf:'center', textAlign:"center",}}>Replenishment</Text>
+                    </View>
+                  </TouchableOpacity>
+               </View>
+                <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
+                  <TouchableOpacity  onPress={() =>{
+                     setpc_modalVisible(!pc_modalVisible);
+                    navigation.navigate("Petty Cash Request",{branch_id:selected_farm_location_id,company_code,company_id,user_id});}
+                    } style={styles.rounded_btn}>
+                    <View style={{ flexDirection: "row",}} >
+                     
+                      <Text style={{flex:1,alignSelf:'center', textAlign:"center",}}>Request</Text>
+                    </View>
+                  </TouchableOpacity>
+               </View>
+               <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
+                  <TouchableOpacity  onPress={() => {setpc_modalVisible(false);}} style={styles.rounded_btn}>
+                    <View style={{ flexDirection: "row",}} >
+                      <Text style={{flex:1,alignSelf:'center', textAlign:"center",}}>Close</Text>
+                    </View>
+                  </TouchableOpacity>
+               </View>
+               </View>
+
+        </View>
+      </Modal>
+
+
+
         <Modal
           animationType="fade"
           transparent={true}
           visible={modalVisible}
           onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
+            setModalVisible(!modalVisible);
           }}>
               <View style={styles.centeredView}>
               <View style={styles.modalView}>
@@ -221,6 +275,7 @@ const FlatListItemSeparator = () => {
                 company_code={company_code}
                 company_id={company_id}
                 user_id={user_id}
+                setpc_modalVisible={setpc_modalVisible}
                  />
               }
             keyExtractor={item => item.id.toString()}
@@ -235,9 +290,9 @@ const FlatListItemSeparator = () => {
 }
 
 
-function RowItem ({navigation,title,id,allow_navigation,branch_id,company_code,company_id,user_id}) {
+function RowItem ({navigation,title,id,allow_navigation,branch_id,company_code,company_id,user_id,setpc_modalVisible}) {
   return (
-      <TouchableOpacity onPress={() => getContent(navigation,title,id,allow_navigation,branch_id,company_code,company_id,user_id)}>
+      <TouchableOpacity onPress={() => getContent(navigation,title,id,allow_navigation,branch_id,company_code,company_id,user_id,setpc_modalVisible)}>
           <View style={styles.item}>
             <View style={{flex:3,flexDirection:'row',alignItems:"center"}}>
               <Text style={styles.title}>{title}</Text>
@@ -260,16 +315,17 @@ function RowItem_modal ({branch_id,branch_name,onSelect}) {
   );
 }
 
-function getContent(navigation,name,id,allow_navigation,branch_id,company_code,company_id,user_id){
+function getContent(navigation,name,id,allow_navigation,branch_id,company_code,company_id,user_id,setpc_modalVisible){
   console.log(allow_navigation)
   if(allow_navigation){
     if(id==1){ // load Abort
       navigation.navigate("Deliveries",{branch_id:branch_id,company_code,company_id,user_id});
-    }else if(id==2){ // load items
-     Alert.alert("Under Development");
+    }else if(id==2){ // load Petty Cash
+      setpc_modalVisible(true)
+      //navigation.navigate("Petty Cash Replenish",{branch_id:branch_id,company_code,company_id,user_id});
     }else if(id==3){ // load items
       // navigation.navigate("Test Screen");
-      Alert.alert("Under Development");
+     // 
     } else if(id==4){ // load items
         // navigation.navigate("Test Screen");
         Alert.alert("Under Development");
@@ -364,4 +420,35 @@ const styles = StyleSheet.create({
         padding:15,
         fontSize: 20,
       },
+      main_modalView: {
+        margin: 10,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 25,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 2
+        },
+      shadowOpacity: 1,
+      shadowRadius: 3.84,
+      elevation: 10
+    },
+    modal_centeredView: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      marginTop: 22
+    },
+    rounded_btn:{
+      flex:0.8,
+      alignContent:"center",
+      alignSelf:"center",
+      borderWidth:1,
+      padding: 10,
+      borderColor: "gray",
+      borderRadius:8
+    },
+  
 })

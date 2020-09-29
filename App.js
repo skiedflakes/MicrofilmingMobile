@@ -6,6 +6,8 @@ import LoginScreen from './src/screen/LoginScreen';
 
 
 import DeliveriesScreen from './src/screen/DeliveriesScreen';
+import PettyCash_ReplenishScreen from './src/screen/PettyCash_ReplenishScreen';
+import PettyCash_RequestScreen from './src/screen/PettyCash_RequestScreen';
 import TestScreen from './src/screen/TestScreen';
 const Stack = createStackNavigator(); 
 
@@ -16,12 +18,12 @@ function App() {
       // global.global_url = 'http://192.168.8.106/PigNotesMobile_php/';
 
       //mylocalhost
-      //  global.global_url = 'http://192.168.41.1/microfilming_localhost/';
-      //  global.notes_web_directory = 'http://192.168.41.1/notes/';
+       global.global_url = 'http://192.168.41.1/microfilming_localhost/';
+       global.notes_web_directory = 'http://192.168.41.1/notes/';
 
       //dev url
-      global.global_url = 'https://mobile.wdysolutions.com/microfilming/main/';
-      global.notes_web_directory = 'https://dev.wdysolutions.com/wfh';
+      // global.global_url = 'https://mobile.wdysolutions.com/microfilming/main/';
+      // global.notes_web_directory = 'https://dev.wdysolutions.com/wfh';
     });
     return (
       <NavigationContainer>
@@ -32,8 +34,14 @@ function App() {
 
             <Stack.Screen name="Deliveries" component={DeliveriesScreen}
              options={{ headerShown: false }}/>
-            <Stack.Screen name="Test Screen" component={TestScreen} />
+             
+            <Stack.Screen name="Petty Cash Replenish" component={PettyCash_ReplenishScreen}
+             options={{ headerShown: false }}/>
 
+            <Stack.Screen name="Petty Cash Request" component={PettyCash_RequestScreen}
+             options={{ headerShown: false }}/>
+             
+            <Stack.Screen name="Test Screen" component={TestScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     )
