@@ -1,13 +1,14 @@
 import React, {useState} from 'react';
-import {View, Button, Modal, Text, TextInput, StyleSheet, TouchableOpacity, CheckBox} from 'react-native';
+import {View, Button, Modal, Text, TextInput, StyleSheet, TouchableOpacity, CheckBox, TouchableHighlight, ActivityIndicator} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import RNPickerSelect from 'react-native-picker-select';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 export default function PettycashReplenish_add_main ({navigation:{goBack},navigation,route}) {
 
-    const { company_id,branch_id,company_code,user_id } = route.params;
+    const { company_id,branch_id,company_code,user_id,category_id } = route.params;
     
     const [text_checkNumber, setCheckNumber] = useState('');
     const [text_remarks, setRemarks] = useState('');
@@ -17,10 +18,12 @@ export default function PettycashReplenish_add_main ({navigation:{goBack},naviga
     const [credit, setCredit] = React.useState('');
     const [menu_list, setMenu_list] = React.useState([]);
 
+    const [spinner, setSpinner] = React.useState(false);
+
     useFocusEffect(
     React.useCallback(() => {
         
-        //alert("User_id:"+user_id+" | branch_id:"+branch_id+" | company_code:"+company_code+" | company_id:"+company_id);
+        //alert("User_id:"+user_id+" | branch_id:"+branch_id+" | company_code:"+company_code+" | company_id:"+company_id+" | category_id:"+category_id);
         get_data();
         return () => {
         };
@@ -28,7 +31,7 @@ export default function PettycashReplenish_add_main ({navigation:{goBack},naviga
     );
 
     const get_data = () =>{
-        //setSpinner(true)
+        setSpinner(true)
         const formData = new FormData();
         formData.append('user_id', user_id);
         formData.append('company_code', company_code);
@@ -58,43 +61,64 @@ export default function PettycashReplenish_add_main ({navigation:{goBack},naviga
 
             console.log(data);
 
-            //setSpinner(false)
+            setSpinner(false)
         }).catch((error) => {
             console.error(error);
-            //setSpinner(false)
+            setSpinner(false)
             Alert.alert('Internet Connection Error');
         });
     }
 
     const saveData = () =>{
-        //setSpinner(true)
-        const formData = new FormData();
-        formData.append('user_id', user_id); 
-        formData.append('company_code', company_code);
-        formData.append('company_id', company_id);
-        formData.append('branch_id', branch_id); 
-        formData.append('category_id', '');
 
-        fetch(global.global_url+'/replinish/addPettycashReplenish.php', {
-            method: 'POST',
-            headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'multipart/form-data'
-            },
-            body: formData
-        }).then((response) => response.json())
-        .then((responseJson) => {
-            
-            var response_data = responseJson.response_status[0];
+        if(text_remarks==''){
+            alert('Please enter remarks');
+        }
+        else if(credit==''){
+            alert('Please select credit method');
+        }
+        else if(text_checkNumber==''){
+            alert('Please enter check number');
+        }
+        else {
 
-            console.log(response_data.status);
+            setSpinner(true)
+            const formData = new FormData();
+            formData.append('user_id', user_id); 
+            formData.append('company_code', company_code);
+            formData.append('company_id', company_id);
+            formData.append('branch_id', branch_id); 
+            formData.append('category_id', category_id);
 
-            //setSpinner(false)
-        }).catch((error) => {
-            console.error(error);
-            //setSpinner(false)
-            Alert.alert('Internet Connection Error');
-        });
+            formData.append('pm_number', Tracking_num); 
+            formData.append('date_added', selected_date);
+            formData.append('remarks', text_remarks);
+            formData.append('credit_method', credit); 
+            formData.append('debit_method', '');
+            formData.append('check_number', text_checkNumber); 
+            formData.append('declared_status', isSelected);
+
+            fetch(global.global_url+'/replinish/addPettycashReplenish.php', {
+                method: 'POST',
+                headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'multipart/form-data'
+                },
+                body: formData
+            }).then((response) => response.json())
+            .then((responseJson) => {
+                
+                var response_data = responseJson.response_status[0];
+
+                console.log(response_data);
+
+                setSpinner(false)
+            }).catch((error) => {
+                console.error(error);
+                setSpinner(false)
+                Alert.alert('Internet Connection Error');
+            });
+        }
     }
 
     const getCurrentDate=()=>{
@@ -160,6 +184,20 @@ export default function PettycashReplenish_add_main ({navigation:{goBack},naviga
 
     return (
         <View>
+            <View style={{flexDirection: 'row', padding:5}} >
+            <View style={{ flex:1,  flexDirection: 'row', padding:2,}} >
+                <TouchableHighlight
+                    style={styles.openButton}
+                    onPress={() => {
+                    goBack()
+                    }}>
+                    <View style={{alignContent:"center",alignItems:"center",alignSelf:"center",  flexDirection: 'row', padding:2,}} >
+                      <AntDesign  style={{marginRight:10}} name="arrowleft" size={20} color={"black"}/> 
+                      <Text style={{fontSize:20,textAlign:"center"}}>Add Petty Cash Replenishment</Text>
+                    </View>
+                </TouchableHighlight>
+            </View>
+        </View>
             <View style={{flexDirection: 'row', padding:5}} >
             <Text style={styles.filter_header}>Tracking #:</Text>
             <View style={styles.filter_picker}>
@@ -231,9 +269,48 @@ export default function PettycashReplenish_add_main ({navigation:{goBack},naviga
                 />
             </View>
             </View>
+            <View style={{flexDirection: 'row', padding:5}} >
+            <TouchableOpacity style={{
+                    backgroundColor:"#4ABBE5",flex:1,
+                    borderWidth: 1.5,
+                    borderColor:"#4ABBE5",
+                    borderRadius:10,
+                    marginRight: 2,
+                    alignContent:"center",
+                    alignSelf:"center",
+                    alignItems:"center"
+                    }} onPress={saveData}>
+
+                    <View style={{ flexDirection: "row",}} >
+                        <Text style={{
+                            color:"#ffff",
+                            padding:5,
+                            textAlign:'center',
+                            fontSize:15,
+                            fontWeight:'bold',
+                            alignContent:"center",
+                            alignSelf:"center",
+                            alignItems:"center"
+                        }}> 
+                        Add Replenishment</Text> 
+                    </View>
+            </TouchableOpacity>
+            </View>
+
+            {spinner && <CustomProgressBar />}
         </View>
     );
 };
+
+const CustomProgressBar = ({ visible }) => (
+    <Modal onRequestClose={() => null} visible={visible} transparent={true}>
+      <View style={{ alignItems: 'center', justifyContent: 'center',flex: 1 }}>
+        <View style={{ borderRadius: 10, backgroundColor: '#f0f0f0', padding: 15 }}>
+          <ActivityIndicator size="large" color="#4ABBE5" />
+        </View>
+      </View>
+    </Modal>
+  );
 
 const pickerStyle = {
 	inputIOS: {
@@ -278,5 +355,14 @@ const styles = StyleSheet.create({
       checkbox: {
         padding: 20,
       },
+      header:{
+        alignItems:"center",
+        alignContent:"center",
+        alignSelf:"center",
+        flexDirection:'row',
+        padding:2,
+        flex:0.5,
+        alignContent:"center",
+    },
 })
 

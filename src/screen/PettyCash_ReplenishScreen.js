@@ -2,8 +2,8 @@ import * as React from 'react';
 import { StyleSheet,Button, Text, View,TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {createStackNavigator} from '@react-navigation/stack';
-import PC_Replenish_main from './PettyCash/Replenish/PC_Replenish_main';
-
+import PettycashReplenish_main from './PettyCash/Replenish/PettycashReplenish_main';
+import PettycashReplenish_add_main from './PettyCash/Replenish/PettycashReplenish_add_main';
 
 const Stack = createStackNavigator();
 export default function PettyCash_ReplenishScreen({route}) {
@@ -14,7 +14,14 @@ export default function PettyCash_ReplenishScreen({route}) {
     <Stack.Navigator>
       <Stack.Screen
         name="Petty Cash Replenish"
-        component={PC_Replenish_main}
+        component={PettycashReplenish_main}
+        initialParams={{ company_id: company_id,branch_id: branch_id,company_code: company_code,user_id:user_id }}
+        options={{ headerShown: false }}
+      />
+
+      <Stack.Screen
+        name="Petty Cash Replenish Add"
+        component={PettycashReplenish_add_main}
         initialParams={{ company_id: company_id,branch_id: branch_id,company_code: company_code,user_id:user_id }}
         options={{ headerShown: false }}
       />

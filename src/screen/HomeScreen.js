@@ -174,7 +174,11 @@ const FlatListItemSeparator = () => {
               <Text style={{flex:1,alignSelf:'center', textAlign:"center",}}>Petty Cash</Text>
               </View>
               <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-                  <TouchableOpacity style={styles.rounded_btn}>
+                  <TouchableOpacity 
+                    onPress={() =>{
+                     setpc_modalVisible(!pc_modalVisible);
+                      navigation.navigate("Petty Cash Replenish",{branch_id:selected_farm_location_id,company_code,company_id,user_id});}
+                    } style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
                 
                       <Text style={{flex:1,alignSelf:'center', textAlign:"center",}}>Replenishment</Text>

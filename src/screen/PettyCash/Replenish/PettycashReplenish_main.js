@@ -215,9 +215,9 @@ export default function PettycashReplenish_main ({navigation:{goBack},navigation
     showMode('time');
   };
 
+  const category_id = '56';
   const openAddReplinish = () => {
-    //alert("test");
-    navigation.navigate("Pettycash Replenish Add",{branch_id,company_code,company_id,user_id});
+    navigation.navigate("Petty Cash Replenish Add",{branch_id,company_code,company_id,user_id,category_id});
   };
 
   return (
