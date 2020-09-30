@@ -195,7 +195,7 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
         var dd='';
     
         if((start_raw_date.getMonth()+1).toString().length>1){
-          mm =start_date_.getMonth()+1; 
+          mm =start_raw_date.getMonth()+1; 
         }else{
           mm ='0'+(start_raw_date.getMonth()+1); 
         }

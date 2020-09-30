@@ -184,7 +184,7 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
         var dd='';
     
         if((start_raw_date.getMonth()+1).toString().length>1){
-          mm =start_date_.getMonth()+1; 
+          mm =start_raw_date.getMonth()+1; 
         }else{
           mm ='0'+(start_raw_date.getMonth()+1); 
         }
@@ -317,7 +317,7 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
               <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_dr_number}</Text>
               </View>
               <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-                  <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Upload Request',{dr_number:selected_dr_number,user_id:user_id});}} style={styles.rounded_btn}>
+                  <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Upload Request ',{dr_number:selected_dr_number,user_id:user_id});}} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
                       <MCI  name="image-plus" size={20} color={"black"}/> 
                       <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>Add Image</Text>
