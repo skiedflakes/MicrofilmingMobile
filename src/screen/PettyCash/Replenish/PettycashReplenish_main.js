@@ -10,7 +10,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ImageViewer from 'react-native-image-zoom-viewer';
-import RNPickerSelect from 'react-native-picker-select';
+// import RNPickerSelect from 'react-native-picker-select';
 
 const FlatListItemSeparator = () => {
   return (
