@@ -33,7 +33,7 @@ export default function PettycashReplenish_main ({navigation:{goBack},navigation
   const [image_found,setimage_found]= useState(false);
   const [spinner, setSpinner] = React.useState(false);
 
-  const [filter, setFilter] = React.useState('');
+  //const [filter, setFilter] = React.useState('');
 
   //main function
   useFocusEffect(
@@ -72,7 +72,7 @@ export default function PettycashReplenish_main ({navigation:{goBack},navigation
     formData.append('branch_id', branch_id); 
     formData.append('start_date', selected_start_date);
     formData.append('end_date', selected_end_date);
-    formData.append('req_stat', filter);
+    formData.append('req_stat', '');
 
     fetch(global.global_url+'/pettycash_replinish/getPaymentReplenish.php', {
     method: 'POST',
@@ -367,95 +367,95 @@ export default function PettycashReplenish_main ({navigation:{goBack},navigation
         <View style={styles.header_date} >
             <View style={{flexDirection:"column",flex:1}}>
 
-              <View style={{flexDirection: 'row', padding:5}} >
-                        <Text style={styles.filter_header}>Filter</Text>
-                        <View style={styles.filter_picker}>
-                          <RNPickerSelect
-                              placeholder={{
-                                  label: 'All',
-                                  value: '',
-                              }}
-                              style={pickerStyle}
-                              useNativeAndroidPickerStyle={false}
-                              onValueChange={(value) => setFilter(value)}
-                              items={[
-                              { label: 'Declared', value: 'd' },
-                              { label: 'Undeclared', value: 'ud' },
-                            ]}
-                          />
-                        </View>
-                      </View>
+                  {/* <View style={{flexDirection: 'row', padding:5}} >
+                    <Text style={styles.filter_header}>Filter</Text>
+                    <View style={styles.filter_picker}>
+                      <RNPickerSelect
+                          placeholder={{
+                              label: 'All',
+                              value: '',
+                          }}
+                          style={pickerStyle}
+                          useNativeAndroidPickerStyle={false}
+                          onValueChange={(value) => setFilter(value)}
+                          items={[
+                          { label: 'Declared', value: 'd' },
+                          { label: 'Undeclared', value: 'ud' },
+                        ]}
+                      />
+                    </View>
+                  </View> */}
 
-                      <View style={{  flexDirection: 'row', padding:5,}} >
-                      <Text style={styles.text_header}>Start Date</Text>
-                        {show_start_date && (
-                        <DateTimePicker
-                          testID="dateTimePicker"
-                          value={date}
-                          mode={mode}
-                          is24Hour={true}
-                          display="default"
-                          onChange={onChange_start_date}
-                        />
-                      )}
-                        <TouchableOpacity onPress={showDatepicker} style={styles.date_picker}>
-                          <View style={{ flexDirection: "row",}} >
-                        <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_start_date}</Text>
-                            <View style={{flex:0.2,flexDirection:"row-reverse",alignContent:'center',alignContent:"center",alignSelf:'center',}}>
-                              <FontAwesome  name="calendar" size={17} color={"gray"}/> 
-                            </View>
-                            {/* */}
-                          </View>
-                        </TouchableOpacity>
-                      </View>
-
-                      <View style={{flexDirection: 'row', padding:5,}} >
-                      <Text style={styles.text_header}>End Date</Text>
-                        {show_end_date && (
-                        <DateTimePicker
-                          testID="dateTimePicker"
-                          value={date}
-                          mode={mode}
-                          is24Hour={true}
-                          display="default"
-                          onChange={onChange_end_date}
-                        />
-                      )}
-                        <TouchableOpacity onPress={showDatepicker2} style={styles.date_picker}>
-                          <View style={{ flexDirection: "row",}} >
-                        <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_end_date}</Text>
-                            <View style={{flex:0.2,flexDirection:"row-reverse",alignContent:'center',alignContent:"center",alignSelf:'center',}}>
-                              <FontAwesome  name="calendar" size={17} color={"gray"}/> 
-                            </View>
-                            {/* */}
-                          </View>
-                        </TouchableOpacity>
-                    
-                      </View>
-                      <View style={{flexDirection: 'row', padding:5,alignSelf:"center",}} >
-                      <TouchableOpacity style={{
-                            backgroundColor:"#4ABBE5",flex:1,
-                            borderWidth: 1.5,
-                            borderColor:"#4ABBE5",
-                            borderRadius:10,
-                            alignContent:"center",
-                            alignSelf:"center",
-                            alignItems:"center"
-                      }} onPress={on_generate_report}>
-                        <View style={{ flexDirection: "row",}} >
-                        <Text style={{
-                          color:"#ffff",
-                          padding:5,
-                          textAlign:'center',
-                          fontSize:15,
-                          fontWeight:'bold',
-                          alignContent:"center",
-                          alignSelf:"center",
-                          alignItems:"center"
-                        }}> 
-                        <AntDesign  name="sync" size={15} color={"white"}/>  Generate Report</Text> 
+                  <View style={{  flexDirection: 'row', padding:5,}} >
+                  <Text style={styles.text_header}>Start Date</Text>
+                    {show_start_date && (
+                    <DateTimePicker
+                      testID="dateTimePicker"
+                      value={date}
+                      mode={mode}
+                      is24Hour={true}
+                      display="default"
+                      onChange={onChange_start_date}
+                    />
+                  )}
+                    <TouchableOpacity onPress={showDatepicker} style={styles.date_picker}>
+                      <View style={{ flexDirection: "row",}} >
+                    <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_start_date}</Text>
+                        <View style={{flex:0.2,flexDirection:"row-reverse",alignContent:'center',alignContent:"center",alignSelf:'center',}}>
+                          <FontAwesome  name="calendar" size={17} color={"gray"}/> 
                         </View>
-                      </TouchableOpacity>
+                        {/* */}
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+
+                  <View style={{flexDirection: 'row', padding:5,}} >
+                  <Text style={styles.text_header}>End Date</Text>
+                    {show_end_date && (
+                    <DateTimePicker
+                      testID="dateTimePicker"
+                      value={date}
+                      mode={mode}
+                      is24Hour={true}
+                      display="default"
+                      onChange={onChange_end_date}
+                    />
+                  )}
+                    <TouchableOpacity onPress={showDatepicker2} style={styles.date_picker}>
+                      <View style={{ flexDirection: "row",}} >
+                    <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_end_date}</Text>
+                        <View style={{flex:0.2,flexDirection:"row-reverse",alignContent:'center',alignContent:"center",alignSelf:'center',}}>
+                          <FontAwesome  name="calendar" size={17} color={"gray"}/> 
+                        </View>
+                        {/* */}
+                      </View>
+                    </TouchableOpacity>
+                
+                  </View>
+                  <View style={{flexDirection: 'row', padding:5,alignSelf:"center",}} >
+                  <TouchableOpacity style={{
+                        backgroundColor:"#4ABBE5",flex:1,
+                        borderWidth: 1.5,
+                        borderColor:"#4ABBE5",
+                        borderRadius:10,
+                        alignContent:"center",
+                        alignSelf:"center",
+                        alignItems:"center"
+                  }} onPress={on_generate_report}>
+                    <View style={{ flexDirection: "row",}} >
+                    <Text style={{
+                      color:"#ffff",
+                      padding:5,
+                      textAlign:'center',
+                      fontSize:15,
+                      fontWeight:'bold',
+                      alignContent:"center",
+                      alignSelf:"center",
+                      alignItems:"center"
+                    }}> 
+                    <AntDesign  name="sync" size={15} color={"white"}/>  Generate Report</Text> 
+                    </View>
+                  </TouchableOpacity>
               </View>
             </View>
       </View>
@@ -564,7 +564,7 @@ const styles = StyleSheet.create({
       alignSelf:"center",
       flexDirection:'row',
       padding:2,
-      flex:2.5,
+      flex:2, //2.5
       alignContent:"center",
   },
     body:{
