@@ -197,6 +197,18 @@ const FlatListItemSeparator = () => {
                   </TouchableOpacity>
                </View>
                <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
+                  <TouchableOpacity  onPress={() =>{
+                     setpc_modalVisible(!pc_modalVisible);
+                    navigation.navigate("Petty Cash Liquidation",{branch_id:selected_farm_location_id,company_code,company_id,user_id});}
+                    } style={styles.rounded_btn}>
+                    <View style={{ flexDirection: "row",}} >
+                     
+                      <Text style={{flex:1,alignSelf:'center', textAlign:"center",}}>Liquidation</Text>
+                    </View>
+                  </TouchableOpacity>
+               </View>
+
+               <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
                   <TouchableOpacity  onPress={() => {setpc_modalVisible(false);}} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
                       <Text style={{flex:1,alignSelf:'center', textAlign:"center",}}>Close</Text>

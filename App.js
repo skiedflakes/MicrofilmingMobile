@@ -6,8 +6,12 @@ import LoginScreen from './src/screen/LoginScreen';
 
 
 import DeliveriesScreen from './src/screen/DeliveriesScreen';
+
+//petty cash
 import PettyCash_ReplenishScreen from './src/screen/PettyCash_ReplenishScreen';
 import PettyCash_RequestScreen from './src/screen/PettyCash_RequestScreen';
+import PettyCash_LiquidationScreen from './src/screen/PettyCash_LiquidationScreen';
+
 import TestScreen from './src/screen/TestScreen';
 const Stack = createStackNavigator(); 
 
@@ -31,15 +35,21 @@ function App() {
           {/* main */}
             <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }}  />
             <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}/>
-
+          {/* main end*/}
             <Stack.Screen name="Deliveries" component={DeliveriesScreen}
              options={{ headerShown: false }}/>
              
+            {/* petty cash */}
             <Stack.Screen name="Petty Cash Replenish" component={PettyCash_ReplenishScreen}
              options={{ headerShown: false }}/>
 
             <Stack.Screen name="Petty Cash Request" component={PettyCash_RequestScreen}
              options={{ headerShown: false }}/>
+            
+            <Stack.Screen name="Petty Cash Liquidation" component={PettyCash_LiquidationScreen}
+             options={{ headerShown: false }}/>
+            {/* petty cash end*/}
+
              
             <Stack.Screen name="Test Screen" component={TestScreen} />
         </Stack.Navigator>
