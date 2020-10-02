@@ -22,12 +22,12 @@ function App() {
       // global.global_url = 'http://192.168.8.106/PigNotesMobile_php/';
 
       //mylocalhost
-      //  global.global_url = 'http://192.168.41.1/microfilming_localhost/';
-      //  global.notes_web_directory = 'http://192.168.41.1/notes/';
+       global.global_url = 'http://192.168.2.109/microfilming/';
+       global.notes_web_directory = 'http://192.168.2.109/notes/';
 
       //dev url
-      global.global_url = 'https://mobile.wdysolutions.com/microfilming/main/';
-      global.notes_web_directory = 'https://dev.wdysolutions.com/wfh';
+      // global.global_url = 'https://mobile.wdysolutions.com/microfilming/main/';
+      // global.notes_web_directory = 'https://dev.wdysolutions.com/wfh';
     });
     return (
       <NavigationContainer>
@@ -49,7 +49,6 @@ function App() {
             <Stack.Screen name="Petty Cash Liquidation" component={PettyCash_LiquidationScreen}
              options={{ headerShown: false }}/>
             {/* petty cash end*/}
-
              
             <Stack.Screen name="Test Screen" component={TestScreen} />
         </Stack.Navigator>

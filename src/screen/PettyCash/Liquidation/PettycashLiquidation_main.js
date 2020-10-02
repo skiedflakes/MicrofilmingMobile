@@ -66,15 +66,16 @@ export default function PettycashLiquidation_main ({navigation:{goBack},navigati
   const get_replinish_data= () =>{
     setSpinner(true)
     const formData = new FormData();
-    formData.append('user_id', user_id);
+ 
     formData.append('company_code', company_code);
     formData.append('company_id', company_id);
     formData.append('branch_id', branch_id); 
     formData.append('start_date', selected_start_date);
     formData.append('end_date', selected_end_date);
-    formData.append('req_stat', '');
 
-    fetch(global.global_url+'/pettycash_replinish/getPaymentReplenish.php', {
+    console.log(user_id+" "+company_code+" "+company_id+" "+branch_id+" "+selected_start_date+" "+selected_end_date)
+    
+    fetch(global.global_url+'/pettycash_liquidation/getLiquidation_data.php', {
     method: 'POST',
     headers: {
     'Accept': 'application/json',
@@ -86,10 +87,10 @@ export default function PettycashLiquidation_main ({navigation:{goBack},navigati
     .then((responseJson) => {
       setSpinner(false)
       console.log(responseJson)
-       var data = responseJson.data.map(function(item,index) {
+       var data = responseJson.array_data.map(function(item,index) {
         return {
-          dr_header_id:item.pcv_replenish_id,
-          delivery_number: item.rplnsh_num
+          dr_header_id:item.pcv_liquidation_id,
+          delivery_number: item.tracking_num
         };
         });
         setMenu_list(data);
