@@ -63,7 +63,7 @@ export default function Upload_Deliveries ({navigation:{goBack},navigation,route
         .then((responseJson) => {
           
           var response_data = responseJson.response_json[0];
-          console.log(response_data.success);
+          console.log(response_data);
 
           if(response_data.success == '1'){
             goBack();

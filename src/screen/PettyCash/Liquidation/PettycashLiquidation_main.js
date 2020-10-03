@@ -28,7 +28,7 @@ export default function PettycashLiquidation_main ({navigation:{goBack},navigati
   
   //global params for instant loading
   const { company_id,branch_id,company_code,user_id } = route.params;
-  const module = 'PFR'; // module
+  const module = 'PFL'; // module
   const [image_data_loaded,setimage_data_loaded] = useState(false);
   const [image_found,setimage_found]= useState(false);
   const [spinner, setSpinner] = React.useState(false);
@@ -113,7 +113,7 @@ export default function PettycashLiquidation_main ({navigation:{goBack},navigati
     formData.append('module', module);
     formData.append('primary_url', global.notes_web_directory);
 
-    fetch(global.global_url+'/pettycash_replinish/get_micro_filming_img.php', {
+    fetch(global.global_url+'/pettycash_liquidation/get_micro_filming_img.php', {
     method: 'POST',
     headers: {
     'Accept': 'application/json',
@@ -129,7 +129,7 @@ export default function PettycashLiquidation_main ({navigation:{goBack},navigati
           url:item.slug,
         };
         });
-        
+        console.log(data);
         if(data.length>0){
        
           setimg_list(data);
@@ -295,7 +295,7 @@ export default function PettycashLiquidation_main ({navigation:{goBack},navigati
               <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_dr_number}</Text>
               </View>
               <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-                  <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Petty Cash Replenish Upload',{dr_number:selected_dr_number,user_id:user_id,module:module});}} style={styles.rounded_btn}>
+                  <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Petty Cash Liquidation Upload',{dr_number:selected_dr_number,user_id:user_id,module:module});}} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
                       <MCI  name="image-plus" size={20} color={"black"}/> 
                       <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>Add Image</Text>
