@@ -33,6 +33,7 @@ export default function LoginScreen ({navigation}) {
         navigation.navigate('Home', {
           company_code: value.company_code,
           company_id: value.company_id,
+          user_id:value.user_id,
         });
        }
       } 

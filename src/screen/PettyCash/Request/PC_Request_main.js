@@ -11,7 +11,6 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ImageViewer from 'react-native-image-zoom-viewer';
 
-
 const images = [{
   // Simplest usage.
   url: 'http://192.168.41.1/microfilming/img/cake2.jpg',
@@ -302,9 +301,9 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
         transparent={true}
         visible={modal_main_Visible}
         backdropColor={'green'}
-       backdropOpacity= {1}
+        backdropOpacity= {1}
         onRequestClose={() => {
-          setmodal_main_Visible(!modal_main_Visible);
+        setmodal_main_Visible(!modal_main_Visible);
         }} >
           
           
@@ -317,7 +316,7 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
               <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_dr_number}</Text>
               </View>
               <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-                  <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Upload Request ',{dr_number:selected_dr_number,user_id:user_id});}} style={styles.rounded_btn}>
+                  <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Upload Request',{dr_number:selected_dr_number,user_id:user_id});}} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
                       <MCI  name="image-plus" size={20} color={"black"}/> 
                       <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>Add Image</Text>
@@ -421,8 +420,6 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
                         </TouchableOpacity>
                     
                       </View>
-
-
 
                       <View style={{flexDirection: 'row', padding:5,}} >
                       <Text style={styles.text_header}>End Date</Text>

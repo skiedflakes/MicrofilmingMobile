@@ -96,6 +96,7 @@ const FlatListItemSeparator = () => {
 
   useFocusEffect(
     React.useCallback(() => {
+      console.log(user_id)
       setselected_farm_location('Select Farm Location');
     //ASYNC STORAGE REMOVE ALL PRE-SELECTED ADDITIONS
     AsyncStorage.getAllKeys((err, keys) => {
@@ -108,6 +109,7 @@ const FlatListItemSeparator = () => {
             }else if(jsonPars.branch_details==1){
               setselected_farm_location(jsonPars.branch_name)
               setselected_farm_location_id(jsonPars.branch_id)
+            
               setallow_navigation(true);
             }else{
             }

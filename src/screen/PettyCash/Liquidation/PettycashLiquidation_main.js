@@ -75,7 +75,7 @@ export default function PettycashLiquidation_main ({navigation:{goBack},navigati
 
     console.log(user_id+" "+company_code+" "+company_id+" "+branch_id+" "+selected_start_date+" "+selected_end_date)
     
-    fetch(global.global_url+'/pettycash_liquidation/getLiquidation_data.php', {
+    fetch(global.global_url+'/pettycash_liquidation/get_liquidation_data.php', {
     method: 'POST',
     headers: {
     'Accept': 'application/json',
