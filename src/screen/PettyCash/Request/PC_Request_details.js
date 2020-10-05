@@ -23,11 +23,11 @@ const FlatListItemSeparator = () => {
     );
   }
 
-export default function Deliveries_main ({navigation:{goBack},navigation,route}) {
+export default function PC_Request_details ({navigation:{goBack},navigation,route}) {
   
   //global params for instant loading
-  const { company_id,branch_id,company_code,user_id } = route.params;
-  const module = 'DR'; // module
+  const {header_id,ref_num,company_id,branch_id,company_code,user_id } = route.params;
+  const module = 'PCV'; // module
   const [image_data_loaded,setimage_data_loaded] = useState(false);
   const [image_found,setimage_found]= useState(false);
   const [spinner, setSpinner] = React.useState(false);
@@ -36,19 +36,20 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
   useFocusEffect(
     React.useCallback(() => {
  
-    get_deliveries_data();
+      get_main_data();
       return () => {
       };
     }, [])
   );
 
   const on_generate_report = () =>{
-    get_deliveries_data();
+    get_main_data();
   }
 
   //selected
-  const[selected_dr_number,setselected_dr_number] = useState('');
-  const[selected_dr_id,setselected_dr_id] = useState('');
+  const[selected_ref_num,setselected_ref_num] = useState('');
+  const[selected_header_id,setselected_header_id] = useState('');
+  const[details_status,setdetails_status] = useState('');
 
   const [menu_list, setMenu_list] = React.useState(null);
   const [img_list, setimg_list] = React.useState(null);
@@ -60,16 +61,16 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
     Alert.alert('offline storage cleared');
   }
 
-  const get_deliveries_data= () =>{
+  const get_main_data= () =>{
     setSpinner(true)
     const formData = new FormData();
     formData.append('company_code', company_code);
     formData.append('company_id', company_id);
-    formData.append('branch_id', branch_id); 
-    formData.append('start_date', selected_start_date);
-    formData.append('end_date', selected_end_date);
+    formData.append('header_id', header_id); 
 
-    fetch(global.global_url+'/deliveries/get_deliveries_data.php', {
+    console.log(user_id+" "+company_code+" "+company_id+" "+branch_id+" "+header_id+" "+selected_end_date)
+
+    fetch(global.global_url+'/pettycash_request/get_pc_request_data_details.php', {
     method: 'POST',
     headers: {
     'Accept': 'application/json',
@@ -82,10 +83,12 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
       setSpinner(false)
     var data = responseJson.array_data.map(function(item,index) {
         return {
-          dr_header_id:item.dr_header_id,
-        delivery_number: item.delivery_number
+          header_id:item.pettycash_detail_id,
+          ref_num: item.chart,
+          details_status: item.amount
         };
         });
+        console.log(responseJson);
         setMenu_list(data);
     }).catch((error) => {
 
@@ -107,7 +110,9 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
     formData.append('module',module );
     formData.append('primary_url', global.notes_web_directory);
 
-    fetch(global.global_url+'/deliveries/get_micro_filming_img.php', {
+
+
+    fetch(global.global_url+'/pettycash_request/get_micro_filming_img.php', {
     method: 'POST',
     headers: {
     'Accept': 'application/json',
@@ -124,6 +129,8 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
           
         };
         });
+
+        console.log(responseJson)
         
         if(data.length>0){
        
@@ -145,10 +152,11 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
   //main modal
   const [modal_main_Visible, setmodal_main_Visible] = useState(false);
 
-  const show_modal_main = (dr_number,dr_id) =>{
+  const show_modal_main = (ref_num,header_id,details_status) =>{
     setmodal_main_Visible(true);
-    setselected_dr_number(dr_number);
-    setselected_dr_id(dr_id);
+    setselected_ref_num(ref_num);
+    setselected_header_id(header_id);
+    setdetails_status(details_status);
   }
 
   //modal view images
@@ -292,9 +300,9 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
         transparent={true}
         visible={modal_main_Visible}
         backdropColor={'green'}
-       backdropOpacity= {1}
+        backdropOpacity= {1}
         onRequestClose={() => {
-          setmodal_main_Visible(!modal_main_Visible);
+        setmodal_main_Visible(!modal_main_Visible);
         }} >
           
           
@@ -304,10 +312,10 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
                    <View style={styles.main_modalView}>
               <View style={{flexDirection: 'row', padding:2,}} >
             
-              <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_dr_number}</Text>
+              <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_ref_num}</Text>
               </View>
               <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-                  <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Upload Deliveries',{dr_number:selected_dr_number,user_id:user_id});}} style={styles.rounded_btn}>
+                  <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Upload Request',{ref_num:selected_ref_num,user_id:user_id});}} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
                       <MCI  name="image-plus" size={20} color={"black"}/> 
                       <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>Add Image</Text>
@@ -322,6 +330,18 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
                     </View>
                   </TouchableOpacity>
                </View>
+
+                {details_status>0?
+                <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
+                  <TouchableOpacity  onPress={() => {image_found? setmodal_img_Visible(true):Alert.alert('No image Available') }} style={styles.rounded_btn}>
+                    <View style={{ flexDirection: "row",}} >
+                      <MaterialIcons  name="image-search" size={20} color={"black"}/> 
+                      <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>Show Records</Text>
+                    </View>
+                  </TouchableOpacity>
+               </View>:null}
+
+
                <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
                   <TouchableOpacity  onPress={() => {setmodal_main_Visible(false);}} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
@@ -379,97 +399,10 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
       >
         <View style={{alignContent:"center",alignItems:"center",alignSelf:"center",  flexDirection: 'row', padding:2,}} >
         <AntDesign  style={{marginRight:10}} name="arrowleft" size={20} color={"black"}/> 
-        <Text style={{fontSize:20,textAlign:"center"}}>Deliveries</Text>
+    <Text style={{fontSize:20,textAlign:"center"}}>{ref_num}</Text>
         </View>
       </TouchableHighlight>
       </View>
-      </View>
-        <View style={styles.header_date} >
-            <View style={{flexDirection:"column",flex:1}}>
-                      <View style={{  flexDirection: 'row', padding:5,}} >
-                      <Text style={styles.text_header}>Start Date</Text>
-                        {show_start_date && (
-                        <DateTimePicker
-                          testID="dateTimePicker"
-                          value={date}
-                          mode={mode}
-                          is24Hour={true}
-                          display="default"
-                          onChange={onChange_start_date}
-                        />
-                      )}
-                        <TouchableOpacity onPress={showDatepicker} style={styles.date_picker}>
-                          <View style={{ flexDirection: "row",}} >
-                        <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_start_date}</Text>
-                            <View style={{flex:0.2,flexDirection:"row-reverse",alignContent:'center',alignContent:"center",alignSelf:'center',}}
-                            >
-                              <FontAwesome  name="calendar" size={17} color={"gray"}/> 
-                            </View>
-                            
-                            {/* */}
-                          </View>
-                        </TouchableOpacity>
-                    
-                      </View>
-
-
-
-                      <View style={{flexDirection: 'row', padding:5,}} >
-                      <Text style={styles.text_header}>End Date</Text>
-                        {show_end_date && (
-                        <DateTimePicker
-                          testID="dateTimePicker"
-                          value={date}
-                          mode={mode}
-                          is24Hour={true}
-                          display="default"
-                          onChange={onChange_end_date}
-                        />
-                      )}
-                        <TouchableOpacity onPress={showDatepicker2} style={styles.date_picker}>
-                          <View style={{ flexDirection: "row",}} >
-                        <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_end_date}</Text>
-                            <View style={{flex:0.2,flexDirection:"row-reverse",alignContent:'center',alignContent:"center",alignSelf:'center',}}
-                            >
-                              <FontAwesome  name="calendar" size={17} color={"gray"}/> 
-                            </View>
-                            
-                            {/* */}
-                          </View>
-                        </TouchableOpacity>
-                    
-                      </View>
-                      <View style={{flexDirection: 'row', padding:5,alignSelf:"center",}} >
-                      <TouchableOpacity style={{
-                            backgroundColor:"#4ABBE5",flex:1,
-                            borderWidth: 1.5,
-                            borderColor:"#4ABBE5",
-                            borderRadius:10,
-                            alignContent:"center",
-                            alignSelf:"center",
-                            alignItems:"center"
-                      }} onPress={on_generate_report}>
-
-                      <View style={{ flexDirection: "row",}} >
-                      <Text style={{
-                      
-                      color:"#ffff",
-                      padding:5,
-                     
-                      textAlign:'center',
-                      fontSize:15,
-                      fontWeight:'bold',
-                      alignContent:"center",
-                      alignSelf:"center",
-                      alignItems:"center"
-             
-                      }}> <AntDesign  name="sync" size={15} color={"white"}/>  Generate Report</Text> 
-                          </View>
-                        
-                      </TouchableOpacity>
-                    
-                      </View>
-                      </View>
       </View>
     <View style={styles.body}>
     <View style={{  flexDirection: 'row',alignContent:"center",alignItems:"center"}} >
@@ -485,10 +418,11 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
               get_images_data ={get_images_data}
               show_modal_main={show_modal_main}
                 navigation={navigation}
-                dr_header_id={item.dr_header_id} 
-                delivery_number={item.delivery_number} />
+                header_id={item.header_id} 
+                ref_num={item.ref_num}
+                details_status={item.details_status} />
               }
-            keyExtractor={item => item.dr_header_id.toString()}
+            keyExtractor={item => item.header_id.toString()}
             ItemSeparatorComponent = { FlatListItemSeparator }
         />
     </View>     
@@ -511,15 +445,15 @@ const CustomProgressBar = ({ visible }) => (
   </Modal>
 );
 
-function RowItem ({navigation,delivery_number,dr_header_id,show_modal_main,get_images_data}) {
+function RowItem ({navigation,ref_num,header_id,show_modal_main,get_images_data,details_status}) {
   return (
       <TouchableOpacity   onPress={() => {
-        show_modal_main(delivery_number,dr_header_id);
-        get_images_data(delivery_number);
+        show_modal_main(ref_num,header_id,details_status);
+        get_images_data(ref_num);
       }}>
           <View style={styles.item}>
             <View style={{flex:3,flexDirection:'row',alignItems:"center"}}>
-              <Text style={styles.title}>{delivery_number}</Text>
+              <Text style={styles.title}>{ref_num}</Text>
             </View>
             <MaterialIcons style={{alignSelf:'center'}} name="keyboard-arrow-right" size={25} color={"#4ABBE5"}/>
           </View>

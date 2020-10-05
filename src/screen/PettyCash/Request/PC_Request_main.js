@@ -11,11 +11,6 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ImageViewer from 'react-native-image-zoom-viewer';
 
-const images = [{
-  // Simplest usage.
-  url: 'http://192.168.41.1/microfilming/img/cake2.jpg',
-}]
-
 const FlatListItemSeparator = () => {
     return (
       <View
@@ -41,19 +36,20 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
   useFocusEffect(
     React.useCallback(() => {
  
-    get_deliveries_data();
+      get_main_data();
       return () => {
       };
     }, [])
   );
 
   const on_generate_report = () =>{
-    get_deliveries_data();
+    get_main_data();
   }
 
   //selected
-  const[selected_dr_number,setselected_dr_number] = useState('');
-  const[selected_dr_id,setselected_dr_id] = useState('');
+  const[selected_ref_num,setselected_ref_num] = useState('');
+  const[selected_header_id,setselected_header_id] = useState('');
+  const[details_status,setdetails_status] = useState('');
 
   const [menu_list, setMenu_list] = React.useState(null);
   const [img_list, setimg_list] = React.useState(null);
@@ -65,7 +61,7 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
     Alert.alert('offline storage cleared');
   }
 
-  const get_deliveries_data= () =>{
+  const get_main_data= () =>{
     setSpinner(true)
     const formData = new FormData();
     formData.append('company_code', company_code);
@@ -73,6 +69,8 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
     formData.append('branch_id', branch_id); 
     formData.append('start_date', selected_start_date);
     formData.append('end_date', selected_end_date);
+
+    console.log(user_id+" "+company_code+" "+company_id+" "+branch_id+" "+selected_start_date+" "+selected_end_date)
 
     fetch(global.global_url+'/pettycash_request/get_pc_request_data.php', {
     method: 'POST',
@@ -87,10 +85,12 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
       setSpinner(false)
     var data = responseJson.array_data.map(function(item,index) {
         return {
-          dr_header_id:item.dr_header_id,
-        delivery_number: item.delivery_number
+          header_id:item.header_id,
+          ref_num: item.ref_num,
+          details_status: item.details_status
         };
         });
+        console.log(data);
         setMenu_list(data);
     }).catch((error) => {
 
@@ -154,10 +154,11 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
   //main modal
   const [modal_main_Visible, setmodal_main_Visible] = useState(false);
 
-  const show_modal_main = (dr_number,dr_id) =>{
+  const show_modal_main = (ref_num,header_id,details_status) =>{
     setmodal_main_Visible(true);
-    setselected_dr_number(dr_number);
-    setselected_dr_id(dr_id);
+    setselected_ref_num(ref_num);
+    setselected_header_id(header_id);
+    setdetails_status(details_status);
   }
 
   //modal view images
@@ -313,10 +314,10 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
                    <View style={styles.main_modalView}>
               <View style={{flexDirection: 'row', padding:2,}} >
             
-              <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_dr_number}</Text>
+              <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_ref_num}</Text>
               </View>
               <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-                  <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Upload Request',{dr_number:selected_dr_number,user_id:user_id});}} style={styles.rounded_btn}>
+                  <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Upload Request',{ref_num:selected_ref_num,user_id:user_id});}} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
                       <MCI  name="image-plus" size={20} color={"black"}/> 
                       <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>Add Image</Text>
@@ -331,6 +332,18 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
                     </View>
                   </TouchableOpacity>
                </View>
+
+                {details_status>0?
+                <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
+                  <TouchableOpacity  onPress={() => {setmodal_main_Visible(false); navigation.navigate('Petty Cash Request details',{ref_num:selected_ref_num,header_id:selected_header_id,company_id: company_id,branch_id: branch_id,company_code: company_code,user_id:user_id});}} style={styles.rounded_btn}>
+                    <View style={{ flexDirection: "row",}} >
+                      <MaterialIcons  name="image-search" size={20} color={"black"}/> 
+                      <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>Show Records</Text>
+                    </View>
+                  </TouchableOpacity>
+               </View>:null}
+
+
                <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
                   <TouchableOpacity  onPress={() => {setmodal_main_Visible(false);}} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
@@ -492,10 +505,11 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
               get_images_data ={get_images_data}
               show_modal_main={show_modal_main}
                 navigation={navigation}
-                dr_header_id={item.dr_header_id} 
-                delivery_number={item.delivery_number} />
+                header_id={item.header_id} 
+                ref_num={item.ref_num}
+                details_status={item.details_status} />
               }
-            keyExtractor={item => item.dr_header_id.toString()}
+            keyExtractor={item => item.header_id.toString()}
             ItemSeparatorComponent = { FlatListItemSeparator }
         />
     </View>     
@@ -518,15 +532,15 @@ const CustomProgressBar = ({ visible }) => (
   </Modal>
 );
 
-function RowItem ({navigation,delivery_number,dr_header_id,show_modal_main,get_images_data}) {
+function RowItem ({navigation,ref_num,header_id,show_modal_main,get_images_data,details_status}) {
   return (
       <TouchableOpacity   onPress={() => {
-        show_modal_main(delivery_number,dr_header_id);
-        get_images_data(delivery_number);
+        show_modal_main(ref_num,header_id,details_status);
+        get_images_data(ref_num);
       }}>
           <View style={styles.item}>
             <View style={{flex:3,flexDirection:'row',alignItems:"center"}}>
-              <Text style={styles.title}>{delivery_number}</Text>
+              <Text style={styles.title}>{ref_num}</Text>
             </View>
             <MaterialIcons style={{alignSelf:'center'}} name="keyboard-arrow-right" size={25} color={"#4ABBE5"}/>
           </View>

@@ -19,7 +19,7 @@ import {
 export default function Upload_PC_Request ({navigation:{goBack},navigation,route}) {
   
   //global params for instant loading
-  const { company_id,branch_id,company_code,user_id,dr_number } = route.params;
+  const { company_id,branch_id,company_code,user_id,ref_num} = route.params;
 
   const [spinner, setSpinner] = React.useState(false);
 
@@ -41,7 +41,7 @@ export default function Upload_PC_Request ({navigation:{goBack},navigation,route
       formData.append('company_id', company_id);
       formData.append('branch_id', branch_id);
 
-      formData.append('ref_num', dr_number);
+      formData.append('ref_num', ref_num);
       formData.append('details_id', "0");
       formData.append('chart_id', "0");
       formData.append('module', "PCV");
@@ -141,7 +141,7 @@ export default function Upload_PC_Request ({navigation:{goBack},navigation,route
 return (
   <View style={styles.container}>
     
-    <Text style={{fontSize:18,textAlign:"center",fontWeight:'bold'}}>Delivery # : {dr_number}</Text>
+    <Text style={{fontSize:18,textAlign:"center",fontWeight:'bold'}}>Delivery # : {ref_num}</Text>
 
       <View style={styles.body}>
       <TouchableOpacity
