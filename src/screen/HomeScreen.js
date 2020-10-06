@@ -342,7 +342,7 @@ function getContent(navigation,name,id,allow_navigation,branch_id,company_code,c
       setpc_modalVisible(true)
       //navigation.navigate("Petty Cash Replenish",{branch_id:branch_id,company_code,company_id,user_id});
     }else if(id==3){ // load items
-      // navigation.navigate("Test Screen");
+      navigation.navigate("Test Screen");
      // 
     } else if(id==4){ // load items
         // navigation.navigate("Test Screen");
