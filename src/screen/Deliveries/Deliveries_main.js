@@ -7,7 +7,7 @@ import MCI from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-
+import { SearchBar } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ImageViewer from 'react-native-image-zoom-viewer';
 
@@ -31,6 +31,41 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
   const [image_data_loaded,setimage_data_loaded] = useState(false);
   const [image_found,setimage_found]= useState(false);
   const [spinner, setSpinner] = React.useState(false);
+
+  //select delete image functiuon
+  const [find_image_index, setfind_image_index] = useState('');
+  const [selected_image_id, setselected_image_id] = useState('');
+
+
+
+  //search function
+  const [search, setSearch] = useState('');
+  const [filteredDataSource, setFilteredDataSource] = useState([]);
+  const [masterDataSource, setMasterDataSource] = useState([]);
+  
+  const searchFilterFunction = (text) => {
+    // Check if searched text is not blank
+    if (text) {
+      // Inserted text is not blank
+      // Filter the masterDataSource
+      // Update FilteredDataSource
+      const newData = masterDataSource.filter(function (item) {
+        const itemData = item.delivery_number
+          ? item.delivery_number.toUpperCase()
+          : ''.toUpperCase();
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
+      setFilteredDataSource(newData);
+      setSearch(text);
+    } else {
+      // Inserted text is blank
+      // Update FilteredDataSource with masterDataSource
+      setFilteredDataSource(masterDataSource);
+      setSearch(text);
+    }
+  };
+
 
   //main function
   useFocusEffect(
@@ -87,6 +122,9 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
         };
         });
         setMenu_list(data);
+        setFilteredDataSource(data);
+        setMasterDataSource(data);
+
     }).catch((error) => {
 
     console.error(error);
@@ -120,6 +158,7 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
 
     var data = responseJson.array_data.map(function(item,index) {
         return {
+          id:item.id,
           url:item.slug,
           
         };
@@ -281,6 +320,36 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
 
 
 
+//delete image function
+const view_image = () => {
+  setmodal_img_Visible(true)
+  setselected_image_id(img_list[0].id);
+};
+
+const delete_image = (id) => {
+  const formData = new FormData();
+  formData.append('company_code', company_code);
+  formData.append('company_id', company_id);
+  formData.append('branch_id', branch_id); 
+  formData.append('id', id); 
+
+  fetch(global.global_url+'/deliveries/delete_micro_filming.php', {
+  method: 'POST',
+  headers: {
+  'Accept': 'application/json',
+  'Content-Type': 'multipart/form-data'
+  },
+  body: formData
+
+  }).then((response) => response.json())
+  .then((responseJson) => {
+    console.log(responseJson);
+  }).catch((error) => {
+
+  console.error(error);
+  Alert.alert('Internet Connection Error');
+  });
+};
 
 
   return (
@@ -315,7 +384,7 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
                   </TouchableOpacity>
                </View>
                 <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-                  <TouchableOpacity  onPress={() => {image_found? setmodal_img_Visible(true):Alert.alert('No image Available') }} style={styles.rounded_btn}>
+                  <TouchableOpacity  onPress={() => {image_found? view_image():Alert.alert('No image Available') }} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
                       <MaterialIcons  name="image-search" size={20} color={"black"}/> 
                       <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>View Image</Text>
@@ -351,18 +420,47 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
                 setmodal_img_Visible(!modal_img_Visible);
               }}
             >
-            <TouchableHighlight
+
+              <View style={{flexDirection:'row-reverse',backgroundColor:'black'}}>
+              
+              <TouchableHighlight
               style={{ ...styles.openButton, backgroundColor: "black" }}
               onPress={() => {
                 setmodal_img_Visible(!modal_img_Visible);
+          
               }}
             >
+
+              
               <View style={{flexDirection:"row-reverse",padding:10}}>
               <AntDesign  name="closecircleo" size={20} color={"white"}/> 
               </View>
             </TouchableHighlight>
+
+
+            <TouchableHighlight
+              style={{ ...styles.openButton, backgroundColor: "black" }}
+              onPress={() => {
+                //setmodal_img_Visible(!modal_img_Visible);
+                //console.log(selected_image_id);
+                delete_image(selected_image_id);
+              }}
+            >
+
+              
+              <View style={{flexDirection:"row-reverse",padding:10}}>
+              <AntDesign  name="delete" size={20} color={"white"}/> 
+              </View>
+            </TouchableHighlight>
+
+            </View>
             <ImageViewer imageUrls={img_list}
-            loadingRender={console.log("rendering")}/>
+            loadingRender={console.log("rendering")}
+            onChange={
+              (index) => {
+            setselected_image_id(img_list[index].id)
+            }}
+            />
 
             </Modal>
               {/* end image modal */}
@@ -386,6 +484,18 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
       </View>
         <View style={styles.header_date} >
             <View style={{flexDirection:"column",flex:1}}>
+                        <View style={{  flexDirection: 'column'}} >
+                        <SearchBar
+                         containerStyle={{backgroundColor: 'white',}}
+                        onChangeText={(text) => searchFilterFunction(text)}
+                        onClear={(text) => searchFilterFunction('')}
+                        value={search} 
+                        placeholder="Search Here..."
+                        inputStyle={{color: 'black'}}
+                        round
+                        lightTheme
+                        />
+                        </View>
                       <View style={{  flexDirection: 'row', padding:5,}} >
                       <Text style={styles.text_header}>Start Date</Text>
                         {show_start_date && (
@@ -469,7 +579,10 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
                       </TouchableOpacity>
                     
                       </View>
+           
+                    
                       </View>
+                      
       </View>
     <View style={styles.body}>
     <View style={{  flexDirection: 'row',alignContent:"center",alignItems:"center"}} >
@@ -478,7 +591,7 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
             style={{alignContent:"center",margin:2}}
-            data={menu_list}
+            data={filteredDataSource}
             renderItem={
               ({ item }) => 
               <RowItem
@@ -486,7 +599,9 @@ export default function Deliveries_main ({navigation:{goBack},navigation,route})
               show_modal_main={show_modal_main}
                 navigation={navigation}
                 dr_header_id={item.dr_header_id} 
-                delivery_number={item.delivery_number} />
+                delivery_number={item.delivery_number} 
+               
+                />
               }
             keyExtractor={item => item.dr_header_id.toString()}
             ItemSeparatorComponent = { FlatListItemSeparator }
@@ -563,7 +678,7 @@ const styles = StyleSheet.create({
       alignSelf:"center",
       flexDirection:'row',
       padding:2,
-      flex:2,
+      flex:3,
       alignContent:"center",
   },
     body:{
