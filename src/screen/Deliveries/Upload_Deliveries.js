@@ -15,11 +15,10 @@ import {
   Modal
 } from "react-native";
 
-
 export default function Upload_Deliveries ({navigation:{goBack},navigation,route}) {
   
   //global params for instant loading
-  const { company_id,branch_id,company_code,user_id,dr_number } = route.params;
+  const { company_id,branch_id,company_code,user_id,dr_number,chart_id,trucking_status_string,selected_dr_id } = route.params;
 
   const [spinner, setSpinner] = React.useState(false);
 
@@ -41,10 +40,16 @@ export default function Upload_Deliveries ({navigation:{goBack},navigation,route
       formData.append('company_id', company_id);
       formData.append('branch_id', branch_id);
 
-      formData.append('ref_num', dr_number);
-      formData.append('details_id', "0");
-      formData.append('chart_id', "0");
       formData.append('module', "DR");
+      formData.append('ref_num', dr_number);
+
+      if (trucking_status_string=='Yes') {
+        formData.append('details_id', selected_dr_id);
+        formData.append('chart_id', chart_id);
+      } else {
+        formData.append('details_id', "0");
+        formData.append('chart_id', "0");
+      }
 
       formData.append('file', {
           uri: imageUri,
@@ -63,7 +68,7 @@ export default function Upload_Deliveries ({navigation:{goBack},navigation,route
         .then((responseJson) => {
           
           var response_data = responseJson.response_json[0];
-          console.log(response_data.success);
+          console.log(responseJson);
 
           if(response_data.success == '1'){
             goBack();
