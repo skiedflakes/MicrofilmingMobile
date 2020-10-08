@@ -19,7 +19,7 @@ import MCI from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useFocusEffect} from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {SearchBar} from 'react-native-elements';
+
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ImageViewer from 'react-native-image-zoom-viewer';
 
@@ -47,48 +47,10 @@ export default function Deliveries_main({
   const [image_found, setimage_found] = useState(false);
   const [spinner, setSpinner] = React.useState(false);
 
-  //trucking init
-
-  const [trucking_status_string, setTruckingStatus_String] = useState('');
-  const [trucking_status, setTruckingStatus] = useState(false);
-  const [chart_id, setChartID] = useState('');
   const [img_list_trucking, setimg_list_trucking] = React.useState(null);
   const [image_found_trucking, setimage_found_trucking] = useState(false);
 
-  //image view list
   const [imageViewList, setImageView] = useState(null);
-
-  //select delete image functiuon
-  const [find_image_index, setfind_image_index] = useState('');
-  const [selected_image_id, setselected_image_id] = useState('');
-
-  //search function
-  const [search, setSearch] = useState('');
-  const [filteredDataSource, setFilteredDataSource] = useState([]);
-  const [masterDataSource, setMasterDataSource] = useState([]);
-
-  const searchFilterFunction = (text) => {
-    // Check if searched text is not blank
-    if (text) {
-      // Inserted text is not blank
-      // Filter the masterDataSource
-      // Update FilteredDataSource
-      const newData = masterDataSource.filter(function (item) {
-        const itemData = item.delivery_number
-          ? item.delivery_number.toUpperCase()
-          : ''.toUpperCase();
-        const textData = text.toUpperCase();
-        return itemData.indexOf(textData) > -1;
-      });
-      setFilteredDataSource(newData);
-      setSearch(text);
-    } else {
-      // Inserted text is blank
-      // Update FilteredDataSource with masterDataSource
-      setFilteredDataSource(masterDataSource);
-      setSearch(text);
-    }
-  };
 
   //main function
   useFocusEffect(
@@ -136,6 +98,7 @@ export default function Deliveries_main({
       .then((response) => response.json())
       .then((responseJson) => {
         setSpinner(false);
+
         var data = responseJson.array_data.map(function (item, index) {
           return {
             dr_header_id: item.dr_header_id,
@@ -145,8 +108,6 @@ export default function Deliveries_main({
           };
         });
         setMenu_list(data);
-        setFilteredDataSource(data);
-        setMasterDataSource(data);
       })
       .catch((error) => {
         console.error(error);
@@ -176,9 +137,10 @@ export default function Deliveries_main({
     })
       .then((response) => response.json())
       .then((responseJson) => {
+        console.log(responseJson);
+
         var data = responseJson.array_data.map(function (item, index) {
           return {
-            id: item.id,
             url: item.slug,
           };
         });
@@ -210,7 +172,6 @@ export default function Deliveries_main({
         }
 
         setimage_data_loaded(true);
-        //
       })
       .catch((error) => {
         console.error(error);
@@ -220,6 +181,10 @@ export default function Deliveries_main({
 
   //main modal
   const [modal_main_Visible, setmodal_main_Visible] = useState(false);
+
+  const [trucking_status_string, setTruckingStatus_String] = useState('');
+  const [trucking_status, setTruckingStatus] = useState(false);
+  const [chart_id, setChartID] = useState('');
 
   const show_modal_main = (dr_number, dr_id, tr_status, details_id) => {
     setmodal_main_Visible(true);
@@ -243,7 +208,6 @@ export default function Deliveries_main({
   const [mode, setMode] = useState('date');
 
   const [show_end_date, setshow_end_date] = useState(false);
-
   const [show_start_date, setshow_start_date] = useState(false);
 
   //setup state start date
@@ -258,7 +222,6 @@ export default function Deliveries_main({
   } else {
     mm = '0' + (start_raw_date.getMonth() + 1);
   }
-
   start_date = Y + '-' + mm + '-' + '01';
 
   //setup state end date
@@ -279,6 +242,7 @@ export default function Deliveries_main({
   const [selected_start_date, setselected_start_date] = useState(start_date);
   const [selected_end_date, setselected_end_date] = useState(end_date);
   // const [selected_date, setselected_date] =   useState( new Date().toDateString());
+
   const onChange_start_date = (event, selectedDate) => {
     const currentDate = selectedDate || date;
 
@@ -352,47 +316,6 @@ export default function Deliveries_main({
     showMode('time');
   };
 
-  //delete image function
-  const view_image = () => {
-    setmodal_img_Visible(true);
-    setselected_image_id(img_list[0].id);
-  };
-
-  const delete_image = (id) => {
-    setSpinner(true);
-    const formData = new FormData();
-    formData.append('company_code', company_code);
-    formData.append('company_id', company_id);
-    formData.append('branch_id', branch_id);
-    formData.append('id', id);
-
-    fetch(global.global_url + '/deliveries/delete_micro_filming.php', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'multipart/form-data',
-      },
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        console.log(responseJson);
-        setSpinner(false);
-        if (responseJson == 1) {
-          setmodal_img_Visible(!modal_img_Visible);
-          setmodal_main_Visible(false);
-          Alert.alert('Delete Success!');
-        } else {
-          Alert.alert('Something went wrong try again');
-        }
-      })
-      .catch((error) => {
-        setSpinner(false);
-        console.error(error);
-        Alert.alert('Internet Connection Error');
-      });
-  };
-
   return (
     <View style={styles.main}>
       {/* //Main modal */}
@@ -410,11 +333,16 @@ export default function Deliveries_main({
             <View style={styles.main_modalView}>
               <View style={{flexDirection: 'row', padding: 2}}>
                 <Text
-                  style={{flex: 0.8, alignSelf: 'center', textAlign: 'center'}}>
+                  style={{
+                    flex: 0.8,
+                    alignSelf: 'center',
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                  }}>
                   {selected_dr_number}
                 </Text>
               </View>
-              <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
+              <View style={{flexDirection: 'row', padding: 2, marginTop: 20}}>
                 <TouchableOpacity
                   onPress={() => {
                     setmodal_main_Visible(false);
@@ -437,13 +365,13 @@ export default function Deliveries_main({
                   </View>
                 </TouchableOpacity>
               </View>
-              <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
+              <View style={{flexDirection: 'row', padding: 2, marginTop: 5}}>
                 <TouchableOpacity
                   onPress={() => {
-                    setImageView(img_list);
-                    image_found
-                      ? view_image()
-                      : Alert.alert('No image Available');
+                    setImageView(img_list),
+                      image_found
+                        ? setmodal_img_Visible(true)
+                        : Alert.alert('No image Available');
                   }}
                   style={styles.rounded_btn}>
                   <View style={{flexDirection: 'row'}}>
@@ -522,7 +450,7 @@ export default function Deliveries_main({
                 </View>
               )}
 
-              <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
+              <View style={{flexDirection: 'row', padding: 2, marginTop: 20}}>
                 <TouchableOpacity
                   onPress={() => {
                     setmodal_main_Visible(false);
@@ -550,7 +478,6 @@ export default function Deliveries_main({
       </Modal>
 
       {/* //image modal */}
-
       <Modal
         animationType="fade"
         transparent={true}
@@ -559,34 +486,19 @@ export default function Deliveries_main({
         onRequestClose={() => {
           setmodal_img_Visible(!modal_img_Visible);
         }}>
-        <View style={{flexDirection: 'row-reverse', backgroundColor: 'black'}}>
-          <TouchableHighlight
-            style={{...styles.openButton, backgroundColor: 'black'}}
-            onPress={() => {
-              setmodal_img_Visible(!modal_img_Visible);
-            }}>
-            <View style={{flexDirection: 'row-reverse', padding: 10}}>
-              <AntDesign name="closecircleo" size={20} color={'white'} />
-            </View>
-          </TouchableHighlight>
+        <TouchableHighlight
+          style={{...styles.openButton, backgroundColor: 'black'}}
+          onPress={() => {
+            setmodal_img_Visible(!modal_img_Visible);
+          }}>
+          <View style={{flexDirection: 'row-reverse', padding: 10}}>
+            <AntDesign name="closecircleo" size={20} color={'white'} />
+          </View>
+        </TouchableHighlight>
 
-          <TouchableHighlight
-            style={{...styles.openButton, backgroundColor: 'black'}}
-            onPress={() => {
-              //console.log(selected_image_id);
-              delete_image(selected_image_id);
-            }}>
-            <View style={{flexDirection: 'row-reverse', padding: 10}}>
-              <AntDesign name="delete" size={20} color={'white'} />
-            </View>
-          </TouchableHighlight>
-        </View>
         <ImageViewer
           imageUrls={imageViewList}
           loadingRender={console.log('rendering')}
-          onChange={(index) => {
-            setselected_image_id(imageViewList[index].id);
-          }}
         />
       </Modal>
       {/* end image modal */}
@@ -621,18 +533,6 @@ export default function Deliveries_main({
       </View>
       <View style={styles.header_date}>
         <View style={{flexDirection: 'column', flex: 1}}>
-          <View style={{flexDirection: 'column'}}>
-            <SearchBar
-              containerStyle={{backgroundColor: 'white'}}
-              onChangeText={(text) => searchFilterFunction(text)}
-              onClear={(text) => searchFilterFunction('')}
-              value={search}
-              placeholder="Search Here..."
-              inputStyle={{color: 'black'}}
-              round
-              lightTheme
-            />
-          </View>
           <View style={{flexDirection: 'row', padding: 5}}>
             <Text style={styles.text_header}>Start Date</Text>
             {show_start_date && (
@@ -668,6 +568,7 @@ export default function Deliveries_main({
               </View>
             </TouchableOpacity>
           </View>
+
           <View style={{flexDirection: 'row', padding: 5}}>
             <Text style={styles.text_header}>End Date</Text>
             {show_end_date && (
@@ -750,7 +651,7 @@ export default function Deliveries_main({
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
             style={{alignContent: 'center', margin: 2}}
-            data={filteredDataSource}
+            data={menu_list}
             renderItem={({item}) => (
               <RowItem
                 get_images_data={get_images_data}
@@ -812,6 +713,7 @@ function RowItem({
     </TouchableOpacity>
   );
 }
+
 const styles = StyleSheet.create({
   rounded_btn: {
     flex: 0.8,
@@ -822,7 +724,6 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderRadius: 8,
   },
-
   main: {
     alignItems: 'center',
     alignContent: 'center',
@@ -832,7 +733,6 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     flexDirection: 'column',
   },
-
   header: {
     alignItems: 'center',
     alignContent: 'center',
@@ -848,7 +748,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     flexDirection: 'row',
     padding: 2,
-    flex: 3,
+    flex: 2,
     alignContent: 'center',
   },
   body: {
@@ -861,7 +761,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 5,
   },
-
   item: {
     flexDirection: 'row',
     paddingLeft: 10,
