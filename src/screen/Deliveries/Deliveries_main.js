@@ -465,7 +465,7 @@ export default function Deliveries_main({
               </View>
 
               {trucking_status && (
-                <View style={{flexDirection: 'row', padding: 2, marginTop: 20}}>
+                <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
                   <TouchableOpacity
                     onPress={() => {
                       setmodal_main_Visible(false);
@@ -494,7 +494,7 @@ export default function Deliveries_main({
               )}
 
               {trucking_status && (
-                <View style={{flexDirection: 'row', padding: 2, marginTop: 5}}>
+                <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
                   <TouchableOpacity
                     onPress={() => {
                       setImageView(img_list_trucking),
