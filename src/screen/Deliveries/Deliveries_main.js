@@ -21,6 +21,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {SearchBar} from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker2 from '@react-native-community/datetimepicker';
 import ImageViewer from 'react-native-image-zoom-viewer';
 
 const FlatListItemSeparator = () => {
@@ -90,14 +91,6 @@ export default function Deliveries_main({
     }
   };
 
-  //main function
-  useFocusEffect(
-    React.useCallback(() => {
-      get_deliveries_data();
-      return () => {};
-    }, []),
-  );
-
   const on_generate_report = () => {
     get_deliveries_data();
   };
@@ -124,6 +117,8 @@ export default function Deliveries_main({
     formData.append('branch_id', branch_id);
     formData.append('start_date', selected_start_date);
     formData.append('end_date', selected_end_date);
+
+    // console.log(selected_end_date + ' ' + selected_start_date);
 
     fetch(global.global_url + '/deliveries/get_deliveries_data.php', {
       method: 'POST',
@@ -241,6 +236,7 @@ export default function Deliveries_main({
   //date
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
+  const [mode2, setMode2] = useState('date');
 
   const [show_end_date, setshow_end_date] = useState(false);
 
@@ -280,10 +276,9 @@ export default function Deliveries_main({
   const [selected_end_date, setselected_end_date] = useState(end_date);
   // const [selected_date, setselected_date] =   useState( new Date().toDateString());
   const onChange_start_date = (event, selectedDate) => {
+    setshow_start_date(false);
     const currentDate = selectedDate || date;
-
     setDate(currentDate);
-    setshow_start_date(Platform.OS === 'ios' ? true : false);
     var mdate = '';
     var Y = selectedDate.getFullYear();
     var mm = '';
@@ -306,10 +301,9 @@ export default function Deliveries_main({
   };
 
   const onChange_end_date = (event, selectedDate) => {
+    setshow_end_date(false);
     const currentDate = selectedDate || date;
-
     setDate(currentDate);
-    setshow_end_date(Platform.OS === 'ios' ? true : false);
     var mdate = '';
     var Y = selectedDate.getFullYear();
     var mm = '';
@@ -331,25 +325,14 @@ export default function Deliveries_main({
     setselected_end_date(mdate);
   };
 
-  const showMode = (currentMode) => {
-    setshow_start_date(true);
-    setMode(currentMode);
-  };
-  const showMode2 = (currentMode) => {
-    setshow_end_date(true);
-    setMode(currentMode);
-  };
-
   const showDatepicker = () => {
-    showMode('date');
+    setMode('date');
+    setshow_start_date(true);
   };
 
   const showDatepicker2 = () => {
-    showMode2('date');
-  };
-
-  const showTimepicker = () => {
-    showMode('time');
+    setMode2('date');
+    setshow_end_date(true);
   };
 
   //delete image function
@@ -392,6 +375,15 @@ export default function Deliveries_main({
         Alert.alert('Internet Connection Error');
       });
   };
+
+  //main function
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log(selected_start_date);
+      get_deliveries_data();
+      return () => {};
+    }, []),
+  );
 
   return (
     <View style={styles.main}>
@@ -583,7 +575,7 @@ export default function Deliveries_main({
         </View>
         <ImageViewer
           imageUrls={imageViewList}
-          loadingRender={console.log('rendering')}
+          // loadingRender={console.log('rendering')}
           onChange={(index) => {
             setselected_image_id(imageViewList[index].id);
           }}
@@ -636,8 +628,8 @@ export default function Deliveries_main({
           <View style={{flexDirection: 'row', padding: 5}}>
             <Text style={styles.text_header}>Start Date</Text>
             {show_start_date && (
-              <DateTimePicker
-                testID="dateTimePicker"
+              <DateTimePicker2
+                testID="dateTimePicker2"
                 value={date}
                 mode={mode}
                 is24Hour={true}
