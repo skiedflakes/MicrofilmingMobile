@@ -75,8 +75,8 @@ export default function Deliveries_main({
       // Filter the masterDataSource
       // Update FilteredDataSource
       const newData = masterDataSource.filter(function (item) {
-        const itemData = item.delivery_number
-          ? item.delivery_number.toUpperCase()
+        const itemData = item.query_data
+          ? item.query_data.toUpperCase()
           : ''.toUpperCase();
         const textData = text.toUpperCase();
         return itemData.indexOf(textData) > -1;
@@ -135,6 +135,8 @@ export default function Deliveries_main({
           return {
             dr_header_id: item.dr_header_id,
             delivery_number: item.delivery_number,
+            invoice_no: item.invoice_no,
+            query_data:  item.delivery_number+'.'+item.invoice_no,
             tr_status: item.tr_status,
             te_id: item.te_id,
           };
@@ -749,6 +751,7 @@ export default function Deliveries_main({
                 show_modal_main={show_modal_main}
                 navigation={navigation}
                 dr_header_id={item.dr_header_id}
+                invoice_no ={item.invoice_no}
                 delivery_number={item.delivery_number}
                 tr_status={item.tr_status}
                 te_id={item.te_id}
@@ -780,6 +783,7 @@ function RowItem({
   delivery_number,
   dr_header_id,
   show_modal_main,
+  invoice_no,
   get_images_data,
   tr_status,
   te_id,
@@ -791,9 +795,11 @@ function RowItem({
         get_images_data(delivery_number);
       }}>
       <View style={styles.item}>
-        <View style={{flex: 3, flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{flex: 3, alignItems: 'center'}}>
           <Text style={styles.title}>{delivery_number}</Text>
+          <Text style={styles.text_inv}>INVOICE #: {invoice_no}</Text>
         </View>
+        
         <MaterialIcons
           style={{alignSelf: 'center'}}
           name="keyboard-arrow-right"
@@ -858,14 +864,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingLeft: 10,
     backgroundColor: '#ffff',
-    padding: 5,
+    padding: 3,
     alignContent: 'center',
     alignItems: 'center',
   },
   title: {
     color: '#4A4A4A',
-    padding: 15,
-    fontSize: 20,
+    padding: 5,
+    fontSize: 18,
+    fontWeight:'bold'
+  },
+  text_inv: {
+    color: '#4A4A4A',
+    padding: 5,
+    fontSize: 15,
   },
   text_header: {
     alignContent: 'center',
