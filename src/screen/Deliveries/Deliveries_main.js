@@ -42,7 +42,13 @@ export default function Deliveries_main({
   route,
 }) {
   //global params for instant loading
-  const {company_id, branch_id, company_code, user_id} = route.params;
+  const {
+    company_id,
+    branch_id,
+    company_code,
+    user_id,
+    allow_delete_mf,
+  } = route.params;
   const module = 'DR'; // module
   const [image_data_loaded, setimage_data_loaded] = useState(false);
   const [image_found, setimage_found] = useState(false);
@@ -117,9 +123,6 @@ export default function Deliveries_main({
     formData.append('branch_id', branch_id);
     formData.append('start_date', selected_start_date);
     formData.append('end_date', selected_end_date);
-
-    // console.log(selected_end_date + ' ' + selected_start_date);
-
     fetch(global.global_url + '/deliveries/get_deliveries_data.php', {
       method: 'POST',
       headers: {
@@ -136,7 +139,7 @@ export default function Deliveries_main({
             dr_header_id: item.dr_header_id,
             delivery_number: item.delivery_number,
             invoice_no: item.invoice_no,
-            query_data:  item.delivery_number+'.'+item.invoice_no,
+            query_data: item.delivery_number + '.' + item.invoice_no,
             tr_status: item.tr_status,
             te_id: item.te_id,
           };
@@ -344,44 +347,45 @@ export default function Deliveries_main({
   };
 
   const delete_image = (id) => {
-    setSpinner(true);
-    const formData = new FormData();
-    formData.append('company_code', company_code);
-    formData.append('company_id', company_id);
-    formData.append('branch_id', branch_id);
-    formData.append('id', id);
-
-    fetch(global.global_url + '/deliveries/delete_micro_filming.php', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'multipart/form-data',
-      },
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        console.log(responseJson);
-        setSpinner(false);
-        if (responseJson == 1) {
-          setmodal_img_Visible(!modal_img_Visible);
-          setmodal_main_Visible(false);
-          Alert.alert('Delete Success!');
-        } else {
-          Alert.alert('Something went wrong try again');
-        }
+    if (allow_delete_mf == 1) {
+      setSpinner(true);
+      const formData = new FormData();
+      formData.append('company_code', company_code);
+      formData.append('company_id', company_id);
+      formData.append('branch_id', branch_id);
+      formData.append('id', id);
+      fetch(global.global_url + '/deliveries/delete_micro_filming.php', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'multipart/form-data',
+        },
+        body: formData,
       })
-      .catch((error) => {
-        setSpinner(false);
-        console.error(error);
-        Alert.alert('Internet Connection Error');
-      });
+        .then((response) => response.json())
+        .then((responseJson) => {
+          setSpinner(false);
+          if (responseJson == 1) {
+            setmodal_img_Visible(!modal_img_Visible);
+            setmodal_main_Visible(false);
+            Alert.alert('Delete Success!');
+          } else {
+            Alert.alert('Something went wrong try again');
+          }
+        })
+        .catch((error) => {
+          setSpinner(false);
+          console.error(error);
+          Alert.alert('Internet Connection Error');
+        });
+    } else {
+      Alert.alert('User Account restricted');
+    }
   };
 
   //main function
   useFocusEffect(
     React.useCallback(() => {
-      console.log(selected_start_date);
       get_deliveries_data();
       return () => {};
     }, []),
@@ -567,7 +571,6 @@ export default function Deliveries_main({
           <TouchableHighlight
             style={{...styles.openButton, backgroundColor: 'black'}}
             onPress={() => {
-              //console.log(selected_image_id);
               delete_image(selected_image_id);
             }}>
             <View style={{flexDirection: 'row-reverse', padding: 10}}>
@@ -577,7 +580,6 @@ export default function Deliveries_main({
         </View>
         <ImageViewer
           imageUrls={imageViewList}
-          // loadingRender={console.log('rendering')}
           onChange={(index) => {
             setselected_image_id(imageViewList[index].id);
           }}
@@ -751,7 +753,7 @@ export default function Deliveries_main({
                 show_modal_main={show_modal_main}
                 navigation={navigation}
                 dr_header_id={item.dr_header_id}
-                invoice_no ={item.invoice_no}
+                invoice_no={item.invoice_no}
                 delivery_number={item.delivery_number}
                 tr_status={item.tr_status}
                 te_id={item.te_id}
@@ -799,7 +801,7 @@ function RowItem({
           <Text style={styles.title}>{delivery_number}</Text>
           <Text style={styles.text_inv}>INVOICE #: {invoice_no}</Text>
         </View>
-        
+
         <MaterialIcons
           style={{alignSelf: 'center'}}
           name="keyboard-arrow-right"
@@ -872,7 +874,7 @@ const styles = StyleSheet.create({
     color: '#4A4A4A',
     padding: 5,
     fontSize: 18,
-    fontWeight:'bold'
+    fontWeight: 'bold',
   },
   text_inv: {
     color: '#4A4A4A',
