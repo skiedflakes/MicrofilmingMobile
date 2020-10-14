@@ -16,10 +16,10 @@ import {
 } from "react-native";
 
 
-export default function Upload_PC_Request ({navigation:{goBack},navigation,route}) {
+export default function PettycashLiquidation_upload_main ({navigation:{goBack},navigation,route}) {
   
   //global params for instant loading
-  const { company_id,branch_id,company_code,user_id,ref_num} = route.params;
+  const { company_id,branch_id,company_code,user_id,dr_number,module } = route.params;
 
   const [spinner, setSpinner] = React.useState(false);
 
@@ -41,17 +41,19 @@ export default function Upload_PC_Request ({navigation:{goBack},navigation,route
       formData.append('company_id', company_id);
       formData.append('branch_id', branch_id);
 
-      formData.append('ref_num', ref_num);
+      formData.append('ref_num', dr_number);
       formData.append('details_id', "0");
       formData.append('chart_id', "0");
-      formData.append('module', "PCV");
+      formData.append('module', module);
+
+      console.log(user_id+" "+company_code+" "+company_id+" "+branch_id+" "+dr_number)
 
       formData.append('file', {
           uri: imageUri,
           name: 'my_photo',
           type: image_file_type
         });
-      fetch(global.global_url+'/deliveries/upload_img.php', {
+      fetch(global.global_url+'/pettycash_liquidation/upload_img.php', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -106,15 +108,9 @@ export default function Upload_PC_Request ({navigation:{goBack},navigation,route
         console.log('User tapped custom button: ', response.customButton);
       } else {
         const source = { uri: response.uri };
-    
-        // You can also display the image using data:
-        // const source = { uri: 'data:image/jpeg;base64,' + response.data };
         Setimage_file_type(response.type);
         SetimageUri(response.uri);
         Setimage_preview(true);
-        // this.setState({
-        //   avatarSource: source,
-        // });
       }
     });
 
@@ -141,7 +137,7 @@ export default function Upload_PC_Request ({navigation:{goBack},navigation,route
 return (
   <View style={styles.container}>
     
-    <Text style={{fontSize:18,textAlign:"center",fontWeight:'bold'}}>Delivery # : {ref_num}</Text>
+    <Text style={{fontSize:18,textAlign:"center",fontWeight:'bold'}}>Replinishment # : {dr_number}</Text>
 
       <View style={styles.body}>
       <TouchableOpacity

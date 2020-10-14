@@ -10,7 +10,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ImageViewer from 'react-native-image-zoom-viewer';
-import RNPickerSelect from 'react-native-picker-select';
+// import RNPickerSelect from 'react-native-picker-select';
 
 const FlatListItemSeparator = () => {
   return (
@@ -174,7 +174,7 @@ export default function PettycashReplenish_main ({navigation:{goBack},navigation
   var dd='';
 
   if((start_raw_date.getMonth()+1).toString().length>1){
-    mm =start_date_.getMonth()+1; 
+    mm =start_raw_date.getMonth()+1; 
   }else{
     mm ='0'+(start_raw_date.getMonth()+1); 
   }

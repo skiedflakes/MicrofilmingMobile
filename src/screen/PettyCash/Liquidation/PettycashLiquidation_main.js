@@ -10,46 +10,48 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ImageViewer from 'react-native-image-zoom-viewer';
+// import RNPickerSelect from 'react-native-picker-select';
 
 const FlatListItemSeparator = () => {
-    return (
-      <View
-        style={{
-          height: 0.5,
-          width: "100%",
-          backgroundColor: "#000",
-        }}
-      />
-    );
-  }
+  return (
+    <View
+      style={{
+        height: 0.5,
+        width: "100%",
+        backgroundColor: "#000",
+      }}
+    />
+  );
+}
 
-export default function PC_Request_main ({navigation:{goBack},navigation,route}) {
+export default function PettycashLiquidation_main ({navigation:{goBack},navigation,route}) {
   
   //global params for instant loading
   const { company_id,branch_id,company_code,user_id } = route.params;
-  const module = 'PCV'; // module
+  const module = 'PFL'; // module
   const [image_data_loaded,setimage_data_loaded] = useState(false);
   const [image_found,setimage_found]= useState(false);
   const [spinner, setSpinner] = React.useState(false);
+
+  //const [filter, setFilter] = React.useState('');
 
   //main function
   useFocusEffect(
     React.useCallback(() => {
  
-      get_main_data();
+      get_replinish_data();
       return () => {
       };
     }, [])
   );
 
   const on_generate_report = () =>{
-    get_main_data();
+    get_replinish_data();
   }
 
   //selected
-  const[selected_ref_num,setselected_ref_num] = useState('');
-  const[selected_header_id,setselected_header_id] = useState('');
-  const[details_status,setdetails_status] = useState('');
+  const[selected_dr_number,setselected_dr_number] = useState('');
+  const[selected_dr_id,setselected_dr_id] = useState('');
 
   const [menu_list, setMenu_list] = React.useState(null);
   const [img_list, setimg_list] = React.useState(null);
@@ -61,9 +63,10 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
     Alert.alert('offline storage cleared');
   }
 
-  const get_main_data= () =>{
+  const get_replinish_data= () =>{
     setSpinner(true)
     const formData = new FormData();
+ 
     formData.append('company_code', company_code);
     formData.append('company_id', company_id);
     formData.append('branch_id', branch_id); 
@@ -71,8 +74,8 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
     formData.append('end_date', selected_end_date);
 
     console.log(user_id+" "+company_code+" "+company_id+" "+branch_id+" "+selected_start_date+" "+selected_end_date)
-
-    fetch(global.global_url+'/pettycash_request/get_pc_request_data.php', {
+    
+    fetch(global.global_url+'/pettycash_liquidation/get_liquidation_data.php', {
     method: 'POST',
     headers: {
     'Accept': 'application/json',
@@ -83,14 +86,13 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
     }).then((response) => response.json())
     .then((responseJson) => {
       setSpinner(false)
-    var data = responseJson.array_data.map(function(item,index) {
+      console.log(responseJson)
+       var data = responseJson.array_data.map(function(item,index) {
         return {
-          header_id:item.header_id,
-          ref_num: item.ref_num,
-          details_status: item.details_status
+          dr_header_id:item.pcv_liquidation_id,
+          delivery_number: item.tracking_num
         };
         });
-        console.log(data);
         setMenu_list(data);
     }).catch((error) => {
 
@@ -100,7 +102,6 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
     });
   }
 
-
   const get_images_data= (reference_number) =>{
     setimage_data_loaded(false);
     setimg_list('');
@@ -109,12 +110,10 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
     formData.append('company_id', company_id);
     formData.append('branch_id', branch_id); 
     formData.append('reference_number', reference_number);
-    formData.append('module',module );
+    formData.append('module', module);
     formData.append('primary_url', global.notes_web_directory);
 
-
-
-    fetch(global.global_url+'/pettycash_request/get_micro_filming_img.php', {
+    fetch(global.global_url+'/pettycash_liquidation/get_micro_filming_img.php', {
     method: 'POST',
     headers: {
     'Accept': 'application/json',
@@ -128,12 +127,9 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
     var data = responseJson.array_data.map(function(item,index) {
         return {
           url:item.slug,
-          
         };
         });
-
-        console.log(responseJson)
-        
+        console.log(data);
         if(data.length>0){
        
           setimg_list(data);
@@ -154,59 +150,53 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
   //main modal
   const [modal_main_Visible, setmodal_main_Visible] = useState(false);
 
-  const show_modal_main = (ref_num,header_id,details_status) =>{
+  const show_modal_main = (dr_number,dr_id) =>{
     setmodal_main_Visible(true);
-    setselected_ref_num(ref_num);
-    setselected_header_id(header_id);
-    setdetails_status(details_status);
+    setselected_dr_number(dr_number);
+    setselected_dr_id(dr_id);
   }
 
   //modal view images
   const [modal_img_Visible, setmodal_img_Visible] = useState(false);
 
-
   //date
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
 
-  
-
   const [show_end_date, setshow_end_date] = useState(false);
-
   const [show_start_date, setshow_start_date] = useState(false);
 
 
-        //setup state start date
-        var start_date ='';
-        var start_raw_date =  new Date(); 
-        var Y = start_raw_date.getFullYear();
-        var mm ='';
-        var dd='';
-    
-        if((start_raw_date.getMonth()+1).toString().length>1){
-          mm =start_raw_date.getMonth()+1; 
-        }else{
-          mm ='0'+(start_raw_date.getMonth()+1); 
-        }
-     
-        start_date = Y+'-'+mm+'-'+'01';
-   
-   
-   
-        //setup state end date
-        var end_date =  '';
-        var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0); // get last day of the month
-        var e_Y = lastDay.getFullYear();
-        var e_mm = ''
-        var e_dd =lastDay.getDate();
-   
-        if((lastDay.getMonth()+1).toString().length>1){
-         e_mm =lastDay.getMonth()+1; 
-       }else{
-         e_mm ='0'+(lastDay.getMonth()+1); 
-       }
-   
-       end_date = e_Y+'-'+e_mm+'-'+e_dd;
+  //setup state start date
+  var start_date ='';
+  var start_raw_date =  new Date(); 
+  var Y = start_raw_date.getFullYear();
+  var mm ='';
+  var dd='';
+
+  if((start_raw_date.getMonth()+1).toString().length>1){
+    mm =start_raw_date.getMonth()+1; 
+  }else{
+    mm ='0'+(start_raw_date.getMonth()+1); 
+  }
+
+  start_date = Y+'-'+mm+'-'+'01';
+
+
+  //setup state end date
+  var end_date =  '';
+  var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0); // get last day of the month
+  var e_Y = lastDay.getFullYear();
+  var e_mm = ''
+  var e_dd =lastDay.getDate();
+
+  if((lastDay.getMonth()+1).toString().length>1){
+    e_mm =lastDay.getMonth()+1; 
+  }else{
+    e_mm ='0'+(lastDay.getMonth()+1); 
+  }
+
+  end_date = e_Y+'-'+e_mm+'-'+e_dd;
 
   const [selected_start_date, setselected_start_date] =   useState(start_date);
   const [selected_end_date, setselected_end_date] =   useState( end_date);
@@ -235,9 +225,7 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
  
     mdate = Y+'-'+mm+'-'+dd;
     setselected_start_date(mdate);
-    
   };
-
   
   const onChange_end_date = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -263,10 +251,7 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
  
     mdate = Y+'-'+mm+'-'+dd;
     setselected_end_date(mdate);
-    
   };
-
-
 
   const showMode = currentMode => {
     setshow_start_date(true);
@@ -289,10 +274,6 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
     showMode('time');
   };
 
-
-
-
-
   return (
     <View style={styles.main}>
 
@@ -304,20 +285,17 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
         backdropColor={'green'}
         backdropOpacity= {1}
         onRequestClose={() => {
-        setmodal_main_Visible(!modal_main_Visible);
-        }} >
-          
-          
+          setmodal_main_Visible(!modal_main_Visible);
+        }}> 
         <View style={styles.centeredView}>
- 
             {image_data_loaded? 
                    <View style={styles.main_modalView}>
               <View style={{flexDirection: 'row', padding:2,}} >
             
-              <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_ref_num}</Text>
+              <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_dr_number}</Text>
               </View>
               <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-                  <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Upload Request',{ref_num:selected_ref_num,user_id:user_id});}} style={styles.rounded_btn}>
+                  <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Petty Cash Liquidation Upload',{dr_number:selected_dr_number,user_id:user_id,module:module});}} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
                       <MCI  name="image-plus" size={20} color={"black"}/> 
                       <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>Add Image</Text>
@@ -332,18 +310,6 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
                     </View>
                   </TouchableOpacity>
                </View>
-
-                {details_status>0?
-                <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-                  <TouchableOpacity  onPress={() => {setmodal_main_Visible(false); navigation.navigate('Petty Cash Request details',{ref_num:selected_ref_num,header_id:selected_header_id,company_id: company_id,branch_id: branch_id,company_code: company_code,user_id:user_id});}} style={styles.rounded_btn}>
-                    <View style={{ flexDirection: "row",}} >
-                      <MaterialIcons  name="image-search" size={20} color={"black"}/> 
-                      <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>Show Records</Text>
-                    </View>
-                  </TouchableOpacity>
-               </View>:null}
-
-
                <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
                   <TouchableOpacity  onPress={() => {setmodal_main_Visible(false);}} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
@@ -361,135 +327,138 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
         </View>
       </Modal>
 
-
       {/* //image modal */}
-
-            <Modal
-              animationType="fade"
-              transparent={true}
-              visible={modal_img_Visible}
-              transparent={true}
-              onRequestClose={() => {
-                setmodal_img_Visible(!modal_img_Visible);
-              }}
-            >
-            <TouchableHighlight
-              style={{ ...styles.openButton, backgroundColor: "black" }}
-              onPress={() => {
-                setmodal_img_Visible(!modal_img_Visible);
-              }}
-            >
-              <View style={{flexDirection:"row-reverse",padding:10}}>
-              <AntDesign  name="closecircleo" size={20} color={"white"}/> 
-              </View>
-            </TouchableHighlight>
-            <ImageViewer imageUrls={img_list}
-            loadingRender={console.log("rendering")}/>
-
-            </Modal>
-              {/* end image modal */}
-
+          <Modal
+            animationType="fade"
+            transparent={true}
+            visible={modal_img_Visible}
+            transparent={true}
+            onRequestClose={() => {
+              setmodal_img_Visible(!modal_img_Visible);
+            }}>
+          <TouchableHighlight
+            style={{ ...styles.openButton, backgroundColor: "black" }}
+            onPress={() => {
+              setmodal_img_Visible(!modal_img_Visible);
+            }}>
+            <View style={{flexDirection:"row-reverse",padding:10}}>
+            <AntDesign  name="closecircleo" size={20} color={"white"}/> 
+            </View>
+          </TouchableHighlight>
+          <ImageViewer imageUrls={img_list}
+          loadingRender={console.log("rendering")}/>
+          </Modal>
+      {/* end image modal */}
 
      <View style={styles.header} >
-
-              <View style={{ flex:1,  flexDirection: 'row', padding:2,}} >
-      <TouchableHighlight
-        style={styles.openButton}
-        onPress={() => {
-          goBack()
-        }}
-      >
-        <View style={{alignContent:"center",alignItems:"center",alignSelf:"center",  flexDirection: 'row', padding:2,}} >
-        <AntDesign  style={{marginRight:10}} name="arrowleft" size={20} color={"black"}/> 
-        <Text style={{fontSize:20,textAlign:"center"}}>Petty Cash Request</Text>
+        <View style={{ flex:1,  flexDirection: 'row', padding:2,}} >
+        <TouchableHighlight
+          style={styles.openButton}
+          onPress={() => {
+            goBack()
+          }}>
+          <View style={{alignContent:"center",alignItems:"center",alignSelf:"center",  flexDirection: 'row', padding:2,}} >
+          <AntDesign  style={{marginRight:10}} name="arrowleft" size={20} color={"black"}/> 
+          <Text style={{fontSize:20,textAlign:"center"}}>Petty Cash Liquidation</Text>
+          </View>
+        </TouchableHighlight>
         </View>
-      </TouchableHighlight>
-      </View>
-      </View>
+    </View>
+
         <View style={styles.header_date} >
             <View style={{flexDirection:"column",flex:1}}>
-                      <View style={{  flexDirection: 'row', padding:5,}} >
-                      <Text style={styles.text_header}>Start Date</Text>
-                        {show_start_date && (
-                        <DateTimePicker
-                          testID="dateTimePicker"
-                          value={date}
-                          mode={mode}
-                          is24Hour={true}
-                          display="default"
-                          onChange={onChange_start_date}
-                        />
-                      )}
-                        <TouchableOpacity onPress={showDatepicker} style={styles.date_picker}>
-                          <View style={{ flexDirection: "row",}} >
-                        <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_start_date}</Text>
-                            <View style={{flex:0.2,flexDirection:"row-reverse",alignContent:'center',alignContent:"center",alignSelf:'center',}}
-                            >
-                              <FontAwesome  name="calendar" size={17} color={"gray"}/> 
-                            </View>
-                            
-                            {/* */}
-                          </View>
-                        </TouchableOpacity>
-                    
-                      </View>
 
-                      <View style={{flexDirection: 'row', padding:5,}} >
-                      <Text style={styles.text_header}>End Date</Text>
-                        {show_end_date && (
-                        <DateTimePicker
-                          testID="dateTimePicker"
-                          value={date}
-                          mode={mode}
-                          is24Hour={true}
-                          display="default"
-                          onChange={onChange_end_date}
-                        />
-                      )}
-                        <TouchableOpacity onPress={showDatepicker2} style={styles.date_picker}>
-                          <View style={{ flexDirection: "row",}} >
-                        <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_end_date}</Text>
-                            <View style={{flex:0.2,flexDirection:"row-reverse",alignContent:'center',alignContent:"center",alignSelf:'center',}}
-                            >
-                              <FontAwesome  name="calendar" size={17} color={"gray"}/> 
-                            </View>
-                            
-                            {/* */}
-                          </View>
-                        </TouchableOpacity>
-                    
-                      </View>
-                      <View style={{flexDirection: 'row', padding:5,alignSelf:"center",}} >
-                      <TouchableOpacity style={{
-                            backgroundColor:"#4ABBE5",flex:1,
-                            borderWidth: 1.5,
-                            borderColor:"#4ABBE5",
-                            borderRadius:10,
-                            alignContent:"center",
-                            alignSelf:"center",
-                            alignItems:"center"
-                      }} onPress={on_generate_report}>
+                  {/* <View style={{flexDirection: 'row', padding:5}} >
+                    <Text style={styles.filter_header}>Filter</Text>
+                    <View style={styles.filter_picker}>
+                      <RNPickerSelect
+                          placeholder={{
+                              label: 'All',
+                              value: '',
+                          }}
+                          style={pickerStyle}
+                          useNativeAndroidPickerStyle={false}
+                          onValueChange={(value) => setFilter(value)}
+                          items={[
+                          { label: 'Declared', value: 'd' },
+                          { label: 'Undeclared', value: 'ud' },
+                        ]}
+                      />
+                    </View>
+                  </View> */}
 
+                  <View style={{  flexDirection: 'row', padding:5,}} >
+                  <Text style={styles.text_header}>Start Date</Text>
+                    {show_start_date && (
+                    <DateTimePicker
+                      testID="dateTimePicker"
+                      value={date}
+                      mode={mode}
+                      is24Hour={true}
+                      display="default"
+                      onChange={onChange_start_date}
+                    />
+                  )}
+                    <TouchableOpacity onPress={showDatepicker} style={styles.date_picker}>
                       <View style={{ flexDirection: "row",}} >
-                      <Text style={{
-                      
+                    <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_start_date}</Text>
+                        <View style={{flex:0.2,flexDirection:"row-reverse",alignContent:'center',alignContent:"center",alignSelf:'center',}}>
+                          <FontAwesome  name="calendar" size={17} color={"gray"}/> 
+                        </View>
+                        {/* */}
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+
+                  <View style={{flexDirection: 'row', padding:5,}} >
+                  <Text style={styles.text_header}>End Date</Text>
+                    {show_end_date && (
+                    <DateTimePicker
+                      testID="dateTimePicker"
+                      value={date}
+                      mode={mode}
+                      is24Hour={true}
+                      display="default"
+                      onChange={onChange_end_date}
+                    />
+                  )}
+                    <TouchableOpacity onPress={showDatepicker2} style={styles.date_picker}>
+                      <View style={{ flexDirection: "row",}} >
+                    <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_end_date}</Text>
+                        <View style={{flex:0.2,flexDirection:"row-reverse",alignContent:'center',alignContent:"center",alignSelf:'center',}}>
+                          <FontAwesome  name="calendar" size={17} color={"gray"}/> 
+                        </View>
+                        {/* */}
+                      </View>
+                    </TouchableOpacity>
+                
+                  </View>
+                  <View style={{flexDirection: 'row', padding:5,alignSelf:"center",}} >
+                  <TouchableOpacity style={{
+                        backgroundColor:"#4ABBE5",flex:1,
+                        borderWidth: 1.5,
+                        borderColor:"#4ABBE5",
+                        borderRadius:10,
+                        alignContent:"center",
+                        alignSelf:"center",
+                        alignItems:"center"
+                  }} onPress={on_generate_report}>
+                    <View style={{ flexDirection: "row",}} >
+                    <Text style={{
                       color:"#ffff",
                       padding:5,
-                     
                       textAlign:'center',
                       fontSize:15,
                       fontWeight:'bold',
                       alignContent:"center",
                       alignSelf:"center",
                       alignItems:"center"
-             
-                      }}> <AntDesign  name="sync" size={15} color={"white"}/>  Generate Report</Text> 
-                          </View>
-                        
-                      </TouchableOpacity>
-                    
-                      </View>
-                      </View>
+                    }}> 
+                    <AntDesign  name="sync" size={15} color={"white"}/>  Generate Report</Text> 
+                    </View>
+                  </TouchableOpacity>
+              </View>
+            </View>
       </View>
     <View style={styles.body}>
     <View style={{  flexDirection: 'row',alignContent:"center",alignItems:"center"}} >
@@ -505,11 +474,10 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
               get_images_data ={get_images_data}
               show_modal_main={show_modal_main}
                 navigation={navigation}
-                header_id={item.header_id} 
-                ref_num={item.ref_num}
-                details_status={item.details_status} />
+                dr_header_id={item.dr_header_id} 
+                delivery_number={item.delivery_number} />
               }
-            keyExtractor={item => item.header_id.toString()}
+            keyExtractor={item => item.dr_header_id.toString()}
             ItemSeparatorComponent = { FlatListItemSeparator }
         />
     </View>     
@@ -532,23 +500,38 @@ const CustomProgressBar = ({ visible }) => (
   </Modal>
 );
 
-function RowItem ({navigation,ref_num,header_id,show_modal_main,get_images_data,details_status}) {
+function RowItem ({navigation,delivery_number,dr_header_id,show_modal_main,get_images_data}) {
   return (
       <TouchableOpacity   onPress={() => {
-        show_modal_main(ref_num,header_id,details_status);
-        get_images_data(ref_num);
+        show_modal_main(delivery_number,dr_header_id);
+        get_images_data(delivery_number);
       }}>
           <View style={styles.item}>
             <View style={{flex:3,flexDirection:'row',alignItems:"center"}}>
-              <Text style={styles.title}>{ref_num}</Text>
+              <Text style={styles.title}>{delivery_number}</Text>
             </View>
             <MaterialIcons style={{alignSelf:'center'}} name="keyboard-arrow-right" size={25} color={"#4ABBE5"}/>
           </View>
       </TouchableOpacity>
   );
 }
-const styles = StyleSheet.create({
 
+const pickerStyle = {
+  inputIOS: {
+    color: 'black',
+    paddingTop: 13,
+    paddingHorizontal: 10,
+    paddingBottom: 12,
+  },
+  inputAndroid: {
+    color: 'black',
+    height: 40
+  },
+  placeholderColor: 'black',
+  underline: { borderTopWidth: 0 },
+};
+
+const styles = StyleSheet.create({
   rounded_btn:{
     flex:0.8,
     alignContent:"center",
@@ -558,7 +541,6 @@ const styles = StyleSheet.create({
     borderColor: "gray",
     borderRadius:8
   },
-
     main:{
         alignItems:"center",
         alignContent:"center",
@@ -568,7 +550,6 @@ const styles = StyleSheet.create({
         alignContent:"center",
         flexDirection:'column'
     },
-
     header:{
         alignItems:"center",
         alignContent:"center",
@@ -584,7 +565,7 @@ const styles = StyleSheet.create({
       alignSelf:"center",
       flexDirection:'row',
       padding:2,
-      flex:2,
+      flex:2, //2.5
       alignContent:"center",
   },
     body:{
@@ -592,13 +573,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#DADCDC',
         alignContent:"center",
         alignItems:"center",
-        
     },
     container: {
         flex: 1,
         marginTop:5,
       },
-      
       item: {
         flexDirection:'row',
         paddingLeft:10,
@@ -669,5 +648,28 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         elevation: 10
       },
-       
+      filter_header: {
+        alignContent:"center",
+        alignSelf:"center",
+        textAlign:"center",
+        borderWidth:1,
+        paddingBottom: 11,
+        paddingTop: 11,
+        paddingLeft: 6,
+        paddingRight: 6,
+        borderColor: "gray",
+        borderBottomLeftRadius:8,
+        borderTopLeftRadius:8,
+        flex:0.3,
+      },
+      filter_picker:{
+        flex:0.7,
+        alignContent:"center",
+        alignSelf:"center",
+        borderWidth:1,
+        borderColor: "gray",
+        borderBottomRightRadius:8,
+        borderTopRightRadius:8,
+        height: 44
+      },
 })
