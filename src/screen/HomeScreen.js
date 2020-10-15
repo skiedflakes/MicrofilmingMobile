@@ -470,10 +470,9 @@ function getContent(
         allow_delete_mf,
       });
     } else if (id == 2) {
-      Alert.alert('Under Development');
+      // Alert.alert('Under Development');
       // load Petty Cash
-      // setpc_modalVisible(true);
-      //navigation.navigate("Petty Cash Replenish",{branch_id:branch_id,company_code,company_id,user_id});
+      setpc_modalVisible(true);
     } else if (id == 3) {
       // load items
       Alert.alert('Under Development');
