@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker2 from '@react-native-community/datetimepicker';
 import ImageViewer from 'react-native-image-zoom-viewer';
 // import RNPickerSelect from 'react-native-picker-select';
 
@@ -159,121 +160,108 @@ export default function PettycashLiquidation_main ({navigation:{goBack},navigati
   //modal view images
   const [modal_img_Visible, setmodal_img_Visible] = useState(false);
 
-  //date
-  const [date, setDate] = useState(new Date());
-  const [mode, setMode] = useState('date');
-
-  const [show_end_date, setshow_end_date] = useState(false);
-  const [show_start_date, setshow_start_date] = useState(false);
-
-
-  //setup state start date
-  var start_date ='';
-  var start_raw_date =  new Date(); 
-  var Y = start_raw_date.getFullYear();
-  var mm ='';
-  var dd='';
-
-  if((start_raw_date.getMonth()+1).toString().length>1){
-    mm =start_raw_date.getMonth()+1; 
-  }else{
-    mm ='0'+(start_raw_date.getMonth()+1); 
-  }
-
-  start_date = Y+'-'+mm+'-'+'01';
-
-
-  //setup state end date
-  var end_date =  '';
-  var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0); // get last day of the month
-  var e_Y = lastDay.getFullYear();
-  var e_mm = ''
-  var e_dd =lastDay.getDate();
-
-  if((lastDay.getMonth()+1).toString().length>1){
-    e_mm =lastDay.getMonth()+1; 
-  }else{
-    e_mm ='0'+(lastDay.getMonth()+1); 
-  }
-
-  end_date = e_Y+'-'+e_mm+'-'+e_dd;
-
-  const [selected_start_date, setselected_start_date] =   useState(start_date);
-  const [selected_end_date, setselected_end_date] =   useState( end_date);
-  // const [selected_date, setselected_date] =   useState( new Date().toDateString());
-  const onChange_start_date = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-
-    setDate(currentDate);
-    setshow_start_date(Platform.OS === 'ios' ? true : false);
-    var mdate ='';
-    var Y = selectedDate.getFullYear();
-    var mm ='';
-    var dd='';
-
-    if((selectedDate.getMonth()+1).toString().length>1){
-      mm =selectedDate.getMonth()+1; 
-    }else{
-      mm ='0'+(selectedDate.getMonth()+1); 
-    }
-
-    if(selectedDate.getDate().toString().length==1){
-      dd ='0'+selectedDate.getDate(); 
-    }else{
-      dd =selectedDate.getDate(); 
-    }
+   //date
+   const [date, setDate] = useState(new Date());
+   const [mode, setMode] = useState('date');
+   const [mode2, setMode2] = useState('date');
  
-    mdate = Y+'-'+mm+'-'+dd;
-    setselected_start_date(mdate);
-  };
-  
-  const onChange_end_date = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-
-    setDate(currentDate);
-    setshow_end_date(Platform.OS === 'ios' ? true : false);
-    var mdate ='';
-    var Y = selectedDate.getFullYear();
-    var mm ='';
-    var dd='';
-
-    if((selectedDate.getMonth()+1).toString().length>1){
-      mm =selectedDate.getMonth()+1; 
-    }else{
-      mm ='0'+(selectedDate.getMonth()+1); 
-    }
-
-    if(selectedDate.getDate().toString().length==1){
-      dd ='0'+selectedDate.getDate(); 
-    }else{
-      dd =selectedDate.getDate(); 
-    }
+   const [show_end_date, setshow_end_date] = useState(false);
  
-    mdate = Y+'-'+mm+'-'+dd;
-    setselected_end_date(mdate);
-  };
-
-  const showMode = currentMode => {
-    setshow_start_date(true);
-    setMode(currentMode);
-  };
-  const showMode2 = currentMode => {
-    setshow_end_date(true);
-    setMode(currentMode);
-  };
-
-  const showDatepicker = () => {
-    showMode('date');
-  };
-
-  const showDatepicker2 = () => {
-    showMode2('date');
-  };
-
-  const showTimepicker = () => {
-    showMode('time');
-  };
-
+   const [show_start_date, setshow_start_date] = useState(false);
+ 
+   //setup state start date
+   var start_date = '';
+   var start_raw_date = new Date();
+   var Y = start_raw_date.getFullYear();
+   var mm = '';
+   var dd = '';
+ 
+   if ((start_raw_date.getMonth() + 1).toString().length > 1) {
+     mm = start_raw_date.getMonth() + 1;
+   } else {
+     mm = '0' + (start_raw_date.getMonth() + 1);
+   }
+ 
+   start_date = Y + '-' + mm + '-' + '01';
+ 
+   //setup state end date
+   var end_date = '';
+   var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0); // get last day of the month
+   var e_Y = lastDay.getFullYear();
+   var e_mm = '';
+   var e_dd = lastDay.getDate();
+ 
+   if ((lastDay.getMonth() + 1).toString().length > 1) {
+     e_mm = lastDay.getMonth() + 1;
+   } else {
+     e_mm = '0' + (lastDay.getMonth() + 1);
+   }
+ 
+   end_date = e_Y + '-' + e_mm + '-' + e_dd;
+ 
+   const [selected_start_date, setselected_start_date] = useState(start_date);
+   const [selected_end_date, setselected_end_date] = useState(end_date);
+   // const [selected_date, setselected_date] =   useState( new Date().toDateString());
+   const onChange_start_date = (event, selectedDate) => {
+     setshow_start_date(false);
+     const currentDate = selectedDate || date;
+     setDate(currentDate);
+     var mdate = '';
+     var Y = selectedDate.getFullYear();
+     var mm = '';
+     var dd = '';
+ 
+     if ((selectedDate.getMonth() + 1).toString().length > 1) {
+       mm = selectedDate.getMonth() + 1;
+     } else {
+       mm = '0' + (selectedDate.getMonth() + 1);
+     }
+ 
+     if (selectedDate.getDate().toString().length == 1) {
+       dd = '0' + selectedDate.getDate();
+     } else {
+       dd = selectedDate.getDate();
+     }
+ 
+     mdate = Y + '-' + mm + '-' + dd;
+     setselected_start_date(mdate);
+   };
+ 
+   const onChange_end_date = (event, selectedDate) => {
+     setshow_end_date(false);
+     const currentDate = selectedDate || date;
+     setDate(currentDate);
+     var mdate = '';
+     var Y = selectedDate.getFullYear();
+     var mm = '';
+     var dd = '';
+ 
+     if ((selectedDate.getMonth() + 1).toString().length > 1) {
+       mm = selectedDate.getMonth() + 1;
+     } else {
+       mm = '0' + (selectedDate.getMonth() + 1);
+     }
+ 
+     if (selectedDate.getDate().toString().length == 1) {
+       dd = '0' + selectedDate.getDate();
+     } else {
+       dd = selectedDate.getDate();
+     }
+ 
+     mdate = Y + '-' + mm + '-' + dd;
+     setselected_end_date(mdate);
+   };
+ 
+   const showDatepicker = () => {
+     setMode('date');
+     setshow_start_date(true);
+   };
+ 
+   const showDatepicker2 = () => {
+     setMode2('date');
+     setshow_end_date(true);
+   };
+ 
   return (
     <View style={styles.main}>
 
@@ -367,72 +355,77 @@ export default function PettycashLiquidation_main ({navigation:{goBack},navigati
 
         <View style={styles.header_date} >
             <View style={{flexDirection:"column",flex:1}}>
+            <View style={{flexDirection: 'row', padding: 5}}>
+            <Text style={styles.text_header}>Start Date</Text>
+            {show_start_date && (
+              <DateTimePicker2
+                testID="dateTimePicker2"
+                value={date}
+                mode={mode}
+                is24Hour={true}
+                display="default"
+                onChange={onChange_start_date}
+              />
+            )}
+            <TouchableOpacity
+              onPress={showDatepicker}
+              style={styles.date_picker}>
+              <View style={{flexDirection: 'row'}}>
+                <Text
+                  style={{flex: 0.8, alignSelf: 'center', textAlign: 'center'}}>
+                  {selected_start_date}
+                </Text>
+                <View
+                  style={{
+                    flex: 0.2,
+                    flexDirection: 'row-reverse',
+                    alignContent: 'center',
+                    alignContent: 'center',
+                    alignSelf: 'center',
+                  }}>
+                  <FontAwesome name="calendar" size={17} color={'gray'} />
+                </View>
 
-                  {/* <View style={{flexDirection: 'row', padding:5}} >
-                    <Text style={styles.filter_header}>Filter</Text>
-                    <View style={styles.filter_picker}>
-                      <RNPickerSelect
-                          placeholder={{
-                              label: 'All',
-                              value: '',
-                          }}
-                          style={pickerStyle}
-                          useNativeAndroidPickerStyle={false}
-                          onValueChange={(value) => setFilter(value)}
-                          items={[
-                          { label: 'Declared', value: 'd' },
-                          { label: 'Undeclared', value: 'ud' },
-                        ]}
-                      />
-                    </View>
-                  </View> */}
+                {/* */}
+              </View>
+            </TouchableOpacity>
+          </View>
+          <View style={{flexDirection: 'row', padding: 5}}>
+            <Text style={styles.text_header}>End Date</Text>
+            {show_end_date && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={date}
+                mode={mode}
+                is24Hour={true}
+                display="default"
+                onChange={onChange_end_date}
+              />
+            )}
+            <TouchableOpacity
+              onPress={showDatepicker2}
+              style={styles.date_picker}>
+              <View style={{flexDirection: 'row'}}>
+                <Text
+                  style={{flex: 0.8, alignSelf: 'center', textAlign: 'center'}}>
+                  {selected_end_date}
+                </Text>
+                <View
+                  style={{
+                    flex: 0.2,
+                    flexDirection: 'row-reverse',
+                    alignContent: 'center',
+                    alignContent: 'center',
+                    alignSelf: 'center',
+                  }}>
+                  <FontAwesome name="calendar" size={17} color={'gray'} />
+                </View>
 
-                  <View style={{  flexDirection: 'row', padding:5,}} >
-                  <Text style={styles.text_header}>Start Date</Text>
-                    {show_start_date && (
-                    <DateTimePicker
-                      testID="dateTimePicker"
-                      value={date}
-                      mode={mode}
-                      is24Hour={true}
-                      display="default"
-                      onChange={onChange_start_date}
-                    />
-                  )}
-                    <TouchableOpacity onPress={showDatepicker} style={styles.date_picker}>
-                      <View style={{ flexDirection: "row",}} >
-                    <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_start_date}</Text>
-                        <View style={{flex:0.2,flexDirection:"row-reverse",alignContent:'center',alignContent:"center",alignSelf:'center',}}>
-                          <FontAwesome  name="calendar" size={17} color={"gray"}/> 
-                        </View>
-                        {/* */}
-                      </View>
-                    </TouchableOpacity>
-                  </View>
+                {/* */}
+              </View>
+            </TouchableOpacity>
+          </View>
 
-                  <View style={{flexDirection: 'row', padding:5,}} >
-                  <Text style={styles.text_header}>End Date</Text>
-                    {show_end_date && (
-                    <DateTimePicker
-                      testID="dateTimePicker"
-                      value={date}
-                      mode={mode}
-                      is24Hour={true}
-                      display="default"
-                      onChange={onChange_end_date}
-                    />
-                  )}
-                    <TouchableOpacity onPress={showDatepicker2} style={styles.date_picker}>
-                      <View style={{ flexDirection: "row",}} >
-                    <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_end_date}</Text>
-                        <View style={{flex:0.2,flexDirection:"row-reverse",alignContent:'center',alignContent:"center",alignSelf:'center',}}>
-                          <FontAwesome  name="calendar" size={17} color={"gray"}/> 
-                        </View>
-                        {/* */}
-                      </View>
-                    </TouchableOpacity>
-                
-                  </View>
                   <View style={{flexDirection: 'row', padding:5,alignSelf:"center",}} >
                   <TouchableOpacity style={{
                         backgroundColor:"#4ABBE5",flex:1,
