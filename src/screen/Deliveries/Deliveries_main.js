@@ -105,7 +105,6 @@ export default function Deliveries_main({
   const [selected_dr_number, setselected_dr_number] = useState('');
   const [selected_dr_id, setselected_dr_id] = useState('');
 
-  const [menu_list, setMenu_list] = React.useState(null);
   const [img_list, setimg_list] = React.useState(null);
   const [content, setcontent] = React.useState(null);
 
@@ -144,7 +143,6 @@ export default function Deliveries_main({
             te_id: item.te_id,
           };
         });
-        setMenu_list(data);
         setFilteredDataSource(data);
         setMasterDataSource(data);
       })

@@ -42,24 +42,14 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
     }, [])
   );
 
-  const on_generate_report = () =>{
-    get_main_data();
-  }
-
   //selected
-  const[selected_ref_num,setselected_ref_num] = useState('');
-  const[selected_header_id,setselected_header_id] = useState('');
-  const[details_status,setdetails_status] = useState('');
+  const[selected_chart_name,setselected_chart_name] = useState('');
+  const[selected_detail_id,setselected_detail_id] = useState('');
+  const[selected_doc_num,setselected_doc_num] = useState('');
+  const[selected_chart_id,setselected_chart_id] = useState('');
 
   const [menu_list, setMenu_list] = React.useState(null);
   const [img_list, setimg_list] = React.useState(null);
-  const [content, setcontent] = React.useState(null);
-
-  const logout = () =>{
-    goBack();
-    AsyncStorage.clear();
-    Alert.alert('offline storage cleared');
-  }
 
   const get_main_data= () =>{
     setSpinner(true)
@@ -67,8 +57,6 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
     formData.append('company_code', company_code);
     formData.append('company_id', company_id);
     formData.append('header_id', header_id); 
-
-    console.log(user_id+" "+company_code+" "+company_id+" "+branch_id+" "+header_id+" "+selected_end_date)
 
     fetch(global.global_url+'/pettycash_request/get_pc_request_data_details.php', {
     method: 'POST',
@@ -83,9 +71,11 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
       setSpinner(false)
     var data = responseJson.array_data.map(function(item,index) {
         return {
-          header_id:item.pettycash_detail_id,
-          ref_num: item.chart,
-          details_status: item.amount
+          detail_id:item.pettycash_detail_id,
+          amount:item.amount,
+          doc_num:item.doc_num,
+          chart_id: item.gchart_id,
+          chart_name: item.chart,
         };
         });
         console.log(responseJson);
@@ -99,20 +89,21 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
   }
 
 
-  const get_images_data= (reference_number) =>{
+  const get_images_data= (details_id) =>{
     setimage_data_loaded(false);
     setimg_list('');
     const formData = new FormData();
     formData.append('company_code', company_code);
     formData.append('company_id', company_id);
     formData.append('branch_id', branch_id); 
-    formData.append('reference_number', reference_number);
+    formData.append('reference_number', ref_num);
     formData.append('module',module );
+    formData.append('mf_reference_id',details_id );
     formData.append('primary_url', global.notes_web_directory);
 
-
-
-    fetch(global.global_url+'/pettycash_request/get_micro_filming_img.php', {
+    console.log(ref_num+" "+company_code+" "+company_id+" "+ branch_id+" "+module+" "+global.notes_web_directory )
+     
+    fetch(global.global_url+'/pettycash_request/get_micro_filming_img_details.php', {
     method: 'POST',
     headers: {
     'Accept': 'application/json',
@@ -152,143 +143,16 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
   //main modal
   const [modal_main_Visible, setmodal_main_Visible] = useState(false);
 
-  const show_modal_main = (ref_num,header_id,details_status) =>{
+  const show_modal_main = (chart_name,detail_id,doc_num,chart_id) =>{
     setmodal_main_Visible(true);
-    setselected_ref_num(ref_num);
-    setselected_header_id(header_id);
-    setdetails_status(details_status);
+    setselected_chart_name(chart_name);
+    setselected_detail_id(detail_id);
+    setselected_doc_num(doc_num);
+    setselected_chart_id(chart_id);
   }
 
   //modal view images
   const [modal_img_Visible, setmodal_img_Visible] = useState(false);
-
-
-  //date
-  const [date, setDate] = useState(new Date());
-  const [mode, setMode] = useState('date');
-
-  
-
-  const [show_end_date, setshow_end_date] = useState(false);
-
-  const [show_start_date, setshow_start_date] = useState(false);
-
-
-        //setup state start date
-        var start_date ='';
-        var start_raw_date =  new Date(); 
-        var Y = start_raw_date.getFullYear();
-        var mm ='';
-        var dd='';
-    
-        if((start_raw_date.getMonth()+1).toString().length>1){
-          mm =start_raw_date.getMonth()+1; 
-        }else{
-          mm ='0'+(start_raw_date.getMonth()+1); 
-        }
-     
-        start_date = Y+'-'+mm+'-'+'01';
-   
-   
-   
-        //setup state end date
-        var end_date =  '';
-        var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0); // get last day of the month
-        var e_Y = lastDay.getFullYear();
-        var e_mm = ''
-        var e_dd =lastDay.getDate();
-   
-        if((lastDay.getMonth()+1).toString().length>1){
-         e_mm =lastDay.getMonth()+1; 
-       }else{
-         e_mm ='0'+(lastDay.getMonth()+1); 
-       }
-   
-       end_date = e_Y+'-'+e_mm+'-'+e_dd;
-
-  const [selected_start_date, setselected_start_date] =   useState(start_date);
-  const [selected_end_date, setselected_end_date] =   useState( end_date);
-  // const [selected_date, setselected_date] =   useState( new Date().toDateString());
-  const onChange_start_date = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-
-    setDate(currentDate);
-    setshow_start_date(Platform.OS === 'ios' ? true : false);
-    var mdate ='';
-    var Y = selectedDate.getFullYear();
-    var mm ='';
-    var dd='';
-
-    if((selectedDate.getMonth()+1).toString().length>1){
-      mm =selectedDate.getMonth()+1; 
-    }else{
-      mm ='0'+(selectedDate.getMonth()+1); 
-    }
-
-    if(selectedDate.getDate().toString().length==1){
-      dd ='0'+selectedDate.getDate(); 
-    }else{
-      dd =selectedDate.getDate(); 
-    }
- 
-    mdate = Y+'-'+mm+'-'+dd;
-    setselected_start_date(mdate);
-    
-  };
-
-  
-  const onChange_end_date = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-
-    setDate(currentDate);
-    setshow_end_date(Platform.OS === 'ios' ? true : false);
-    var mdate ='';
-    var Y = selectedDate.getFullYear();
-    var mm ='';
-    var dd='';
-
-    if((selectedDate.getMonth()+1).toString().length>1){
-      mm =selectedDate.getMonth()+1; 
-    }else{
-      mm ='0'+(selectedDate.getMonth()+1); 
-    }
-
-    if(selectedDate.getDate().toString().length==1){
-      dd ='0'+selectedDate.getDate(); 
-    }else{
-      dd =selectedDate.getDate(); 
-    }
- 
-    mdate = Y+'-'+mm+'-'+dd;
-    setselected_end_date(mdate);
-    
-  };
-
-
-
-  const showMode = currentMode => {
-    setshow_start_date(true);
-    setMode(currentMode);
-  };
-  const showMode2 = currentMode => {
-    setshow_end_date(true);
-    setMode(currentMode);
-  };
-
-  const showDatepicker = () => {
-    showMode('date');
-  };
-
-  const showDatepicker2 = () => {
-    showMode2('date');
-  };
-
-  const showTimepicker = () => {
-    showMode('time');
-  };
-
-
-
 
 
   return (
@@ -312,10 +176,10 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
                    <View style={styles.main_modalView}>
               <View style={{flexDirection: 'row', padding:2,}} >
             
-              <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_ref_num}</Text>
+              <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_chart_name}</Text>
               </View>
               <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-                  <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Upload Request',{ref_num:selected_ref_num,user_id:user_id});}} style={styles.rounded_btn}>
+                  <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Upload Request details',{chart_id:selected_chart_id,doc_num:selected_doc_num,ref_num:ref_num,detail_id:selected_detail_id,chart_name:selected_chart_name,user_id:user_id});}} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
                       <MCI  name="image-plus" size={20} color={"black"}/> 
                       <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>Add Image</Text>
@@ -329,19 +193,8 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
                       <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>View Image</Text>
                     </View>
                   </TouchableOpacity>
+
                </View>
-
-                {details_status>0?
-                <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-                  <TouchableOpacity  onPress={() => {image_found? setmodal_img_Visible(true):Alert.alert('No image Available') }} style={styles.rounded_btn}>
-                    <View style={{ flexDirection: "row",}} >
-                      <MaterialIcons  name="image-search" size={20} color={"black"}/> 
-                      <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>Show Records</Text>
-                    </View>
-                  </TouchableOpacity>
-               </View>:null}
-
-
                <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
                   <TouchableOpacity  onPress={() => {setmodal_main_Visible(false);}} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
@@ -416,13 +269,15 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
               ({ item }) => 
               <RowItem
               get_images_data ={get_images_data}
-              show_modal_main={show_modal_main}
+              show_modal_main={show_modal_main}  
                 navigation={navigation}
-                header_id={item.header_id} 
-                ref_num={item.ref_num}
-                details_status={item.details_status} />
+                doc_num={item.doc_num} 
+                detail_id={item.detail_id} 
+                chart_name={item.chart_name}
+                chart_id={item.chart_id}
+               />
               }
-            keyExtractor={item => item.header_id.toString()}
+            keyExtractor={item => item.detail_id.toString()}
             ItemSeparatorComponent = { FlatListItemSeparator }
         />
     </View>     
@@ -445,16 +300,18 @@ const CustomProgressBar = ({ visible }) => (
   </Modal>
 );
 
-function RowItem ({navigation,ref_num,header_id,show_modal_main,get_images_data,details_status}) {
+function RowItem ({navigation,chart_name,detail_id,show_modal_main,get_images_data,doc_num,chart_id}) {
   return (
       <TouchableOpacity   onPress={() => {
-        show_modal_main(ref_num,header_id,details_status);
-        get_images_data(ref_num);
+        show_modal_main(chart_name,detail_id,doc_num,chart_id);
+        get_images_data(detail_id);
       }}>
           <View style={styles.item}>
-            <View style={{flex:3,flexDirection:'row',alignItems:"center"}}>
-              <Text style={styles.title}>{ref_num}</Text>
-            </View>
+            <View style={{flex: 3}}>
+                <Text style={styles.title}>{chart_name}</Text>
+                <Text style={styles.text_inv}>Doc #: {doc_num}</Text>
+              </View>
+
             <MaterialIcons style={{alignSelf:'center'}} name="keyboard-arrow-right" size={25} color={"#4ABBE5"}/>
           </View>
       </TouchableOpacity>
@@ -521,9 +378,10 @@ const styles = StyleSheet.create({
         alignItems:"center"
       },
       title: {
-        color:'#4A4A4A',
-        padding:15,
-        fontSize: 20,
+        color: '#4A4A4A',
+        padding: 5,
+        fontSize: 18,
+        fontWeight: 'bold',
       },
       text_header: {
         alignContent:"center",
@@ -581,6 +439,10 @@ const styles = StyleSheet.create({
         shadowOpacity: 1,
         shadowRadius: 3.84,
         elevation: 10
+      }, text_inv: {
+        color: '#4A4A4A',
+        padding: 5,
+        fontSize: 15,
       },
        
 })

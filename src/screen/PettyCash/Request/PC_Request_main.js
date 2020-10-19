@@ -11,6 +11,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import DateTimePicker2 from '@react-native-community/datetimepicker';
 import ImageViewer from 'react-native-image-zoom-viewer';
+import {SearchBar} from 'react-native-elements';
 
 const FlatListItemSeparator = () => {
     return (
@@ -92,7 +93,9 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
         };
         });
         console.log(data);
-        setMenu_list(data);
+        setFilteredDataSource(data);
+        setMasterDataSource(data);
+       
     }).catch((error) => {
 
     console.error(error);
@@ -269,7 +272,33 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
   };
 
 
+  //search function
+  const [search, setSearch] = useState('');
+  const [filteredDataSource, setFilteredDataSource] = useState([]);
+  const [masterDataSource, setMasterDataSource] = useState([]);
 
+  const searchFilterFunction = (text) => {
+    // Check if searched text is not blank
+    if (text) {
+      // Inserted text is not blank
+      // Filter the masterDataSource
+      // Update FilteredDataSource
+      const newData = masterDataSource.filter(function (item) {
+        const itemData = item.ref_num
+          ? item.ref_num.toUpperCase()
+          : ''.toUpperCase();
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
+      setFilteredDataSource(newData);
+      setSearch(text);
+    } else {
+      // Inserted text is blank
+      // Update FilteredDataSource with masterDataSource
+      setFilteredDataSource(masterDataSource);
+      setSearch(text);
+    }
+  };
 
 
   return (
@@ -316,7 +345,7 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
                 <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
                   <TouchableOpacity  onPress={() => {setmodal_main_Visible(false); navigation.navigate('Petty Cash Request details',{ref_num:selected_ref_num,header_id:selected_header_id,company_id: company_id,branch_id: branch_id,company_code: company_code,user_id:user_id});}} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
-                      <MaterialIcons  name="image-search" size={20} color={"black"}/> 
+                      <AntDesign  name="book" size={20} color={"black"}/> 
                       <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>Show Records</Text>
                     </View>
                   </TouchableOpacity>
@@ -387,6 +416,18 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
       </View>
         <View style={styles.header_date} >
             <View style={{flexDirection:"column",flex:1}}>
+              <View style={{flexDirection: 'column'}}>
+                <SearchBar
+                  containerStyle={{backgroundColor: 'white'}}
+                  onChangeText={(text) => searchFilterFunction(text)}
+                  onClear={(text) => searchFilterFunction('')}
+                  value={search}
+                  placeholder="Search Here..."
+                  inputStyle={{color: 'black'}}
+                  round
+                  lightTheme
+                />
+            </View>
             <View style={{flexDirection: 'row', padding: 5}}>
             <Text style={styles.text_header}>Start Date</Text>
             {show_start_date && (
@@ -485,7 +526,6 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
                           </View>
                         
                       </TouchableOpacity>
-                    
                       </View>
                       </View>
       </View>
@@ -496,7 +536,7 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
             style={{alignContent:"center",margin:2}}
-            data={menu_list}
+            data={filteredDataSource}
             renderItem={
               ({ item }) => 
               <RowItem
@@ -582,7 +622,7 @@ const styles = StyleSheet.create({
       alignSelf:"center",
       flexDirection:'row',
       padding:2,
-      flex:2,
+      flex:3,
       alignContent:"center",
   },
     body:{
