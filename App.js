@@ -21,8 +21,8 @@ function App() {
     // global.global_url = 'http://192.168.8.106/PigNotesMobile_php/';
 
     //mylocalhost
-    global.global_url = 'http://192.168.2.110/microfilming_localhost/';
-    global.notes_web_directory = 'http://192.168.2.110/notes/';
+    global.global_url = 'http://192.168.2.102/microfilming/';
+    global.notes_web_directory = 'http://192.168.2.102/notes/';
 
     // dev url
     // global.global_url = 'https://mobile.wdysolutions.com/microfilming/main/';
