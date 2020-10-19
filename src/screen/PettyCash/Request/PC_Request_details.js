@@ -88,21 +88,17 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
     });
   }
 
-
-  const get_images_data= (details_id) =>{
+  const get_images_data= (reference_number) =>{
     setimage_data_loaded(false);
     setimg_list('');
     const formData = new FormData();
     formData.append('company_code', company_code);
     formData.append('company_id', company_id);
     formData.append('branch_id', branch_id); 
-    formData.append('reference_number', ref_num);
+    formData.append('reference_number', reference_number);
     formData.append('module',module );
-    formData.append('mf_reference_id',details_id );
     formData.append('primary_url', global.notes_web_directory);
 
-    console.log(ref_num+" "+company_code+" "+company_id+" "+ branch_id+" "+module+" "+global.notes_web_directory )
-     
     fetch(global.global_url+'/pettycash_request/get_micro_filming_img_details.php', {
     method: 'POST',
     headers: {
@@ -116,8 +112,8 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
 
     var data = responseJson.array_data.map(function(item,index) {
         return {
-          url:item.slug,
-          
+          id: item.id,
+          url: item.slug,
         };
         });
 
@@ -154,7 +150,52 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
   //modal view images
   const [modal_img_Visible, setmodal_img_Visible] = useState(false);
 
+  //select delete image functiuon
+  const [find_image_index, setfind_image_index] = useState('');
+  const [selected_image_id, setselected_image_id] = useState('');
 
+   //delete image function
+   const view_image = () => {
+    setmodal_img_Visible(true);
+    setselected_image_id(img_list[0].id);
+  };
+ 
+  const delete_image = (id) => {
+    if (allow_delete_mf == 1) {
+      setSpinner(true);
+      const formData = new FormData();
+      formData.append('company_code', company_code);
+      formData.append('company_id', company_id);
+      formData.append('branch_id', branch_id);
+      formData.append('id', id);
+      fetch(global.global_url + '/delete_micro_filming.php', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'multipart/form-data',
+        },
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((responseJson) => {
+          setSpinner(false);
+          if (responseJson == 1) {
+            setmodal_img_Visible(!modal_img_Visible);
+            setmodal_main_Visible(false);
+            Alert.alert('Delete Success!');
+          } else {
+            Alert.alert('Something went wrong try again');
+          }
+        })
+        .catch((error) => {
+          setSpinner(false);
+          console.error(error);
+          Alert.alert('Internet Connection Error');
+        });
+    } else {
+      Alert.alert('User Account restricted');
+    }
+  };
   return (
     <View style={styles.main}>
 
@@ -235,7 +276,12 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
               </View>
             </TouchableHighlight>
             <ImageViewer imageUrls={img_list}
-            loadingRender={console.log("rendering")}/>
+            loadingRender={console.log("rendering")}
+            onChange={(index) => {
+              setselected_image_id(img_list[index].id);
+               // console.log(img_list[index].id)
+             }}
+            />
 
             </Modal>
               {/* end image modal */}
