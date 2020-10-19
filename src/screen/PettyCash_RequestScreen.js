@@ -10,14 +10,14 @@ import PC_Request_details from './PettyCash/Request/PC_Request_details';
 const Stack = createStackNavigator();
 export default function PettyCash_RequetScreen({route}) {
   //global params for instant loading
-  const { company_id,branch_id,company_code,user_id } = route.params;
+  const { company_id,branch_id,company_code,user_id, allow_delete_mf } = route.params;
 
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="Petty Cash Request"
         component={PC_Request_main}
-        initialParams={{ company_id: company_id,branch_id: branch_id,company_code: company_code,user_id:user_id }}
+        initialParams={{ company_id: company_id,branch_id: branch_id,company_code: company_code,user_id:user_id,allow_delete_mf: allow_delete_mf,}}
         options={{ headerShown: false }}
       />
 

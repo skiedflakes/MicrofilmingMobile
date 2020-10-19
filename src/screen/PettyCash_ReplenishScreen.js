@@ -15,7 +15,7 @@ export default function PettyCash_ReplenishScreen({route}) {
       <Stack.Screen
         name="Petty Cash Replenish"
         component={PettycashReplenish_main}
-        initialParams={{ company_id: company_id,branch_id: branch_id,company_code: company_code,user_id:user_id }}
+        initialParams={{ company_id: company_id,branch_id: branch_id,company_code: company_code,user_id:user_id,allow_delete_mf: allow_delete_mf,}}
         options={{ headerShown: false }}
       />
 

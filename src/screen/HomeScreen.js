@@ -196,6 +196,7 @@ export default function HomeScreen({navigation: {goBack}, navigation, route}) {
                     company_code,
                     company_id,
                     user_id,
+                    allow_delete_mf,
                   });
                 }}
                 style={styles.rounded_btn}>
@@ -216,6 +217,7 @@ export default function HomeScreen({navigation: {goBack}, navigation, route}) {
                     company_code,
                     company_id,
                     user_id,
+                    allow_delete_mf,
                   });
                 }}
                 style={styles.rounded_btn}>
@@ -236,6 +238,7 @@ export default function HomeScreen({navigation: {goBack}, navigation, route}) {
                     company_code,
                     company_id,
                     user_id,
+                    allow_delete_mf,
                   });
                 }}
                 style={styles.rounded_btn}>
