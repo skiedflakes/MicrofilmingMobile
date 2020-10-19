@@ -28,7 +28,7 @@ const FlatListItemSeparator = () => {
 export default function PettycashReplenish_main ({navigation:{goBack},navigation,route}) {
   
   //global params for instant loading
-  const { company_id,branch_id,company_code,user_id } = route.params;
+  const { company_id,branch_id,company_code,user_id,allow_delete_mf } = route.params;
   const module = 'PFR'; // module
   const [image_data_loaded,setimage_data_loaded] = useState(false);
   const [image_found,setimage_found]= useState(false);

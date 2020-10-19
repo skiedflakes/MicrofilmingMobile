@@ -8,7 +8,7 @@ import PettycashLiquidation_upload_main from './PettyCash/Liquidation/PettycashL
 const Stack = createStackNavigator();
 export default function PettyCash_ReplenishScreen({route}) {
   //global params for instant loading
-  const { company_id,branch_id,company_code,user_id } = route.params;
+  const { company_id,branch_id,company_code,user_id,allow_delete_mf } = route.params;
 
   return (
     <Stack.Navigator>
@@ -26,7 +26,6 @@ export default function PettyCash_ReplenishScreen({route}) {
         options={{ headerShown: false }}
       />
 
-      
     </Stack.Navigator>
   );
 }
