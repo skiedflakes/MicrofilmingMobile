@@ -1,113 +1,77 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
+import React, {useState, useEffect, Alert} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import HomeScreen from './src/screen/HomeScreen';
+import LoginScreen from './src/screen/LoginScreen';
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import DeliveriesScreen from './src/screen/DeliveriesScreen';
 
-const App: () => React$Node = () => {
+//petty cash
+import PettyCash_ReplenishScreen from './src/screen/PettyCash_ReplenishScreen';
+import PettyCash_RequestScreen from './src/screen/PettyCash_RequestScreen';
+import PettyCash_LiquidationScreen from './src/screen/PettyCash_LiquidationScreen';
+
+import TestScreen from './src/screen/TestScreen';
+const Stack = createStackNavigator();
+
+function App() {
+  useEffect(() => {
+    // global.global_url = 'https://mobile.wdysolutions.com/notes_verifier/main/';
+    //global.global_url = 'http://192.168.254.185/PigNotesMobile/';
+    // global.global_url = 'http://192.168.8.106/PigNotesMobile_php/';
+
+    //mylocalhost
+    global.global_url = 'http://192.168.2.102/microfilming/';
+    global.notes_web_directory = 'http://192.168.2.102/notes/';
+
+    // dev url
+    // global.global_url = 'https://mobile.wdysolutions.com/microfilming/main/';
+    // global.notes_web_directory = 'https://notes.wdysolutions.com/';
+  });
   return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
+    <NavigationContainer>
+      <Stack.Navigator>
+        {/* main */}
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{headerShown: false}}
+        />
+        {/* main end*/}
+        <Stack.Screen
+          name="Deliveries"
+          component={DeliveriesScreen}
+          options={{headerShown: false}}
+        />
+
+        {/* petty cash */}
+        <Stack.Screen
+          name="Petty Cash Replenish"
+          component={PettyCash_ReplenishScreen}
+          options={{headerShown: false}}
+        />
+
+        <Stack.Screen
+          name="Petty Cash Request"
+          component={PettyCash_RequestScreen}
+          options={{headerShown: false}}
+        />
+
+        <Stack.Screen
+          name="Petty Cash Liquidation"
+          component={PettyCash_LiquidationScreen}
+          options={{headerShown: false}}
+        />
+        {/* petty cash end*/}
+
+        <Stack.Screen name="Test Screen" component={TestScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
-};
-
-const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
-  },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  body: {
-    backgroundColor: Colors.white,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
-});
-
+}
 export default App;
