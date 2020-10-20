@@ -26,7 +26,7 @@ const FlatListItemSeparator = () => {
 export default function PC_Request_details ({navigation:{goBack},navigation,route}) {
   
   //global params for instant loading
-  const {header_id,ref_num,company_id,branch_id,company_code,user_id } = route.params;
+  const {header_id,ref_num,company_id,branch_id,company_code,user_id,allow_delete_mf} = route.params;
   const module = 'PCV'; // module
   const [image_data_loaded,setimage_data_loaded] = useState(false);
   const [image_found,setimage_found]= useState(false);
@@ -87,18 +87,20 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
     Alert.alert('Internet Connection Error');
     });
   }
-
-  const get_images_data= (reference_number) =>{
+  const get_images_data= (details_id) =>{
     setimage_data_loaded(false);
     setimg_list('');
     const formData = new FormData();
     formData.append('company_code', company_code);
     formData.append('company_id', company_id);
     formData.append('branch_id', branch_id); 
-    formData.append('reference_number', reference_number);
+    formData.append('reference_number', ref_num);
     formData.append('module',module );
+    formData.append('mf_reference_id',details_id );
     formData.append('primary_url', global.notes_web_directory);
 
+    console.log(ref_num+" "+company_code+" "+company_id+" "+ branch_id+" "+module+" "+global.notes_web_directory )
+     
     fetch(global.global_url+'/pettycash_request/get_micro_filming_img_details.php', {
     method: 'POST',
     headers: {
@@ -135,7 +137,6 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
     Alert.alert('Internet Connection Error');
     });
   }
-
   //main modal
   const [modal_main_Visible, setmodal_main_Visible] = useState(false);
 
@@ -265,6 +266,7 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
                 setmodal_img_Visible(!modal_img_Visible);
               }}
             >
+            <View style={{flexDirection: 'row-reverse', backgroundColor: 'black'}}>
             <TouchableHighlight
               style={{ ...styles.openButton, backgroundColor: "black" }}
               onPress={() => {
@@ -275,11 +277,26 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
               <AntDesign  name="closecircleo" size={20} color={"white"}/> 
               </View>
             </TouchableHighlight>
+
+            <TouchableHighlight
+            style={{...styles.openButton, backgroundColor: 'black'}}
+            onPress={() => {
+            //  console.log(selected_image_id);
+            delete_image(selected_image_id);
+            }}>
+          
+            <View style={{flexDirection: 'row-reverse', padding: 10}}>
+              <AntDesign name="delete" size={20} color={'white'} />
+            </View>
+          </TouchableHighlight>
+          </View>
+
+
             <ImageViewer imageUrls={img_list}
             loadingRender={console.log("rendering")}
             onChange={(index) => {
               setselected_image_id(img_list[index].id);
-               // console.log(img_list[index].id)
+              //  console.log(img_list[index].id)
              }}
             />
 
