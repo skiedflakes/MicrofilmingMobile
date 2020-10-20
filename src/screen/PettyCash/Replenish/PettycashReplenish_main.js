@@ -490,13 +490,10 @@ export default function PettycashReplenish_main({
 
         <ImageViewer
           imageUrls={img_list}
-          loadingRender={console.log('rendering')}
-          onChange={(index) => {
+            onChange={(index) => {
             setselected_image_id(img_list[index].id);
              // console.log(img_list[index].id)
-           }}
-
-        />
+           }}/>
       </Modal>
       {/* end image modal */}
 
