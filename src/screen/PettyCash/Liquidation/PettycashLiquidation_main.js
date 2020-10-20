@@ -7,7 +7,7 @@ import MCI from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-
+import {SearchBar} from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import DateTimePicker2 from '@react-native-community/datetimepicker';
 import ImageViewer from 'react-native-image-zoom-viewer';
@@ -35,6 +35,34 @@ export default function PettycashLiquidation_main ({navigation:{goBack},navigati
   const [spinner, setSpinner] = React.useState(false);
 
   //const [filter, setFilter] = React.useState('');
+
+  //search function
+  const [search, setSearch] = useState('');
+  const [filteredDataSource, setFilteredDataSource] = useState([]);
+  const [masterDataSource, setMasterDataSource] = useState([]);
+
+  const searchFilterFunction = (text) => {
+    // Check if searched text is not blank
+    if (text) {
+      // Inserted text is not blank
+      // Filter the masterDataSource
+      // Update FilteredDataSource
+      const newData = masterDataSource.filter(function (item) {
+        const itemData = item.delivery_number
+          ? item.delivery_number.toUpperCase()
+          : ''.toUpperCase();
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
+      setFilteredDataSource(newData);
+      setSearch(text);
+    } else {
+      // Inserted text is blank
+      // Update FilteredDataSource with masterDataSource
+      setFilteredDataSource(masterDataSource);
+      setSearch(text);
+    }
+  };
 
   //main function
   useFocusEffect(
@@ -95,6 +123,8 @@ export default function PettycashLiquidation_main ({navigation:{goBack},navigati
         };
         });
         setMenu_list(data);
+        setFilteredDataSource(data);
+        setMasterDataSource(data);
     }).catch((error) => {
 
     console.error(error);
@@ -355,6 +385,18 @@ export default function PettycashLiquidation_main ({navigation:{goBack},navigati
 
         <View style={styles.header_date} >
             <View style={{flexDirection:"column",flex:1}}>
+            <View style={{flexDirection: 'column'}}>
+            <SearchBar
+              containerStyle={{backgroundColor: 'white'}}
+              onChangeText={(text) => searchFilterFunction(text)}
+              onClear={(text) => searchFilterFunction('')}
+              value={search}
+              placeholder="Search Here..."
+              inputStyle={{color: 'black'}}
+              round
+              lightTheme
+            />
+          </View>
             <View style={{flexDirection: 'row', padding: 5}}>
             <Text style={styles.text_header}>Start Date</Text>
             {show_start_date && (
@@ -460,7 +502,7 @@ export default function PettycashLiquidation_main ({navigation:{goBack},navigati
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
             style={{alignContent:"center",margin:2}}
-            data={menu_list}
+            data={filteredDataSource}
             renderItem={
               ({ item }) => 
               <RowItem
@@ -558,7 +600,7 @@ const styles = StyleSheet.create({
       alignSelf:"center",
       flexDirection:'row',
       padding:2,
-      flex:2, //2.5
+      flex:3.2, //2.5
       alignContent:"center",
   },
     body:{
