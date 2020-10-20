@@ -43,7 +43,7 @@ export default function PettycashReplenish_main({
   route,
 }) {
   //global params for instant loading
-  const {company_id, branch_id, company_code, user_id} = route.params;
+  const {company_id, branch_id, company_code, user_id,allow_delete_mf} = route.params;
   const module = 'PFR'; // module
   const [image_data_loaded, setimage_data_loaded] = useState(false);
   const [image_found, setimage_found] = useState(false);
@@ -171,6 +171,7 @@ export default function PettycashReplenish_main({
       .then((responseJson) => {
         var data = responseJson.array_data.map(function (item, index) {
           return {
+            id:item.id,
             url: item.slug,
           };
         });
@@ -307,6 +308,55 @@ export default function PettycashReplenish_main({
     setshow_end_date(true);
   };
 
+
+    //select delete image functiuon
+    const [find_image_index, setfind_image_index] = useState('');
+    const [selected_image_id, setselected_image_id] = useState('');
+  
+     //delete image function
+     const view_image = () => {
+      setmodal_img_Visible(true);
+      setselected_image_id(img_list[0].id);
+    };
+  
+    const delete_image = (id) => {
+      if (allow_delete_mf == 1) {
+        setSpinner(true);
+        const formData = new FormData();
+        formData.append('company_code', company_code);
+        formData.append('company_id', company_id);
+        formData.append('branch_id', branch_id);
+        formData.append('id', id);
+        fetch(global.global_url + '/delete_micro_filming.php', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'multipart/form-data',
+          },
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((responseJson) => {
+            setSpinner(false);
+            if (responseJson == 1) {
+              setmodal_img_Visible(!modal_img_Visible);
+              setmodal_main_Visible(false);
+              Alert.alert('Delete Success!');
+            } else {
+              Alert.alert('Something went wrong try again');
+            }
+          })
+          .catch((error) => {
+            setSpinner(false);
+            console.error(error);
+            Alert.alert('Internet Connection Error');
+          });
+      } else {
+        Alert.alert('User Account restricted');
+      }
+    };
+
+    
   return (
     <View style={styles.main}>
       {/* //Main modal */}
@@ -356,8 +406,8 @@ export default function PettycashReplenish_main({
                 <TouchableOpacity
                   onPress={() => {
                     image_found
-                      ? setmodal_img_Visible(true)
-                      : Alert.alert('No image Available');
+                    ? view_image()
+                    : Alert.alert('No image Available');
                   }}
                   style={styles.rounded_btn}>
                   <View style={{flexDirection: 'row'}}>
@@ -413,18 +463,39 @@ export default function PettycashReplenish_main({
         onRequestClose={() => {
           setmodal_img_Visible(!modal_img_Visible);
         }}>
-        <TouchableHighlight
-          style={{...styles.openButton, backgroundColor: 'black'}}
-          onPress={() => {
-            setmodal_img_Visible(!modal_img_Visible);
-          }}>
-          <View style={{flexDirection: 'row-reverse', padding: 10}}>
-            <AntDesign name="closecircleo" size={20} color={'white'} />
-          </View>
-        </TouchableHighlight>
+
+        <View style={{flexDirection: 'row-reverse', backgroundColor: 'black'}}>
+          <TouchableHighlight
+            style={{...styles.openButton, backgroundColor: 'black'}}
+            onPress={() => {
+              setmodal_img_Visible(!modal_img_Visible);
+            }}>
+            <View style={{flexDirection: 'row-reverse', padding: 10}}>
+              <AntDesign name="closecircleo" size={20} color={'white'} />
+            </View>
+          </TouchableHighlight>
+
+          <TouchableHighlight
+            style={{...styles.openButton, backgroundColor: 'black'}}
+            onPress={() => {
+              // console.log(selected_image_id);
+             delete_image(selected_image_id);
+            }}>
+            <View style={{flexDirection: 'row-reverse', padding: 10}}>
+              <AntDesign name="delete" size={20} color={'white'} />
+            </View>
+          </TouchableHighlight>
+        </View>
+
+
         <ImageViewer
           imageUrls={img_list}
           loadingRender={console.log('rendering')}
+          onChange={(index) => {
+            setselected_image_id(img_list[index].id);
+             // console.log(img_list[index].id)
+           }}
+
         />
       </Modal>
       {/* end image modal */}
