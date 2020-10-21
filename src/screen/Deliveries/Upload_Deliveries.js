@@ -107,7 +107,7 @@ export default function Upload_Deliveries({
       },
       maxWidth: 500,
       maxHeight: 650,
-      quality: 0.7,
+      quality: 0.8,
     };
     // ImagePicker.launchImageLibrary(options, (response) => {
     //     // Same code as in above section!
@@ -167,8 +167,8 @@ export default function Upload_Deliveries({
       return (
         <Image
           style={{
-            height: 400,
-            width: 400,
+            height:  350,
+            width: 350,
             alignItems: 'center',
             alignContent: 'center',
             marginBottom: 10,

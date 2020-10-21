@@ -127,8 +127,8 @@ export default function PettycashLiquidation_upload_main ({navigation:{goBack},n
         return (
             <Image 
             style={{
-              height: 650,
-              width: 500,
+              height: 350,
+              width: 350,
               alignItems:"center",
               alignContent:"center",marginBottom:10,marginTop:10,borderWidth: 1.5,
             borderColor:"#4ABBE5",}}

@@ -169,6 +169,7 @@ export default function PettycashReplenish_main({
     )
       .then((response) => response.json())
       .then((responseJson) => {
+        console.log(responseJson);
         var data = responseJson.array_data.map(function (item, index) {
           return {
             id:item.id,

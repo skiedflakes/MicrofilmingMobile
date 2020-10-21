@@ -125,8 +125,8 @@ export default function PettycashReplenish_upload_main ({navigation:{goBack},nav
         return (
             <Image 
             style={{ 
-              height: 650,
-              width: 500,alignItems:"center",alignContent:"center",marginBottom:10,marginTop:10,borderWidth: 1.5,
+              height: 350,
+              width: 350,alignItems:"center",alignContent:"center",marginBottom:10,marginTop:10,borderWidth: 1.5,
             borderColor:"#4ABBE5",}}
             source={{ uri: imageUri }}
              />

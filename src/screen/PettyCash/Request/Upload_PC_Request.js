@@ -130,7 +130,7 @@ export default function Upload_PC_Request ({navigation:{goBack},navigation,route
     }else{
         return (
             <Image 
-            style={{height:400,width:400,alignItems:"center",alignContent:"center",marginBottom:10,marginTop:10,borderWidth: 1.5,
+            style={{height:350,width:350,alignItems:"center",alignContent:"center",marginBottom:10,marginTop:10,borderWidth: 1.5,
             borderColor:"#4ABBE5",}}
             source={{ uri: imageUri }}
              />
