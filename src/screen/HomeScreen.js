@@ -27,14 +27,6 @@ const mydata = [
     id: '2',
     name: 'Petty Cash',
   },
-  {
-    id: '3',
-    name: 'Test Module1',
-  },
-  {
-    id: '4',
-    name: 'Test Module2',
-  },
 ];
 
 const FlatListItemSeparator = () => {
@@ -476,15 +468,7 @@ function getContent(
       // Alert.alert('Under Development');
       // load Petty Cash
       setpc_modalVisible(true);
-    } else if (id == 3) {
-      // load items
-      Alert.alert('Under Development');
-      //
-    } else if (id == 4) {
-      // load items
-      // navigation.navigate("Test Screen");
-      Alert.alert('Under Development');
-    } else {
+    }else {
     }
   } else {
     Alert.alert('Please Select Farm Location');

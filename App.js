@@ -20,12 +20,16 @@ function App() {
     // global.global_url = 'http://192.168.8.106/PigNotesMobile_php/';
 
     //mylocalhost
-    global.global_url = 'http://192.168.2.116/microfilming_localhost/';
-    global.notes_web_directory = 'http://192.168.2.116/notes/';
+    // global.global_url = 'http://192.168.2.116/microfilming_localhost/';
+    // global.notes_web_directory = 'http://192.168.2.116/notes/';
 
-    // dev url
-    // global.global_url = 'https://mobile.wdysolutions.com/microfilming/main/';
-    // global.notes_web_directory = 'https://notes.wdysolutions.com/';
+    // main onlnie url
+    global.global_url = 'https://mobile.wdysolutions.com/microfilming/main/';
+    global.notes_web_directory = 'https://notes.wdysolutions.com/';
+
+    // demo onlnie url
+    // global.global_url = 'https://mobile.wdysolutions.com/microfilming/demo/';
+    // global.notes_web_directory = 'https://dev.wdysolutions.com/';
   });
   return (
     <NavigationContainer>

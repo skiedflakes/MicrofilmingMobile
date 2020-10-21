@@ -91,8 +91,8 @@ export default function Upload_PC_Request_details ({navigation:{goBack},navigati
           path: 'images',
         },
         maxWidth: 500,
-        maxHeight: 700,
-        quality: 0.7
+        maxHeight: 650,
+        quality: 0.8
       };
 
     ImagePicker.showImagePicker(options, (response) => {
@@ -130,7 +130,10 @@ export default function Upload_PC_Request_details ({navigation:{goBack},navigati
     }else{
         return (
             <Image 
-            style={{height:400,width:400,alignItems:"center",alignContent:"center",marginBottom:10,marginTop:10,borderWidth: 1.5,
+            style={{
+              height: 650,
+              width: 500,
+              alignItems:"center",alignContent:"center",marginBottom:10,marginTop:10,borderWidth: 1.5,
             borderColor:"#4ABBE5",}}
             source={{ uri: imageUri }}
              />
