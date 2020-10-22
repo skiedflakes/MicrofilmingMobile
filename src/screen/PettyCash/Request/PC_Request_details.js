@@ -154,6 +154,7 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
   //select delete image functiuon
   const [find_image_index, setfind_image_index] = useState('');
   const [selected_image_id, setselected_image_id] = useState('');
+  const [delete_modalVisible, setdelete_modalVisible] = useState(false);
 
    //delete image function
    const view_image = () => {
@@ -179,6 +180,7 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
       })
         .then((response) => response.json())
         .then((responseJson) => {
+          setdelete_modalVisible(!delete_modalVisible);
           setSpinner(false);
           if (responseJson == 1) {
             setmodal_img_Visible(!modal_img_Visible);
@@ -189,6 +191,7 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
           }
         })
         .catch((error) => {
+          setdelete_modalVisible(!delete_modalVisible);
           setSpinner(false);
           console.error(error);
           Alert.alert('Internet Connection Error');
@@ -281,8 +284,7 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
             <TouchableHighlight
             style={{...styles.openButton, backgroundColor: 'black'}}
             onPress={() => {
-            //  console.log(selected_image_id);
-            delete_image(selected_image_id);
+            setdelete_modalVisible(!delete_modalVisible);
             }}>
           
             <View style={{flexDirection: 'row-reverse', padding: 10}}>
@@ -303,7 +305,64 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
             </Modal>
               {/* end image modal */}
 
+{/* delete img modal */}
+<Modal
+        animationType="slide"
+        transparent={true}
+        visible={delete_modalVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Are you sure you want to delete?</Text>
 
+            <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
+                <TouchableOpacity
+                  onPress={() => {
+                    delete_image(selected_image_id);
+                  }}
+                  style={styles.rounded_btn}>
+                  <View style={{flexDirection: 'row'}}>
+                  
+                    <Text
+                      style={{
+                        flex: 1,
+                        alignSelf: 'center',
+                        textAlign: 'center',
+                      }}>
+                     Yes
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+
+              <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setdelete_modalVisible(!delete_modalVisible);
+                  }}
+                  style={styles.rounded_btn}>
+                  <View style={{flexDirection: 'row'}}>
+                    
+                    <Text
+                      style={{
+                        flex: 1,
+                        alignSelf: 'center',
+                        textAlign: 'center',
+                      }}>
+                     Cancel
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+
+
+          </View>
+        </View>
+      </Modal>
+{/* end delete img modal */}
      <View style={styles.header} >
 
               <View style={{ flex:1,  flexDirection: 'row', padding:2,}} >
