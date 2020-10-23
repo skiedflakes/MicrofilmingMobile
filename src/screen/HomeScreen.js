@@ -26,6 +26,9 @@ const mydata = [
   {
     id: '2',
     name: 'Petty Cash',
+  },{
+    id: '3',
+    name: 'Revolving Fund',
   },
 ];
 
@@ -76,6 +79,9 @@ export default function HomeScreen({navigation: {goBack}, navigation, route}) {
 
   //modal PettyCash
   const [pc_modalVisible, setpc_modalVisible] = useState(false);
+
+  //modal PettyCash
+  const [rf_modalVisible, setrf_modalVisible] = useState(false);
 
   const onSelectBranch = (branch_name, branch_id) => {
     setModalVisible(false);
@@ -260,6 +266,86 @@ export default function HomeScreen({navigation: {goBack}, navigation, route}) {
           </View>
         </View>
       </Modal>
+      {/* //PettyCash modal end */}
+
+      {/* //Revolving modal*/}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={rf_modalVisible}
+        backdropColor={'green'}
+        backdropOpacity={1}
+        onRequestClose={() => {
+          setrf_modalVisible(!rf_modalVisible);
+        }}>
+        <View style={styles.modal_centeredView}>
+          <View style={styles.main_modalView}>
+            <View style={{flexDirection: 'row', padding: 2}}>
+              <Text style={{flex: 1, alignSelf: 'center', textAlign: 'center'}}>
+                Revolving Fund
+              </Text>
+            </View>
+            <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
+              <TouchableOpacity
+                onPress={() => {
+                  
+                }}
+                style={styles.rounded_btn}>
+                <View style={{flexDirection: 'row'}}>
+                  <Text
+                    style={{flex: 1, alignSelf: 'center', textAlign: 'center'}}>
+                    Replenishment
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
+              <TouchableOpacity
+                onPress={() => {
+                
+                }}
+                style={styles.rounded_btn}>
+                <View style={{flexDirection: 'row'}}>
+                  <Text
+                    style={{flex: 1, alignSelf: 'center', textAlign: 'center'}}>
+                    Request
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
+              <TouchableOpacity
+                onPress={() => {
+                 
+                }}
+                style={styles.rounded_btn}>
+                <View style={{flexDirection: 'row'}}>
+                  <Text
+                    style={{flex: 1, alignSelf: 'center', textAlign: 'center'}}>
+                    Liquidation
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+
+            <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
+              <TouchableOpacity
+                onPress={() => {
+                  setrf_modalVisible(false);
+                }}
+                style={styles.rounded_btn}>
+                <View style={{flexDirection: 'row'}}>
+                  <Text
+                    style={{flex: 1, alignSelf: 'center', textAlign: 'center'}}>
+                    Close
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    {/* //Revolving modal end*/}
 
       <Modal
         animationType="fade"
@@ -375,6 +461,7 @@ export default function HomeScreen({navigation: {goBack}, navigation, route}) {
                 user_id={user_id}
                 allow_delete_mf={allow_delete_mf}
                 setpc_modalVisible={setpc_modalVisible}
+                setrf_modalVisible={setrf_modalVisible}
               />
             )}
             keyExtractor={(item) => item.id.toString()}
@@ -397,6 +484,7 @@ function RowItem({
   company_id,
   user_id,
   setpc_modalVisible,
+  setrf_modalVisible,
   allow_delete_mf,
 }) {
   return (
@@ -412,6 +500,7 @@ function RowItem({
           company_id,
           user_id,
           setpc_modalVisible,
+          setrf_modalVisible,
           allow_delete_mf,
         )
       }>
@@ -452,6 +541,7 @@ function getContent(
   company_id,
   user_id,
   setpc_modalVisible,
+  setrf_modalVisible,
   allow_delete_mf,
 ) {
   if (allow_navigation) {
@@ -468,6 +558,10 @@ function getContent(
       // Alert.alert('Under Development');
       // load Petty Cash
       setpc_modalVisible(true);
+    }else if (id == 3) {
+      // Alert.alert('Under Development');
+      // load Petty Cash
+      setrf_modalVisible(true);
     }else {
     }
   } else {

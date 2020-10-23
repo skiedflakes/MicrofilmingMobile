@@ -81,7 +81,7 @@ export default function Upload_Deliveries({
           console.log(response_data);
 
           if (response_data.success == '1') {
-            goBack();
+            navigation.goBack();
           } else {
             Alert.alert('Error upload');
           }

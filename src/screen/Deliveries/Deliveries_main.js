@@ -378,13 +378,14 @@ export default function Deliveries_main({
     }
   };
 
+  const [teststate, setteststate] = useState('world');
+
   //main function
-  useFocusEffect(
-    React.useCallback(() => {
-      get_deliveries_data();
-      return () => {};
-    }, []),
-  );
+  var count =1;
+  useEffect(() => {
+    get_deliveries_data();
+  }, [count]); // Only re-run the effect if count changes
+
 
   return (
     <View style={styles.main}>
