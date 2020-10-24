@@ -302,7 +302,14 @@ export default function HomeScreen({navigation: {goBack}, navigation, route}) {
             <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
               <TouchableOpacity
                 onPress={() => {
-                
+                  setrf_modalVisible(!rf_modalVisible);
+                  navigation.navigate('Revolving Fund Request', {
+                    branch_id: selected_farm_location_id,
+                    company_code,
+                    company_id,
+                    user_id,
+                    allow_delete_mf,
+                  });
                 }}
                 style={styles.rounded_btn}>
                 <View style={{flexDirection: 'row'}}>

@@ -25,7 +25,7 @@ const FlatListItemSeparator = () => {
     );
   }
 
-export default function PC_Request_main ({navigation:{goBack},navigation,route}) {
+export default function RF_Request_main ({navigation:{goBack},navigation,route}) {
   
   //global params for instant loading
   const { company_id,branch_id,company_code,user_id,allow_delete_mf } = route.params;
@@ -534,7 +534,7 @@ export default function PC_Request_main ({navigation:{goBack},navigation,route})
       >
         <View style={{alignContent:"center",alignItems:"center",alignSelf:"center",  flexDirection: 'row', padding:2,}} >
         <AntDesign  style={{marginRight:10}} name="arrowleft" size={20} color={"black"}/> 
-        <Text style={{fontSize:20,textAlign:"center"}}>Petty Cash Request</Text>
+        <Text style={{fontSize:20,textAlign:"center"}}>Revolving Fund Request</Text>
         </View>
       </TouchableHighlight>
       </View>
