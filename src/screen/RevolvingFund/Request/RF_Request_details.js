@@ -23,11 +23,11 @@ const FlatListItemSeparator = () => {
     );
   }
 
-export default function PC_Request_details ({navigation:{goBack},navigation,route}) {
+export default function RF_Request_details ({navigation:{goBack},navigation,route}) {
   
   //global params for instant loading
   const {header_id,ref_num,company_id,branch_id,company_code,user_id,allow_delete_mf} = route.params;
-  const module = 'PCV'; // module
+  const module = 'RFV'; // module
   const [image_data_loaded,setimage_data_loaded] = useState(false);
   const [image_found,setimage_found]= useState(false);
   const [spinner, setSpinner] = React.useState(false);
@@ -56,7 +56,7 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
     formData.append('company_id', company_id);
     formData.append('header_id', header_id); 
 
-    fetch(global.global_url+'/pettycash_request/get_pc_request_data_details.php', {
+    fetch(global.global_url+'/revolvingfund_request/get_rf_request_data_details.php', {
     method: 'POST',
     headers: {
     'Accept': 'application/json',
@@ -69,7 +69,7 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
       setSpinner(false)
     var data = responseJson.array_data.map(function(item,index) {
         return {
-          detail_id:item.pettycash_detail_id,
+          detail_id:item.revolving_detail_id,
           amount:item.amount,
           doc_num:item.doc_num,
           chart_id: item.gchart_id,
@@ -99,7 +99,7 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
 
     console.log(ref_num+" "+company_code+" "+company_id+" "+ branch_id+" "+module+" "+global.notes_web_directory )
      
-    fetch(global.global_url+'/pettycash_request/get_micro_filming_img_details.php', {
+    fetch(global.global_url+'/revolvingfund_request/get_micro_filming_img_details.php', {
     method: 'POST',
     headers: {
     'Accept': 'application/json',
@@ -222,7 +222,7 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
               <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_chart_name}</Text>
               </View>
               <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-                  <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Upload Request details',{chart_id:selected_chart_id,doc_num:selected_doc_num,ref_num:ref_num,detail_id:selected_detail_id,chart_name:selected_chart_name,user_id:user_id});}} style={styles.rounded_btn}>
+                  <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Upload Revolving Fund details',{chart_id:selected_chart_id,doc_num:selected_doc_num,ref_num:ref_num,detail_id:selected_detail_id,chart_name:selected_chart_name,user_id:user_id});}} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
                       <MCI  name="image-plus" size={20} color={"black"}/> 
                       <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>Add Image</Text>
@@ -230,7 +230,11 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
                   </TouchableOpacity>
                </View>
                 <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-                  <TouchableOpacity  onPress={() => {image_found? setmodal_img_Visible(true):Alert.alert('No image Available') }} style={styles.rounded_btn}>
+                  <TouchableOpacity  onPress={() => {
+                    image_found
+                    ? view_image()
+                    : Alert.alert('No image Available');
+                    }} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
                       <MaterialIcons  name="image-search" size={20} color={"black"}/> 
                       <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>View Image</Text>
@@ -320,6 +324,7 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
                 <TouchableOpacity
                   onPress={() => {
                     delete_image(selected_image_id);
+                    // console.log(selected_image_id)
                   }}
                   style={styles.rounded_btn}>
                   <View style={{flexDirection: 'row'}}>

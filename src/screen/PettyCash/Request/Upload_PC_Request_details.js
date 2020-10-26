@@ -146,7 +146,7 @@ return (
     <View style={{alignContent:'flex-start',alignItems:'flex-start'}}>
     <Text style={{fontSize:18,textAlign:"center",fontWeight:'bold'}}>Reference # : {ref_num}</Text>
     <Text style={{fontSize:18,textAlign:"center",fontWeight:'bold'}}>Doc # : {doc_num}</Text>
-    <Text style={{fontSize:18,textAlign:"center",fontWeight:'bold'}}>Chart of Account : {chart_name}</Text>
+    <Text style={{fontSize:18,fontWeight:'bold'}}>Chart of Account : {chart_name}</Text>
     </View>
       <View style={styles.body}>
       <TouchableOpacity

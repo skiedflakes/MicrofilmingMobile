@@ -230,7 +230,11 @@ export default function PC_Request_details ({navigation:{goBack},navigation,rout
                   </TouchableOpacity>
                </View>
                 <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-                  <TouchableOpacity  onPress={() => {image_found? setmodal_img_Visible(true):Alert.alert('No image Available') }} style={styles.rounded_btn}>
+                  <TouchableOpacity  onPress={() => {
+                    image_found
+                    ? view_image()
+                    : Alert.alert('No image Available');
+                    }} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
                       <MaterialIcons  name="image-search" size={20} color={"black"}/> 
                       <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>View Image</Text>

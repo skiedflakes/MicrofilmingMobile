@@ -16,10 +16,10 @@ import {
 } from "react-native";
 
 
-export default function Upload_PC_Request_details ({navigation:{goBack},navigation,route}) {
+export default function Upload_PC_Request ({navigation:{goBack},navigation,route}) {
   
   //global params for instant loading
-  const { company_id,branch_id,company_code,user_id,ref_num,detail_id,chart_name,doc_num,chart_id} = route.params;
+  const { company_id,branch_id,company_code,user_id,ref_num} = route.params;
 
   const [spinner, setSpinner] = React.useState(false);
 
@@ -42,8 +42,8 @@ export default function Upload_PC_Request_details ({navigation:{goBack},navigati
       formData.append('branch_id', branch_id);
 
       formData.append('ref_num', ref_num);
-      formData.append('details_id', detail_id);
-      formData.append('chart_id', chart_id);
+      formData.append('details_id', "0");
+      formData.append('chart_id', "0");
       formData.append('module', "PCV");
 
       formData.append('file', {
@@ -51,7 +51,7 @@ export default function Upload_PC_Request_details ({navigation:{goBack},navigati
           name: 'my_photo',
           type: image_file_type
         });
-      fetch(global.global_url+'/deliveries/upload_img.php', {
+      fetch(global.global_url+'/revolvingfund_request/upload_img.php', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -91,8 +91,8 @@ export default function Upload_PC_Request_details ({navigation:{goBack},navigati
           path: 'images',
         },
         maxWidth: 500,
-        maxHeight: 650,
-        quality: 0.8
+        maxHeight: 700,
+        quality: 0.7
       };
 
     ImagePicker.showImagePicker(options, (response) => {
@@ -130,24 +130,19 @@ export default function Upload_PC_Request_details ({navigation:{goBack},navigati
     }else{
         return (
             <Image 
-            style={{
-              height: 350,
-              width: 350,
-              alignItems:"center",alignContent:"center",marginBottom:10,marginTop:10,borderWidth: 1.5,
+            style={{height:350,width:350,alignItems:"center",alignContent:"center",marginBottom:10,marginTop:10,borderWidth: 1.5,
             borderColor:"#4ABBE5",}}
             source={{ uri: imageUri }}
-            />
+             />
         );
     }
 }
 
 return (
   <View style={styles.container}>
-    <View style={{alignContent:'flex-start',alignItems:'flex-start'}}>
-    <Text style={{fontSize:18,textAlign:"center",fontWeight:'bold'}}>Reference # : {ref_num}</Text>
-    <Text style={{fontSize:18,textAlign:"center",fontWeight:'bold'}}>Doc # : {doc_num}</Text>
-    <Text style={{fontSize:18,textAlign:"center",fontWeight:'bold'}}>Chart of Account : {chart_name}</Text>
-    </View>
+    
+    <Text style={{fontSize:18,textAlign:"center",fontWeight:'bold'}}>Delivery # : {ref_num}</Text>
+
       <View style={styles.body}>
       <TouchableOpacity
               onPress={() => { open_file(); }}

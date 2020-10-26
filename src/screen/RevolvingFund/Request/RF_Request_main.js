@@ -29,7 +29,7 @@ export default function RF_Request_main ({navigation:{goBack},navigation,route})
   
   //global params for instant loading
   const { company_id,branch_id,company_code,user_id,allow_delete_mf } = route.params;
-  const module = 'PCV'; // module
+  const module = 'RFV'; // module
   const [image_data_loaded,setimage_data_loaded] = useState(false);
   const [image_found,setimage_found]= useState(false);
   const [spinner, setSpinner] = React.useState(false);
@@ -122,7 +122,7 @@ export default function RF_Request_main ({navigation:{goBack},navigation,route})
 
     console.log(user_id+" "+company_code+" "+company_id+" "+branch_id+" "+selected_start_date+" "+selected_end_date)
 
-    fetch(global.global_url+'/pettycash_request/get_pc_request_data.php', {
+    fetch(global.global_url+'/revolvingfund_request/get_rf_request_data.php', {
     method: 'POST',
     headers: {
     'Accept': 'application/json',
@@ -164,7 +164,7 @@ export default function RF_Request_main ({navigation:{goBack},navigation,route})
     formData.append('module',module );
     formData.append('primary_url', global.notes_web_directory);
 
-    fetch(global.global_url+'/pettycash_request/get_micro_filming_img.php', {
+    fetch(global.global_url+'/revolvingfund_request/get_micro_filming_img.php', {
     method: 'POST',
     headers: {
     'Accept': 'application/json',
@@ -360,18 +360,15 @@ export default function RF_Request_main ({navigation:{goBack},navigation,route})
         onRequestClose={() => {
         setmodal_main_Visible(!modal_main_Visible);
         }} >
-          
-          
+
         <View style={styles.centeredView}>
- 
             {image_data_loaded? 
                    <View style={styles.main_modalView}>
-              <View style={{flexDirection: 'row', padding:2,}} >
-            
+              <View style={{flexDirection: 'row', padding:2,}} > 
               <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_ref_num}</Text>
               </View>
               <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-                  <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Upload Request',{ref_num:selected_ref_num,user_id:user_id});}} style={styles.rounded_btn}>
+                  <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Upload Revolving Fund main',{ref_num:selected_ref_num,user_id:user_id});}} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
                       <MCI  name="image-plus" size={20} color={"black"}/> 
                       <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>Add Image</Text>
@@ -394,7 +391,7 @@ export default function RF_Request_main ({navigation:{goBack},navigation,route})
 
                 {details_status>0?
                 <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-                  <TouchableOpacity  onPress={() => {setmodal_main_Visible(false); navigation.navigate('Petty Cash Request details',{ref_num:selected_ref_num,header_id:selected_header_id,company_id: company_id,branch_id: branch_id,company_code: company_code,user_id:user_id,allow_delete_mf:allow_delete_mf});}} style={styles.rounded_btn}>
+                  <TouchableOpacity  onPress={() => {setmodal_main_Visible(false); navigation.navigate('Revolving Fund Request details',{ref_num:selected_ref_num,header_id:selected_header_id,company_id: company_id,branch_id: branch_id,company_code: company_code,user_id:user_id,allow_delete_mf:allow_delete_mf});}} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
                       <AntDesign  name="book" size={20} color={"black"}/> 
                       <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>Show Records</Text>
@@ -481,6 +478,7 @@ export default function RF_Request_main ({navigation:{goBack},navigation,route})
             <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
                 <TouchableOpacity
                   onPress={() => {
+       
                     delete_image(selected_image_id);
                   }}
                   style={styles.rounded_btn}>
