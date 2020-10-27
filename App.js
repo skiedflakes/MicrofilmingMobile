@@ -12,6 +12,10 @@ import PettyCash_LiquidationScreen from './src/screen/PettyCash_LiquidationScree
 
 //revolving fund
 import RevolvingFund_RequestScreen from './src/screen/Revolving_RequestScreen';
+import Revolving_ReplenishScreen from './src/screen/Revolving_ReplenishScreen';
+import Revolving_LiquidationScreen from './src/screen/Revolving_LiquidationScreen';
+
+
 
 import TestScreen from './src/screen/TestScreen';
 const Stack = createStackNavigator();
@@ -23,8 +27,8 @@ function App() {
     // global.global_url = 'http://192.168.8.106/PigNotesMobile_php/';
 
     //mylocalhost
-    global.global_url = 'http://192.168.2.118/microfilming_localhost/';
-    global.notes_web_directory = 'http://192.168.2.118/notes';
+    global.global_url = 'http://192.168.2.121/microfilming_localhost/';
+    global.notes_web_directory = 'http://192.168.2.121/notes';
 
     // main onlnie url
     // global.global_url = 'https://mobile.wdysolutions.com/microfilming/main/';
@@ -82,6 +86,19 @@ function App() {
           component={RevolvingFund_RequestScreen}
           options={{headerShown: false}}
         />
+        
+        <Stack.Screen
+          name="Revolving Fund Replenish"
+          component={Revolving_ReplenishScreen}
+          options={{headerShown: false}}
+        />
+
+        <Stack.Screen
+          name="Revolving Fund Liquidation"
+          component={Revolving_LiquidationScreen}
+          options={{headerShown: false}}
+        />
+
 
         {/* revolving fund end */}
 

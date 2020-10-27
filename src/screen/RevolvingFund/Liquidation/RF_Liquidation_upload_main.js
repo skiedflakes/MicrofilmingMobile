@@ -16,7 +16,7 @@ import {
 } from "react-native";
 
 
-export default function PettycashReplenish_upload_main ({navigation:{goBack},navigation,route}) {
+export default function RF_Liquidation_upload_main ({navigation:{goBack},navigation,route}) {
   
   //global params for instant loading
   const { company_id,branch_id,company_code,user_id,dr_number,module } = route.params;
@@ -46,12 +46,14 @@ export default function PettycashReplenish_upload_main ({navigation:{goBack},nav
       formData.append('chart_id', "0");
       formData.append('module', module);
 
+      console.log(user_id+" "+company_code+" "+company_id+" "+branch_id+" "+dr_number)
+
       formData.append('file', {
           uri: imageUri,
           name: 'my_photo',
           type: image_file_type
         });
-      fetch(global.global_url+'/pettycash_replinish/upload_img.php', {
+      fetch(global.global_url+'/pettycash_liquidation/upload_img.php', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -66,6 +68,7 @@ export default function PettycashReplenish_upload_main ({navigation:{goBack},nav
           console.log(response_data.success);
 
           if(response_data.success == '1'){
+            Alert.alert('Upload Success!');
             goBack();
           } else {
             Alert.alert('Error upload');
@@ -124,9 +127,11 @@ export default function PettycashReplenish_upload_main ({navigation:{goBack},nav
     }else{
         return (
             <Image 
-            style={{ 
+            style={{
               height: 350,
-              width: 350,alignItems:"center",alignContent:"center",marginBottom:10,marginTop:10,borderWidth: 1.5,
+              width: 350,
+              alignItems:"center",
+              alignContent:"center",marginBottom:10,marginTop:10,borderWidth: 1.5,
             borderColor:"#4ABBE5",}}
             source={{ uri: imageUri }}
              />
@@ -137,7 +142,7 @@ export default function PettycashReplenish_upload_main ({navigation:{goBack},nav
 return (
   <View style={styles.container}>
     
-    <Text style={{fontSize:18,textAlign:"center",fontWeight:'bold'}}>Replinishment # : {dr_number}</Text>
+    <Text style={{fontSize:18,textAlign:"center",fontWeight:'bold'}}>Tracking # : {dr_number}</Text>
 
       <View style={styles.body}>
       <TouchableOpacity

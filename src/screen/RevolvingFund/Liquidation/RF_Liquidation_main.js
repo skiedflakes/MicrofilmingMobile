@@ -25,11 +25,11 @@ const FlatListItemSeparator = () => {
   );
 }
 
-export default function PettycashLiquidation_main ({navigation:{goBack},navigation,route}) {
+export default function RF_Liquidation_main ({navigation:{goBack},navigation,route}) {
   
   //global params for instant loading
   const { company_id,branch_id,company_code,user_id,allow_delete_mf } = route.params;
-  const module = 'PFL'; // module
+  const module = 'RFL'; // module
   const [image_data_loaded,setimage_data_loaded] = useState(false);
   const [image_found,setimage_found]= useState(false);
   const [spinner, setSpinner] = React.useState(false);
@@ -100,7 +100,7 @@ export default function PettycashLiquidation_main ({navigation:{goBack},navigati
 
     console.log(user_id+" "+company_code+" "+company_id+" "+branch_id+" "+selected_start_date+" "+selected_end_date)
     
-    fetch(global.global_url+'/pettycash_liquidation/get_liquidation_data.php', {
+    fetch(global.global_url+'/revolvingfund_liquidation/get_liquidation_data.php', {
     method: 'POST',
     headers: {
     'Accept': 'application/json',
@@ -114,7 +114,7 @@ export default function PettycashLiquidation_main ({navigation:{goBack},navigati
       console.log(responseJson)
        var data = responseJson.array_data.map(function(item,index) {
         return {
-          dr_header_id:item.pcv_liquidation_id,
+          dr_header_id:item.rfe_liquidation_id,
           delivery_number: item.tracking_num
         };
         });
@@ -360,7 +360,7 @@ export default function PettycashLiquidation_main ({navigation:{goBack},navigati
               <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>{selected_dr_number}</Text>
               </View>
               <View style={{flexDirection: 'row', padding:2,marginTop:10}} >
-                  <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Petty Cash Liquidation Upload',{dr_number:selected_dr_number,user_id:user_id,module:module});}} style={styles.rounded_btn}>
+                  <TouchableOpacity   onPress={() => {setmodal_main_Visible(false);  navigation.navigate('Revolving Fund Liquidation Upload',{dr_number:selected_dr_number,user_id:user_id,module:module});}} style={styles.rounded_btn}>
                     <View style={{ flexDirection: "row",}} >
                       <MCI  name="image-plus" size={20} color={"black"}/> 
                       <Text style={{flex:0.8,alignSelf:'center', textAlign:"center",}}>Add Image</Text>
@@ -507,7 +507,7 @@ export default function PettycashLiquidation_main ({navigation:{goBack},navigati
           }}>
           <View style={{alignContent:"center",alignItems:"center",alignSelf:"center",  flexDirection: 'row', padding:2,}} >
           <AntDesign  style={{marginRight:10}} name="arrowleft" size={20} color={"black"}/> 
-          <Text style={{fontSize:20,textAlign:"center"}}>Petty Cash Liquidation</Text>
+          <Text style={{fontSize:20,textAlign:"center"}}>Revolving Fund Liquidation</Text>
           </View>
         </TouchableHighlight>
         </View>

@@ -141,7 +141,7 @@ export default function PettycashLiquidation_upload_main ({navigation:{goBack},n
 return (
   <View style={styles.container}>
     
-    <Text style={{fontSize:18,textAlign:"center",fontWeight:'bold'}}>Replinishment # : {dr_number}</Text>
+    <Text style={{fontSize:18,textAlign:"center",fontWeight:'bold'}}>Tracking # : {dr_number}</Text>
 
       <View style={styles.body}>
       <TouchableOpacity

@@ -137,7 +137,7 @@ export default function PettycashReplenish_upload_main ({navigation:{goBack},nav
 return (
   <View style={styles.container}>
     
-    <Text style={{fontSize:18,textAlign:"center",fontWeight:'bold'}}>Replinishment # : {dr_number}</Text>
+    <Text style={{fontSize:18,textAlign:"center",fontWeight:'bold'}}>Tracking # : {dr_number}</Text>
 
       <View style={styles.body}>
       <TouchableOpacity

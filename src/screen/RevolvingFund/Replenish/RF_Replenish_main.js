@@ -37,14 +37,14 @@ const FlatListItemSeparator = () => {
   );
 };
 
-export default function PettycashReplenish_main({
+export default function RF_Replenish_main({
   navigation: {goBack},
   navigation,
   route,
 }) {
   //global params for instant loading
   const {company_id, branch_id, company_code, user_id,allow_delete_mf} = route.params;
-  const module = 'PFR'; // module
+  const module = 'RFR'; // module
   const [image_data_loaded, setimage_data_loaded] = useState(false);
   const [image_found, setimage_found] = useState(false);
   const [spinner, setSpinner] = React.useState(false);
@@ -116,7 +116,7 @@ export default function PettycashReplenish_main({
     formData.append('end_date', selected_end_date);
     formData.append('req_stat', '');
 
-    fetch(global.global_url + '/pettycash_replinish/getPaymentReplenish.php', {
+    fetch(global.global_url + '/revolvingfund_replenish/get_replenish_data.php', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -128,10 +128,10 @@ export default function PettycashReplenish_main({
       .then((responseJson) => {
         setSpinner(false);
         console.log(responseJson);
-        var data = responseJson.data.map(function (item, index) {
+        var data = responseJson.array_data.map(function (item, index) {
           return {
-            dr_header_id: item.pcv_replenish_id,
-            delivery_number: item.rplnsh_num,
+            dr_header_id: item.rfe_replenish_id,
+            delivery_number: item.tracking_num,
           };
         });
         setMenu_list(data);
@@ -157,7 +157,7 @@ export default function PettycashReplenish_main({
     formData.append('primary_url', global.notes_web_directory);
 
     fetch(
-      global.global_url + '/pettycash_replinish/get_micro_filming_img.php',
+      global.global_url + '/revolvingfund_replenish/get_micro_filming_img.php',
       {
         method: 'POST',
         headers: {
@@ -386,7 +386,7 @@ export default function PettycashReplenish_main({
                 <TouchableOpacity
                   onPress={() => {
                     setmodal_main_Visible(false);
-                    navigation.navigate('Petty Cash Replenish Upload', {
+                    navigation.navigate('Revolving Fund Replenish Upload', {
                       dr_number: selected_dr_number,
                       user_id: user_id,
                       module: module,
@@ -581,7 +581,7 @@ export default function PettycashReplenish_main({
                 color={'black'}
               />
               <Text style={{fontSize: 20, textAlign: 'center'}}>
-                Petty Cash Replenishment
+                Revolving Fund Replenishment
               </Text>
             </View>
           </TouchableHighlight>
