@@ -150,7 +150,7 @@ export default function RF_Liquidation_main ({navigation:{goBack},navigation,rou
 
     }).then((response) => response.json())
     .then((responseJson) => {
-
+console.log(responseJson);
     var data = responseJson.array_data.map(function(item,index) {
         return {
           id:item.id,
