@@ -76,7 +76,8 @@ export default function Upload_PC_Request_details({
           console.log(response_data.success);
 
           if (response_data.success == '1') {
-            goBack();
+            Alert.alert('Upload Success!');
+            navigation.goBack();
           } else {
             Alert.alert('Error upload');
           }

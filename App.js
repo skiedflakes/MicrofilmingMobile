@@ -15,8 +15,6 @@ import RevolvingFund_RequestScreen from './src/screen/Revolving_RequestScreen';
 import Revolving_ReplenishScreen from './src/screen/Revolving_ReplenishScreen';
 import Revolving_LiquidationScreen from './src/screen/Revolving_LiquidationScreen';
 
-
-
 import TestScreen from './src/screen/TestScreen';
 const Stack = createStackNavigator();
 
@@ -86,7 +84,7 @@ function App() {
           component={RevolvingFund_RequestScreen}
           options={{headerShown: false}}
         />
-        
+
         <Stack.Screen
           name="Revolving Fund Replenish"
           component={Revolving_ReplenishScreen}
@@ -99,7 +97,6 @@ function App() {
           options={{headerShown: false}}
         />
         {/* revolving fund end */}
-
 
         <Stack.Screen name="Test Screen" component={TestScreen} />
       </Stack.Navigator>
