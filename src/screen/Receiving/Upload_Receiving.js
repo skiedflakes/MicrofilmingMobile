@@ -106,8 +106,8 @@ export default function Upload_Receiving({
         skipBackup: true,
         path: 'images',
       },
-      maxWidth: 500,
-      maxHeight: 650,
+      // maxWidth: 500,
+      // maxHeight: 650,
     };
     // ImagePicker.launchImageLibrary(options, (response) => {
     //     // Same code as in above section!

@@ -106,9 +106,9 @@ export default function Upload_Deliveries({
         skipBackup: true,
         path: 'images',
       },
-      maxWidth: 500,
-      maxHeight: 650,
-      quality: 0.8,
+      // maxWidth: 500,
+      // maxHeight: 650,
+      // quality: 1,
     };
     // ImagePicker.launchImageLibrary(options, (response) => {
     //     // Same code as in above section!
@@ -168,7 +168,7 @@ export default function Upload_Deliveries({
       return (
         <Image
           style={{
-            height:  350,
+            height: 350,
             width: 350,
             alignItems: 'center',
             alignContent: 'center',
