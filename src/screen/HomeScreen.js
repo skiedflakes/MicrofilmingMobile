@@ -110,32 +110,32 @@ export default function HomeScreen({navigation: {goBack}, navigation, route}) {
     // Alert.alert('offline storage cleared');
   };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      setselected_farm_location('Select Farm Location');
-      //ASYNC STORAGE REMOVE ALL PRE-SELECTED ADDITIONS
-      AsyncStorage.getAllKeys((err, keys) => {
-        AsyncStorage.multiGet(keys, (err, stores) => {
-          stores.map((result, i, store) => {
-            let key = store[i][0];
-            var jsonPars = JSON.parse(store[i][1]);
-            if (jsonPars.user_details == 1) {
-              setallow_delete_mf(jsonPars.allow_delete_microfilming_img);
-            } else if (jsonPars.branch_details == 1) {
-              setselected_farm_location(jsonPars.branch_name);
-              setselected_farm_location_id(jsonPars.branch_id);
-              setallow_navigation(true);
-            } else {
-            }
-          });
+  var count =1;
+  useEffect(() => {
+    setselected_farm_location('Select Farm Location');
+    //ASYNC STORAGE REMOVE ALL PRE-SELECTED ADDITIONS
+    AsyncStorage.getAllKeys((err, keys) => {
+      AsyncStorage.multiGet(keys, (err, stores) => {
+        stores.map((result, i, store) => {
+          let key = store[i][0];
+          var jsonPars = JSON.parse(store[i][1]);
+          if (jsonPars.user_details == 1) {
+            setallow_delete_mf(jsonPars.allow_delete_microfilming_img);
+          } else if (jsonPars.branch_details == 1) {
+            setselected_farm_location(jsonPars.branch_name);
+            setselected_farm_location_id(jsonPars.branch_id);
+            setallow_navigation(true);
+          } else {
+          }
         });
       });
+    });
 
-      get_branch();
-      setMenu_list(mydata);
-      return () => {};
-    }, []),
-  );
+    get_branch();
+    setMenu_list(mydata);
+  }, [count]); // Only re-run the effect if count changes
+
+
 
   const get_branch = () => {
     const formData = new FormData();
