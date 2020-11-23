@@ -26,9 +26,22 @@ const mydata = [
   {
     id: '2',
     name: 'Petty Cash',
-  },{
+  },
+  {
     id: '3',
     name: 'Revolving Fund',
+  },
+  {
+    id: '4',
+    name: 'Receiving Stocks',
+  },
+  {
+    id: '5',
+    name: 'Purchase Order',
+  },
+  {
+    id: '6',
+    name: 'Consumables',
   },
 ];
 
@@ -110,7 +123,7 @@ export default function HomeScreen({navigation: {goBack}, navigation, route}) {
     // Alert.alert('offline storage cleared');
   };
 
-  var count =1;
+  var count = 1;
   useEffect(() => {
     setselected_farm_location('Select Farm Location');
     //ASYNC STORAGE REMOVE ALL PRE-SELECTED ADDITIONS
@@ -134,8 +147,6 @@ export default function HomeScreen({navigation: {goBack}, navigation, route}) {
     get_branch();
     setMenu_list(mydata);
   }, [count]); // Only re-run the effect if count changes
-
-
 
   const get_branch = () => {
     const formData = new FormData();
@@ -366,7 +377,7 @@ export default function HomeScreen({navigation: {goBack}, navigation, route}) {
           </View>
         </View>
       </Modal>
-    {/* //Revolving modal end*/}
+      {/* //Revolving modal end*/}
 
       <Modal
         animationType="fade"
@@ -579,10 +590,34 @@ function getContent(
       // Alert.alert('Under Development');
       // load Petty Cash
       setpc_modalVisible(true);
-    }else if (id == 3) {
+    } else if (id == 3) {
       // Alert.alert('Under Development');
       // load Petty Cash
       setrf_modalVisible(true);
+    } else if (id == 4) {
+      navigation.navigate('Receiving Stocks', {
+        branch_id: branch_id,
+        company_code,
+        company_id,
+        user_id,
+        allow_delete_mf,
+      });
+    } else if (id == 5) {
+      navigation.navigate('Purchase Order', {
+        branch_id: branch_id,
+        company_code,
+        company_id,
+        user_id,
+        allow_delete_mf,
+      });
+    } else if (id == 6) {
+      navigation.navigate('Consumables', {
+        branch_id: branch_id,
+        company_code,
+        company_id,
+        user_id,
+        allow_delete_mf,
+      });
     }else {
     }
   } else {

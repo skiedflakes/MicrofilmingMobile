@@ -15,6 +15,15 @@ import RevolvingFund_RequestScreen from './src/screen/Revolving_RequestScreen';
 import Revolving_ReplenishScreen from './src/screen/Revolving_ReplenishScreen';
 import Revolving_LiquidationScreen from './src/screen/Revolving_LiquidationScreen';
 
+//receiving stocks
+import ReceivingScreen from './src/screen/RecievingScreen';
+
+//purchase order
+import PurchaseOrderScreen from './src/screen/PurchaseOrderScreen';
+
+//Consumables
+import ConsumablesScreen from './src/screen/ConsumablesScreen';
+
 import TestScreen from './src/screen/TestScreen';
 const Stack = createStackNavigator();
 
@@ -25,8 +34,8 @@ function App() {
     // global.global_url = 'http://192.168.8.106/PigNotesMobile_php/';
 
     //mylocalhost
-    global.global_url = 'http://192.168.2.108/microfilming_localhost/';
-    global.notes_web_directory = 'http://192.168.2.108/notes';
+    global.global_url = 'http://192.168.2.104/microfilming_localhost/';
+    global.notes_web_directory = 'http://192.168.2.104/notes';
 
     // main onlnie url
     // global.global_url = 'https://mobile.wdysolutions.com/microfilming/main/';
@@ -97,6 +106,30 @@ function App() {
           options={{headerShown: false}}
         />
         {/* revolving fund end */}
+
+        {/* receiving stocks end */}
+        <Stack.Screen
+          name="Receiving Stocks"
+          component={ReceivingScreen}
+          options={{headerShown: false}}
+        />
+        {/* receiving stocks end */}
+
+        {/*Purchase Order start */}
+        <Stack.Screen
+          name="Purchase Order"
+          component={PurchaseOrderScreen}
+          options={{headerShown: false}}
+        />
+        {/*Purchase Order end*/}
+
+        {/*Purchase Order start */}
+        <Stack.Screen
+          name="Consumables"
+          component={ConsumablesScreen}
+          options={{headerShown: false}}
+        />
+        {/*Purchase Order end*/}
 
         <Stack.Screen name="Test Screen" component={TestScreen} />
       </Stack.Navigator>
