@@ -185,7 +185,7 @@ export default function PurchaseOrder_upload({
   return (
     <View style={styles.container}>
       <Text style={{fontSize: 18, textAlign: 'center', fontWeight: 'bold'}}>
-        Delivery # : {dr_number}
+        Purchase # : {dr_number}
       </Text>
 
       <View style={styles.body}>

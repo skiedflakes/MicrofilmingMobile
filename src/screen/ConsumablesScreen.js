@@ -3,7 +3,7 @@ import {StyleSheet, Button, Text, View, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {createStackNavigator} from '@react-navigation/stack';
 import Consumables_main from './Consumables/Consumables_main';
-import Upload_Receiving from './Receiving/Upload_Receiving';
+import Upload_Screen from './Components/UploadScreen';
 
 const Stack = createStackNavigator();
 export default function ConsumablesScreen({route}) {
@@ -29,6 +29,19 @@ export default function ConsumablesScreen({route}) {
         }}
         options={{headerShown: false}}
       />
+
+        <Stack.Screen
+        name="Upload Image Screen"
+        component={Upload_Screen}
+        initialParams={{
+          company_id: company_id,
+          branch_id: branch_id,
+          company_code: company_code,
+          user_id: user_id,
+        }}
+        options={{headerShown: false}}
+      />
+
     </Stack.Navigator>
   );
 }

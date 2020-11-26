@@ -15,7 +15,7 @@ import {
   Modal,
 } from 'react-native';
 
-export default function Upload_Receiving({
+export default function Upload_Deliveries({
   navigation: {goBack},
   navigation,
   route,
@@ -26,10 +26,12 @@ export default function Upload_Receiving({
     branch_id,
     company_code,
     user_id,
-    dr_number,
+    header_number,
+    header_number_title,
     chart_id,
     trucking_status_string,
     selected_dr_id,
+    module,
   } = route.params;
 
   const [spinner, setSpinner] = React.useState(false);
@@ -50,9 +52,8 @@ export default function Upload_Receiving({
       formData.append('company_code', company_code);
       formData.append('company_id', company_id);
       formData.append('branch_id', branch_id);
-
-      formData.append('module', 'RR');
-      formData.append('ref_num', dr_number);
+      formData.append('module', module);
+      formData.append('ref_num', header_number);
 
       if (trucking_status_string == 'Yes') {
         formData.append('details_id', selected_dr_id);
@@ -108,6 +109,7 @@ export default function Upload_Receiving({
       },
       // maxWidth: 500,
       // maxHeight: 650,
+      // quality: 1,
     };
     // ImagePicker.launchImageLibrary(options, (response) => {
     //     // Same code as in above section!
@@ -185,9 +187,8 @@ export default function Upload_Receiving({
   return (
     <View style={styles.container}>
       <Text style={{fontSize: 18, textAlign: 'center', fontWeight: 'bold'}}>
-        Receiving # : {dr_number}
+        {header_number_title}: {header_number}
       </Text>
-
       <View style={styles.body}>
         <TouchableOpacity
           onPress={() => {

@@ -49,18 +49,10 @@ export default function Consumables_main({
     user_id,
     allow_delete_mf,
   } = route.params;
-  const module = 'DR'; // module
+  const module = 'DBM'; // module
   const [image_data_loaded, setimage_data_loaded] = useState(false);
   const [image_found, setimage_found] = useState(false);
   const [spinner, setSpinner] = React.useState(false);
-
-  //trucking init
-
-  const [trucking_status_string, setTruckingStatus_String] = useState('');
-  const [trucking_status, setTruckingStatus] = useState(false);
-  const [chart_id, setChartID] = useState('');
-  const [img_list_trucking, setimg_list_trucking] = React.useState(null);
-  const [image_found_trucking, setimage_found_trucking] = useState(false);
 
   //image view list
   const [imageViewList, setImageView] = useState(null);
@@ -99,11 +91,11 @@ export default function Consumables_main({
   };
 
   const on_generate_report = () => {
-    get_deliveries_data();
+    get_table_data();
   };
 
   //selected
-  const [selected_dr_number, setselected_dr_number] = useState('');
+  const [selected_header_number, setselected_header_number] = useState('');
   const [selected_dr_id, setselected_dr_id] = useState('');
 
   const [img_list, setimg_list] = React.useState(null);
@@ -117,24 +109,23 @@ export default function Consumables_main({
     formData.append('branch_id', branch_id);
     formData.append('start_date', selected_start_date);
     formData.append('end_date', selected_end_date);
-    fetch(global.global_url + '/deliveries/get_deliveries_data.php', {
+    fetch(global.global_url + '/consumables/get_table_data.php', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'multipart/form-data',
       },
       body: formData,
-    }).then((response) => response.json())
+    })
+      .then((response) => response.json())
       .then((responseJson) => {
+        console.log(responseJson);
         setSpinner(false);
+        // console.log(responseJson);
         var data = responseJson.array_data.map(function (item, index) {
           return {
-            dr_header_id: item.dr_header_id,
-            delivery_number: item.delivery_number,
-            invoice_no: item.invoice_no,
-            query_data: item.delivery_number + '.' + item.invoice_no,
-            tr_status: item.tr_status,
-            te_id: item.te_id,
+            consumables_header_id: item.consumables_header_id,
+            consumable_number: item.consumable_number,
           };
         });
         setFilteredDataSource(data);
@@ -158,7 +149,7 @@ export default function Consumables_main({
     formData.append('module', module);
     formData.append('primary_url', global.notes_web_directory);
 
-    fetch(global.global_url + '/deliveries/get_micro_filming_img.php', {
+    fetch(global.global_url + '/consumables/get_micro_filming_img.php', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -168,6 +159,7 @@ export default function Consumables_main({
     })
       .then((response) => response.json())
       .then((responseJson) => {
+        console.log(responseJson);
         var data = responseJson.array_data.map(function (item, index) {
           return {
             id: item.id,
@@ -182,25 +174,6 @@ export default function Consumables_main({
           setimg_list('');
           setimage_found(false);
         }
-
-        // trucking
-        var data_trucking = responseJson.array_data_trucking.map(function (
-          item,
-          index,
-        ) {
-          return {
-            url: item.slug,
-          };
-        });
-
-        if (data_trucking.length > 0) {
-          setimg_list_trucking(data_trucking);
-          setimage_found_trucking(true);
-        } else {
-          setimg_list_trucking('');
-          setimage_found_trucking(false);
-        }
-
         setimage_data_loaded(true);
         //
       })
@@ -213,18 +186,11 @@ export default function Consumables_main({
   //main modal
   const [modal_main_Visible, setmodal_main_Visible] = useState(false);
 
-  const show_modal_main = (dr_number, dr_id, tr_status, details_id) => {
+  const show_modal_main = (header_number, dr_id, tr_status, details_id) => {
     setmodal_main_Visible(true);
-    setselected_dr_number(dr_number);
+    setselected_header_number(header_number);
     setselected_dr_id(dr_id);
-    setChartID(details_id);
-    setTruckingStatus_String(tr_status);
 
-    if (tr_status == 'Yes') {
-      setTruckingStatus(true);
-    } else {
-      setTruckingStatus(false);
-    }
   };
 
   //modal view images
@@ -251,7 +217,6 @@ export default function Consumables_main({
   } else {
     mm = '0' + (start_raw_date.getMonth() + 1);
   }
-
   start_date = Y + '-' + mm + '-' + '01';
 
   //setup state end date
@@ -266,9 +231,7 @@ export default function Consumables_main({
   } else {
     e_mm = '0' + (lastDay.getMonth() + 1);
   }
-
   end_date = e_Y + '-' + e_mm + '-' + e_dd;
-
   const [selected_start_date, setselected_start_date] = useState(start_date);
   const [selected_end_date, setselected_end_date] = useState(end_date);
   // const [selected_date, setselected_date] =   useState( new Date().toDateString());
@@ -380,11 +343,10 @@ export default function Consumables_main({
   const [teststate, setteststate] = useState('world');
 
   //main function
-  var count =1;
+  var count = 1;
   useEffect(() => {
     get_table_data();
   }, [count]); // Only re-run the effect if count changes
-
 
   return (
     <View style={styles.main}>
@@ -404,16 +366,18 @@ export default function Consumables_main({
               <View style={{flexDirection: 'row', padding: 2}}>
                 <Text
                   style={{flex: 0.8, alignSelf: 'center', textAlign: 'center'}}>
-                  {selected_dr_number}
+                  {selected_header_number}
                 </Text>
               </View>
               <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
                 <TouchableOpacity
                   onPress={() => {
                     setmodal_main_Visible(false);
-                    navigation.navigate('Upload Deliveries', {
-                      dr_number: selected_dr_number,
+                    navigation.navigate('Upload Image Screen', {
+                      header_number: selected_header_number,
+                      header_number_title: 'Consumable #',
                       user_id: user_id,
+                      module:module
                     });
                   }}
                   style={styles.rounded_btn}>
@@ -456,65 +420,7 @@ export default function Consumables_main({
                   </View>
                 </TouchableOpacity>
               </View>
-
-              {trucking_status && (
-                <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setmodal_main_Visible(false);
-                      navigation.navigate('Upload Deliveries', {
-                        dr_number: selected_dr_number,
-                        user_id: user_id,
-                        chart_id: chart_id,
-                        trucking_status_string: trucking_status_string,
-                        selected_dr_id: selected_dr_id,
-                      });
-                    }}
-                    style={styles.rounded_btn}>
-                    <View style={{flexDirection: 'row'}}>
-                      <MCI name="image-plus" size={20} color={'black'} />
-                      <Text
-                        style={{
-                          flex: 0.8,
-                          alignSelf: 'center',
-                          textAlign: 'center',
-                        }}>
-                        Trucking Add Image
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              )}
-
-              {trucking_status && (
-                <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setImageView(img_list_trucking),
-                        image_found_trucking
-                          ? setmodal_img_Visible(true)
-                          : Alert.alert('No image Available');
-                    }}
-                    style={styles.rounded_btn}>
-                    <View style={{flexDirection: 'row'}}>
-                      <MaterialIcons
-                        name="image-search"
-                        size={20}
-                        color={'black'}
-                      />
-                      <Text
-                        style={{
-                          flex: 0.8,
-                          alignSelf: 'center',
-                          textAlign: 'center',
-                        }}>
-                        Trucking View Image
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              )}
-
+              
               <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
                 <TouchableOpacity
                   onPress={() => {
@@ -582,64 +488,61 @@ export default function Consumables_main({
       </Modal>
       {/* end image modal */}
 
-{/* delete img modal */}
+      {/* delete img modal */}
       <Modal
         animationType="slide"
         transparent={true}
         visible={delete_modalVisible}
         onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-        }}
-      >
+          Alert.alert('Modal has been closed.');
+        }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Are you sure you want to delete?</Text>
+            <Text style={styles.modalText}>
+              Are you sure you want to delete?
+            </Text>
 
             <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
-                <TouchableOpacity
-                  onPress={() => {
-                    delete_image(selected_image_id);
-                  }}
-                  style={styles.rounded_btn}>
-                  <View style={{flexDirection: 'row'}}>
-                  
-                    <Text
-                      style={{
-                        flex: 1,
-                        alignSelf: 'center',
-                        textAlign: 'center',
-                      }}>
-                     Yes
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity
+                onPress={() => {
+                  delete_image(selected_image_id);
+                }}
+                style={styles.rounded_btn}>
+                <View style={{flexDirection: 'row'}}>
+                  <Text
+                    style={{
+                      flex: 1,
+                      alignSelf: 'center',
+                      textAlign: 'center',
+                    }}>
+                    Yes
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
 
-              <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
-                <TouchableOpacity
-                  onPress={() => {
-                    setdelete_modalVisible(!delete_modalVisible);
-                  }}
-                  style={styles.rounded_btn}>
-                  <View style={{flexDirection: 'row'}}>
-                    
-                    <Text
-                      style={{
-                        flex: 1,
-                        alignSelf: 'center',
-                        textAlign: 'center',
-                      }}>
-                     Cancel
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-
-
+            <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
+              <TouchableOpacity
+                onPress={() => {
+                  setdelete_modalVisible(!delete_modalVisible);
+                }}
+                style={styles.rounded_btn}>
+                <View style={{flexDirection: 'row'}}>
+                  <Text
+                    style={{
+                      flex: 1,
+                      alignSelf: 'center',
+                      textAlign: 'center',
+                    }}>
+                    Cancel
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
-{/* end delete img modal */}
+      {/* end delete img modal */}
 
       <View style={styles.header}>
         <View style={{flex: 1, flexDirection: 'row', padding: 2}}>
@@ -806,14 +709,14 @@ export default function Consumables_main({
                 get_images_data={get_images_data}
                 show_modal_main={show_modal_main}
                 navigation={navigation}
-                dr_header_id={item.dr_header_id}
+                consumables_header_id={item.consumables_header_id}
                 invoice_no={item.invoice_no}
-                delivery_number={item.delivery_number}
+                consumable_number={item.consumable_number}
                 tr_status={item.tr_status}
                 te_id={item.te_id}
               />
             )}
-            keyExtractor={(item) => item.dr_header_id.toString()}
+            keyExtractor={(item) => item.consumables_header_id.toString()}
             ItemSeparatorComponent={FlatListItemSeparator}
           />
         </View>
@@ -836,8 +739,8 @@ const CustomProgressBar = ({visible}) => (
 
 function RowItem({
   navigation,
-  delivery_number,
-  dr_header_id,
+  consumable_number,
+  consumables_header_id,
   show_modal_main,
   invoice_no,
   get_images_data,
@@ -847,13 +750,17 @@ function RowItem({
   return (
     <TouchableOpacity
       onPress={() => {
-        show_modal_main(delivery_number, dr_header_id, tr_status, te_id);
-        get_images_data(delivery_number);
+        show_modal_main(
+          consumable_number,
+          consumables_header_id,
+          tr_status,
+          te_id,
+        );
+        get_images_data(consumable_number);
       }}>
       <View style={styles.item}>
         <View style={{flex: 3, alignItems: 'center'}}>
-          <Text style={styles.title}>{delivery_number}</Text>
-          <Text style={styles.text_inv}>INVOICE #: {invoice_no}</Text>
+          <Text style={styles.title}>{consumable_number}</Text>
         </View>
 
         <MaterialIcons
@@ -926,7 +833,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: '#4A4A4A',
-    padding: 5,
+    padding: 15,
     fontSize: 18,
     fontWeight: 'bold',
   },
