@@ -381,10 +381,11 @@ export default function Deliveries_main({
   const [teststate, setteststate] = useState('world');
 
   //main function
-  var count = 1;
+  var count =1;
   useEffect(() => {
     get_deliveries_data();
   }, [count]); // Only re-run the effect if count changes
+
 
   return (
     <View style={styles.main}>
@@ -582,61 +583,64 @@ export default function Deliveries_main({
       </Modal>
       {/* end image modal */}
 
-      {/* delete img modal */}
+{/* delete img modal */}
       <Modal
         animationType="slide"
         transparent={true}
         visible={delete_modalVisible}
         onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
-        }}>
+          Alert.alert("Modal has been closed.");
+        }}
+      >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>
-              Are you sure you want to delete?
-            </Text>
+            <Text style={styles.modalText}>Are you sure you want to delete?</Text>
 
             <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
-              <TouchableOpacity
-                onPress={() => {
-                  delete_image(selected_image_id);
-                }}
-                style={styles.rounded_btn}>
-                <View style={{flexDirection: 'row'}}>
-                  <Text
-                    style={{
-                      flex: 1,
-                      alignSelf: 'center',
-                      textAlign: 'center',
-                    }}>
-                    Yes
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
+                <TouchableOpacity
+                  onPress={() => {
+                    delete_image(selected_image_id);
+                  }}
+                  style={styles.rounded_btn}>
+                  <View style={{flexDirection: 'row'}}>
+                  
+                    <Text
+                      style={{
+                        flex: 1,
+                        alignSelf: 'center',
+                        textAlign: 'center',
+                      }}>
+                     Yes
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
 
-            <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
-              <TouchableOpacity
-                onPress={() => {
-                  setdelete_modalVisible(!delete_modalVisible);
-                }}
-                style={styles.rounded_btn}>
-                <View style={{flexDirection: 'row'}}>
-                  <Text
-                    style={{
-                      flex: 1,
-                      alignSelf: 'center',
-                      textAlign: 'center',
-                    }}>
-                    Cancel
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
+              <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setdelete_modalVisible(!delete_modalVisible);
+                  }}
+                  style={styles.rounded_btn}>
+                  <View style={{flexDirection: 'row'}}>
+                    
+                    <Text
+                      style={{
+                        flex: 1,
+                        alignSelf: 'center',
+                        textAlign: 'center',
+                      }}>
+                     Cancel
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+
+
           </View>
         </View>
       </Modal>
-      {/* end delete img modal */}
+{/* end delete img modal */}
 
       <View style={styles.header}>
         <View style={{flex: 1, flexDirection: 'row', padding: 2}}>

@@ -2,11 +2,11 @@ import * as React from 'react';
 import {StyleSheet, Button, Text, View, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {createStackNavigator} from '@react-navigation/stack';
-import Deliveries_main from './Deliveries/Deliveries_main';
-import Upload_Deliveries from './Deliveries/Upload_Deliveries';
+import PettycashReplenish_main from './PettyCash/Replenish/PettycashReplenish_main';
+import DepositCheckCollection_main from './Deposit/DepositCheckCollection/DepositCheckCollection_main';
 
 const Stack = createStackNavigator();
-export default function DeliveriesScreen({route}) {
+export default function DepositCheckCollectionScreen({route}) {
   //global params for instant loading
   const {
     company_id,
@@ -15,28 +15,18 @@ export default function DeliveriesScreen({route}) {
     user_id,
     allow_delete_mf,
   } = route.params;
+
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="Deliveries main"
-        component={Deliveries_main}
+        name="Deposit Check Collection"
+        component={DepositCheckCollection_main}
         initialParams={{
           company_id: company_id,
           branch_id: branch_id,
           company_code: company_code,
           user_id: user_id,
           allow_delete_mf: allow_delete_mf,
-        }}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="Upload Deliveries"
-        component={Upload_Deliveries}
-        initialParams={{
-          company_id: company_id,
-          branch_id: branch_id,
-          company_code: company_code,
-          user_id: user_id,
         }}
         options={{headerShown: false}}
       />

@@ -43,6 +43,18 @@ const mydata = [
     id: '6',
     name: 'Consumables',
   },
+  {
+    id: '7',
+    name: 'Deposit',
+  },
+  {
+    id: '8',
+    name: 'Customer',
+  },
+  {
+    id: '9',
+    name: 'Test',
+  },
 ];
 
 const FlatListItemSeparator = () => {
@@ -379,6 +391,85 @@ export default function HomeScreen({navigation: {goBack}, navigation, route}) {
       </Modal>
       {/* //Revolving modal end*/}
 
+      {/* //Deposit modal*/}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={rf_modalVisible}
+        backdropColor={'green'}
+        backdropOpacity={1}
+        onRequestClose={() => {
+          setrf_modalVisible(!rf_modalVisible);
+        }}>
+        <View style={styles.modal_centeredView}>
+          <View style={styles.main_modalView}>
+            <View style={{flexDirection: 'row', padding: 2}}>
+              <Text style={{flex: 1, alignSelf: 'center', textAlign: 'center'}}>
+                Deposit
+              </Text>
+            </View>
+            <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
+              <TouchableOpacity
+                onPress={() => {
+                  setrf_modalVisible(!rf_modalVisible);
+                }}
+                style={styles.rounded_btn}>
+                <View style={{flexDirection: 'row'}}>
+                  <Text
+                    style={{flex: 1, alignSelf: 'center', textAlign: 'center'}}>
+                    Replenishment
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
+              <TouchableOpacity
+                onPress={() => {
+                  setrf_modalVisible(!rf_modalVisible);
+                }}
+                style={styles.rounded_btn}>
+                <View style={{flexDirection: 'row'}}>
+                  <Text
+                    style={{flex: 1, alignSelf: 'center', textAlign: 'center'}}>
+                    Request
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
+              <TouchableOpacity
+                onPress={() => {
+                  setrf_modalVisible(!rf_modalVisible);
+                }}
+                style={styles.rounded_btn}>
+                <View style={{flexDirection: 'row'}}>
+                  <Text
+                    style={{flex: 1, alignSelf: 'center', textAlign: 'center'}}>
+                    Liquidation
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+
+            <View style={{flexDirection: 'row', padding: 2, marginTop: 10}}>
+              <TouchableOpacity
+                onPress={() => {
+                  setrf_modalVisible(false);
+                }}
+                style={styles.rounded_btn}>
+                <View style={{flexDirection: 'row'}}>
+                  <Text
+                    style={{flex: 1, alignSelf: 'center', textAlign: 'center'}}>
+                    Close
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+      {/* //Deposit modal end*/}
+
       <Modal
         animationType="fade"
         transparent={true}
@@ -618,7 +709,8 @@ function getContent(
         user_id,
         allow_delete_mf,
       });
-    }else {
+    } else {
+      navigation.navigate('Test Screen');
     }
   } else {
     Alert.alert('Please Select Farm Location');
