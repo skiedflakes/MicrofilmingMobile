@@ -34,12 +34,12 @@ function App() {
     // global.global_url = 'http://192.168.8.106/PigNotesMobile_php/';
 
     //mylocalhost
-    global.global_url = 'http://192.168.2.111/microfilming_localhost/';
-    global.notes_web_directory = 'http://192.168.2.111/notes';
+    // global.global_url = 'http://192.168.2.111/microfilming_localhost/';
+    // global.notes_web_directory = 'http://192.168.2.111/notes';
 
     // main onlnie url
-    // global.global_url = 'https://mobile.wdysolutions.com/microfilming/main/';
-    // global.notes_web_directory = 'https://notes.wdysolutions.com/';
+    global.global_url = 'https://mobile.wdysolutions.com/microfilming/main/';
+    global.notes_web_directory = 'https://notes.wdysolutions.com/';
 
     // demo onlnie url
     // global.global_url = 'https://mobile.wdysolutions.com/microfilming/demo/';
@@ -123,14 +123,21 @@ function App() {
         />
         {/*Purchase Order end*/}
 
-        {/*Purchase Order start */}
+        {/*Consumables start */}
         <Stack.Screen
           name="Consumables"
           component={ConsumablesScreen}
           options={{headerShown: false}}
         />
-        {/*Purchase Order end*/}
+        {/*Consumables end*/}
 
+        {/*Customer Payment start */}
+        <Stack.Screen
+          name="Customer Payment"
+          component={ConsumablesScreen}
+          options={{headerShown: false}}
+        />
+        {/*Customer Payment end*/}
         <Stack.Screen name="Test Screen" component={TestScreen} />
       </Stack.Navigator>
     </NavigationContainer>
